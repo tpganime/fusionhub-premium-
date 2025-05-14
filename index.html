@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fusion Hub premium </title>
+  <style>
+    :root { 
+      --bg-start: #E0FFFF; 
+      --bg-end: #E0FFFF; 
+      --item-bg: rgba(255,255,255,0.95); 
+      --shadow: rgba(0,0,0,0.15); 
+      --hover: rgba(0,0,0,0.25); 
+    }
+
+    body { 
+      font-family: Arial, sans-serif; 
+      background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
+      padding: 20px;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .container { 
+      max-width: 800px;
+      margin: 0 auto;
+      padding-bottom: 250px; /* Space for chat panel and AI image */
+    }
+
+    .app-grid { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); 
+      gap: 18px; 
+      margin: 30px auto;
+    }
+
+    .app-item { 
+      background: var(--item-bg); 
+      border-radius: 10px; 
+      padding: 15px; 
+      text-align: center; 
+      box-shadow: 0 3px 8px var(--shadow); 
+      cursor: pointer; 
+      transition: transform .35s, box-shadow .35s; 
+    }
+
+    .app-item:hover { 
+      transform: scale(1.02); 
+      box-shadow: 0 6px 16px var(--hover); 
+    }
+
+    .app-item img { 
+      width: 55px; 
+      height: 55px; 
+      margin-bottom: 8px; 
+      object-fit: contain;
+    }
+
+    #fusionBot { 
+      position: fixed; 
+      bottom: 100px; 
+      right: 20px; 
+      width: 100px; 
+      height: 100px; 
+      background: #ffffffcc; 
+      border-radius: 50%; 
+      box-shadow: 0 3px 8px rgba(0,0,0,0.3); 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      z-index: 1000;
+    }
+
+    #fusionBot img { 
+      width: 80px; 
+      height: 80px; 
+    }
+
+    #speechBubble { 
+      position: fixed; 
+      bottom: 210px; 
+      right: 130px; 
+      max-width: 250px; 
+      padding: 15px; 
+      background: #fff; 
+      border-radius: 15px; 
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2); 
+      font-size: 14px; 
+      opacity: 0; 
+      transition: opacity 0.3s; 
+      z-index: 999;
+    }
+
+    #speechBubble.active { 
+      opacity: 1; 
+    }
+
+    #chatPanel {
+      position: fixed;
+      bottom: 20px; 
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 40px);
+      max-width: 350px; 
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 1001;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+
+    #chatInput {
+      width: 100%;
+      padding: 10px 15px;
+      border: 1px solid #ccc;
+      border-radius: 25px;
+      font-size: 14px;
+      background: #fff;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      outline: none;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    #chatInput:focus {
+      border-color: #4CAF50;
+      box-shadow: 0 2px 8px rgba(76,175,80,0.3);
+    }
+
+    #buttonContainer {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+    }
+
+    #sendBtn, #micToggleBtn {
+      width: 120px;
+      padding: 10px 15px;
+      background: #4CAF50; 
+      color: white;
+      border: none;
+      border-radius: 25px;
+      font-size: 14px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.1);
+      transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transform: perspective(500px) rotateX(0deg) rotateY(0deg);
+    }
+
+    #sendBtn:hover, #micToggleBtn:hover {
+      background: #45a049;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.3), 0 3px 6px rgba(0,0,0,0.15);
+      transform: perspective(500px) rotateX(5deg) rotateY(5deg) scale(1.05);
+    }
+
+    #sendBtn:active, #micToggleBtn:active {
+      transform: perspective(500px) rotateX(-5deg) rotateY(-5deg) scale(0.95);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    #micToggleBtn.listening {
+      background: #ff4444; 
+    }
+
+    #micToggleBtn.listening:hover {
+      background: #e53935;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.3), 0 3px 6px rgba(0,0,0,0.15);
+      transform: perspective(500px) rotateX(5deg) rotateY(5deg) scale(1.05);
+    }
+
+    #micToggleBtn.listening:active {
+      transform: perspective(500px) rotateX(-5deg) rotateY(-5deg) scale(0.95);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    #micToggleBtn::before {
+      content: '🎙️';
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Welcome to Fusion Hub(PREMIUM)!</h1>
+    <div class="app-grid">
+      <div class="app-item" onclick="window.open('https://chat.openai.com/', '_blank')">
+        <img src="gpt.png" alt="ChatGPT">
+        <span>ChatGPT</span>
+      </div>
+      <div class="app-item" onclick="window.open('https://soundcloud.com/', '_blank')">
+        <img src="music.png" alt="Music">
+        <span>Music</span>
+      </div>
+      <div class="app-item" onclick="window.open('https://crazygames.com/', '_blank')">
+        <img src="games.jpg" alt="Games">
+        <span>Game Server 1</span>
+      </div>
+      <div class="app-item" onclick="window.open('https://poki.com/', '_blank')">
+        <img src="games.jpg" alt="Games">
+        <span>Game Server 2</span>
+      </div>
+      <div class="app-item" onclick="window.open('https://aniplaynow.live/', '_blank')">
+        <img src="anime.png" alt="Anime">
+        <span>Anime</span>
+      </div>
+      <div class="app-item" onclick="window.open('https://app.kosmi.io/', '_blank')">
+        <img src="wt.jpg" alt="Watch Together">
+        <span>Watch Together</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="speechBubble"></div>
+
+  <div id="chatPanel">
+    <input type="text" id="chatInput" placeholder="Type your message...">
+    <div id="buttonContainer">
+      <button id="sendBtn">Send</button>
+      <button id="micToggleBtn">On</button>
+    </div>
+  </div>
+
+  <div id="fusionBot">
+    <img src="ai.gif" alt="FusionBot AI Assistant">
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('DOM loaded, initializing...');
+      const bubble = document.getElementById('speechBubble');
+      const chatInput = document.getElementById('chatInput');
+      const sendBtn = document.getElementById('sendBtn');
+      const micToggleBtn = document.getElementById('micToggleBtn');
+
+      if (!bubble || !chatInput || !sendBtn || !micToggleBtn) {
+        console.error('Missing DOM elements:', { bubble, chatInput, sendBtn, micToggleBtn });
+        alert('Error: Required elements not found. Check HTML IDs.');
+        return;
+      }
+
+      // State variables
+      let userName = localStorage.getItem('userName');
+      let isFirstMessage = !userName;
+      let isSettingUp = false;
+      let isMicListening = false;
+      let isWakeWordDetected = false;
+
+      // Preloaded responses
+      const jokes = [
+        "Why don’t skeletons fight each other? Because they don’t have the guts!",
+        "What do you call fake spaghetti? An impasta!",
+        "Why did the scarecrow win an award? Because he was outstanding in his field!",
+        "What do you call a bear with no teeth? A gummy bear!",
+        "Why don’t eggs tell jokes? They’d crack up!",
+        "What do you call cheese that isn’t yours? Nacho cheese!",
+        "Why did the tomato turn red? Because it saw the salad dressing!",
+        "What do you call a lazy kangaroo? A pouch potato!",
+        "Why did the bicycle fall over? Because it was two-tired!",
+        "What do you call a fish with no eyes? A fsh!",
+        "Why did the banana go to the doctor? It wasn’t peeling well!",
+        "What do you call a snowman with a six-pack? An abdominal snowman!",
+        "Why did the math book look sad? Because it had too many problems!",
+        "What do you call a cow with no legs? Ground beef!",
+        "Why did the chicken join a band? Because it had the drumsticks!",
+        "What do you call a dog that can do magic? A labracadabrador!",
+        "Why did the golfer bring two pairs of pants? In case he got a hole in one!",
+        "What do you call a pig that does karate? A pork chop!",
+        "Why did the cookie go to the doctor? It felt crummy!",
+        "What do you call an alligator in a vest? An investi-gator!"
+      ];
+
+      const facts = [
+        "The shortest war in history lasted 38 minutes.",
+        "Honey never spoils; archaeologists found edible honey in ancient Egyptian tombs!",
+        "Octopuses have three hearts.",
+        "The Eiffel Tower can be 15 cm taller in summer due to thermal expansion.",
+        "A group of flamingos is called a 'flamboyance'."
+      ];
+
+      function showBubble(text) {
+        console.log('showBubble:', text);
+        if (!bubble) {
+          console.error('speechBubble not found');
+          return;
+        }
+        bubble.textContent = text;
+        bubble.classList.add('active');
+        setTimeout(() => {
+          bubble.classList.remove('active');
+        }, 5000);
+      }
+
+      function getIndiaTime() {
+        console.log('getIndiaTime called');
+        const now = new Date();
+        const istOffset = 5.5 * 60;
+        const utcOffset = now.getTimezoneOffset();
+        const istTime = new Date(now.getTime() + (istOffset + utcOffset) * 60 * 1000);
+        const options = {
+          timeZone: 'Asia/Kolkata',
+          weekday: 'long',
+          month: 'long',
+          day: 'numeric',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true
+        };
+        const dateString = istTime.toLocaleString('en-US', options);
+        const dayOfWeek = istTime.getDay();
+        const dayType = (dayOfWeek === 0 || dayOfWeek === 6) ? 'a weekend' : 'a weekday';
+        const month = istTime.getMonth();
+        const season = (month >= 2 && month <= 4) ? 'spring' : (month >= 5 && month <= 7) ? 'summer' : (month >= 8 && month <= 10) ? 'autumn' : 'winter';
+        return `${dateString}, ${dayType} in the ${season} season.`;
+      }
+
+      function getRandomJoke() {
+        console.log('getRandomJoke called');
+        return jokes[Math.floor(Math.random() * jokes.length)];
+      }
+
+      function getRandomFact() {
+        console.log('getRandomFact called');
+        return facts[Math.floor(Math.random() * facts.length)];
+      }
+
+      function handleCommand(input) {
+        console.log('handleCommand:', input);
+        const lowerInput = input.toLowerCase().trim();
+
+        if (isFirstMessage) {
+          isFirstMessage = false;
+          isSettingUp = true;
+          return "Please enter your name:";
+        }
+
+        if (isSettingUp) {
+          if (lowerInput) {
+            userName = lowerInput;
+            localStorage.setItem('userName', userName);
+            isSettingUp = false;
+            return `Name set to ${userName}! Welcome to FusionBot! Say "hey TPG", "TPG", or "FusionHub" to start, or type 'help' for commands.`;
+          }
+          return "Please enter a valid name:";
+        }
+
+        if (lowerInput.includes("time")) {
+          return `Here’s the details: ${getIndiaTime()}`;
+        }
+
+        if (lowerInput.includes("weather")) {
+          return `For May 5, 2025, in India, expect warm spring weather, around 30-35°C in most regions, with possible evening showers in the north. Stay hydrated!`;
+        }
+
+        if (lowerInput.includes("fact")) {
+          return getRandomFact();
+        }
+
+        if (lowerInput === "hello" || lowerInput === "hi" || lowerInput === "hey") {
+          const now = new Date();
+          const istOffset = 5.5 * 60;
+          const utcOffset = now.getTimezoneOffset();
+          const istTime = new Date(now.getTime() + (istOffset + utcOffset) * 60 * 1000);
+          const hour = istTime.getHours();
+          const greeting = hour >= 5 && hour < 12 ? "Good morning" : hour >= 12 && hour < 17 ? "Good afternoon" : "Good evening";
+          return `${greeting}, ${userName}! Nice to see you! How can I help today?`;
+        }
+
+        if (lowerInput === "joke") {
+          return getRandomJoke();
+        }
+
+        if (lowerInput === "help") {
+          return "Available commands: hello/hi/hey, time, weather, fact, joke, help, open [chatgpt/music/game server 1/game server 2/anime/watch together]";
+        }
+
+        if (lowerInput.startsWith("open ")) {
+          const link = lowerInput.replace("open ", "");
+          const urls = {
+            "chatgpt": "https://chat.openai.com/",
+            "music": "https://soundcloud.com/",
+            "game server 1": "https://crazygames.com/",
+            "game server 2": "https://poki.com/",
+            "anime": "https://aniplaynow.live/",
+            "watch together": "https://app.kosmi.io/"
+          };
+          if (urls[link]) {
+            window.open(urls[link], '_blank');
+            return `Opening ${link}...`;
+          }
+          return "Invalid link. Try: chatgpt, music, game server 1, game server 2, anime, watch together.";
+        }
+
+        return `You said: ${input}. Try: hello, time, weather, fact, joke, help, or open [link].`;
+      }
+
+      function sendMessage() {
+        console.log('sendMessage called');
+        const message = chatInput.value.trim();
+        if (!message) {
+          showBubble("Please type a message.");
+          return;
+        }
+        chatInput.value = '';
+        showBubble('Thinking...');
+        const response = handleCommand(message);
+        showBubble(response);
+      }
+
+      // Event listeners
+      sendBtn.addEventListener('click', () => {
+        console.log('Send button clicked');
+        sendMessage();
+      });
+
+      chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          console.log('Enter key pressed');
+          sendMessage();
+        }
+      });
+
+      // Speech recognition
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      let recognition;
+      if (SpeechRecognition) {
+        console.log('SpeechRecognition supported');
+        recognition = new SpeechRecognition();
+        recognition.lang = 'en-US';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        recognition.onresult = (event) => {
+          console.log('Speech recognition result');
+          if (!isMicListening) return;
+          const result = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
+          console.log('Recognized:', result);
+
+          const wakeWords = ["hey tpg", "tpg", "fusionhub"];
+          if (wakeWords.some(word => result.includes(word))) {
+            isWakeWordDetected = true;
+            showBubble('Wake word detected! Say your command...');
+            return;
+          }
+
+          if (isWakeWordDetected) {
+            chatInput.value = result;
+            showBubble('Thinking...');
+            const response = handleCommand(result);
+            showBubble(response);
+            isWakeWordDetected = false;
+          }
+        };
+
+        recognition.onerror = (event) => {
+          console.error('Speech recognition error:', event.error);
+          if (event.error === 'no-speech') {
+            showBubble('No speech detected. Speak clearly.');
+          } else if (event.error === 'not-allowed') {
+            showBubble('Mic access denied. Please allow microphone permissions.');
+          } else {
+            showBubble('Speech error. Try typing instead.');
+          }
+        };
+
+        recognition.onend = () => {
+          console.log('Speech recognition ended');
+          if (isMicListening) {
+            console.log('Restarting recognition...');
+            recognition.start();
+          }
+        };
+
+        micToggleBtn.addEventListener('click', () => {
+          console.log('Mic toggle clicked');
+          if (isMicListening) {
+            isMicListening = false;
+            isWakeWordDetected = false;
+            recognition.stop();
+            micToggleBtn.textContent = 'On';
+            micToggleBtn.classList.remove('listening');
+            showBubble('Mic turned off.');
+          } else {
+            isMicListening = true;
+            try {
+              recognition.start();
+              micToggleBtn.textContent = 'Off';
+              micToggleBtn.classList.add('listening');
+              showBubble('Listening for "hey TPG", "TPG", or "FusionHub"...');
+            } catch (e) {
+              console.error('Mic start error:', e);
+              showBubble('Failed to start mic. Check permissions.');
+            }
+          }
+        });
+      } else {
+        console.warn('SpeechRecognition not supported');
+        micToggleBtn.disabled = true;
+        micToggleBtn.textContent = '🎙️ (Not supported)';
+        showBubble('Speech not supported. Use text input.');
+      }
+
+      // Initial welcome
+      if (userName) {
+        console.log('Showing welcome message');
+        setTimeout(() => showBubble(`Welcome back, ${userName}! Say "hey TPG", "TPG", or "FusionHub" to start, or type 'help' for commands.`), 1000);
+      } else {
+        console.log('No userName, prompting for name');
+        setTimeout(() => showBubble('Say "hey TPG" or type your name to start!'), 1000);
+      }
+    });
+  </script>
+</body>
+</html>
