@@ -1,519 +1,664 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fusion Hub premium </title>
-  <style>
-    :root { 
-      --bg-start: #E0FFFF; 
-      --bg-end: #E0FFFF; 
-      --item-bg: rgba(255,255,255,0.95); 
-      --shadow: rgba(0,0,0,0.15); 
-      --hover: rgba(0,0,0,0.25); 
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fusion Hub Premium</title>
+    <style>
+        :root {
+            --bg-start: #0f172a;
+            --bg-end: #1e293b;
+            --card-bg: rgba(255, 255, 255, 0.06);
+            --card-glow: rgba(34, 197, 94, 0.6);
+            --text-color: #d1d5db;
+            --accent-color: #22c55e;
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            --glow: 0 0 8px rgba(34, 197, 94, 0.6);
+            --border: 1px solid rgba(255, 255, 255, 0.1);
+        }
 
-    body { 
-      font-family: Arial, sans-serif; 
-      background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
-      padding: 20px;
-      min-height: 100vh;
-      margin: 0;
-    }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    .container { 
-      max-width: 800px;
-      margin: 0 auto;
-      padding-bottom: 250px; /* Space for chat panel and AI image */
-    }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
+            color: var(--text-color);
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
 
-    .app-grid { 
-      display: grid; 
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); 
-      gap: 18px; 
-      margin: 30px auto;
-    }
+        #particles {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0;
+            animation: fadeInParticles 0.4s ease-out 0s forwards;
+        }
 
-    .app-item { 
-      background: var(--item-bg); 
-      border-radius: 10px; 
-      padding: 15px; 
-      text-align: center; 
-      box-shadow: 0 3px 8px var(--shadow); 
-      cursor: pointer; 
-      transition: transform .35s, box-shadow .35s; 
-    }
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            height: 100vh;
+            padding: 10px;
+            max-width: 1200px;
+            margin: 0 auto;
+            opacity: 0;
+            animation: fadeInContainer 0.25s ease-out forwards;
+        }
 
-    .app-item:hover { 
-      transform: scale(1.02); 
-      box-shadow: 0 6px 16px var(--hover); 
-    }
+        h1 {
+            font-size: calc(2rem + 1vw);
+            font-weight: 700;
+            background: linear-gradient(90deg, #22c55e, #86efac);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: calc(2vh) 0;
+            will-change: transform, opacity;
+            opacity: 0;
+            transform: translateY(-20px);
+            animation: fadeInTitle 0.5s ease-out 0.2s forwards;
+        }
 
-    .app-item img { 
-      width: 55px; 
-      height: 55px; 
-      margin-bottom: 8px; 
-      object-fit: contain;
-    }
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: calc(2px + 0.3vw);
+            width: 100%;
+            max-height: calc(100vh - 130px);
+            height: 100%;
+            padding: calc(2px + 0.3vw);
+            flex-grow: 1;
+        }
 
-    #fusionBot { 
-      position: fixed; 
-      bottom: 100px; 
-      right: 20px; 
-      width: 100px; 
-      height: 100px; 
-      background: #ffffffcc; 
-      border-radius: 50%; 
-      box-shadow: 0 3px 8px rgba(0,0,0,0.3); 
-      display: flex; 
-      align-items: center; 
-      justify-content: center; 
-      z-index: 1000;
-    }
+        .app-item {
+            background: var(--card-bg);
+            backdrop-filter: blur(8px);
+            border: var(--border);
+            border-radius: 6px;
+            padding: calc(4px + 0.3vw);
+            text-align: center;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.2s ease, filter 0.2s ease;
+            transform: perspective(600px) rotateX(-10deg) rotateY(10deg) scale(0.7);
+            will-change: transform, opacity, filter;
+            opacity: 0;
+            animation: unfoldCard 0.4s ease-out var(--delay) forwards;
+            min-width: calc(50px + 0.5vw);
+            filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.2));
+        }
 
-    #fusionBot img { 
-      width: 80px; 
-      height: 80px; 
-    }
+        .app-item:hover {
+            transform: perspective(600px) rotateX(5deg) rotateY(-5deg) scale(1.05);
+            box-shadow: var(--glow);
+            filter: drop-shadow(0 5px 8px rgba(34, 197, 94, 0.4));
+        }
 
-    #speechBubble { 
-      position: fixed; 
-      bottom: 210px; 
-      right: 130px; 
-      max-width: 250px; 
-      padding: 15px; 
-      background: #fff; 
-      border-radius: 15px; 
-      box-shadow: 0 5px 15px rgba(0,0,0,0.2); 
-      font-size: 14px; 
-      opacity: 0; 
-      transition: opacity 0.3s; 
-      z-index: 999;
-    }
+        .app-item:active {
+            transform: perspective(600px) rotateX(0deg) rotateY(0deg) scale(0.95);
+            animation: pulse 0.3s ease-out;
+        }
 
-    #speechBubble.active { 
-      opacity: 1; 
-    }
+        .app-item img {
+            width: calc(16px + 0.5vw);
+            height: calc(16px + 0.5vw);
+            margin-bottom: calc(2px + 0.3vw);
+            object-fit: contain;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+            transition: transform 0.3s ease;
+        }
 
-    #chatPanel {
-      position: fixed;
-      bottom: 20px; 
-      left: 50%;
-      transform: translateX(-50%);
-      width: calc(100% - 40px);
-      max-width: 350px; 
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      z-index: 1001;
-      padding: 10px;
-      box-sizing: border-box;
-    }
+        .app-item:hover img {
+            transform: scale(1.1);
+        }
 
-    #chatInput {
-      width: 100%;
-      padding: 10px 15px;
-      border: 1px solid #ccc;
-      border-radius: 25px;
-      font-size: 14px;
-      background: #fff;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      outline: none;
-      transition: border-color 0.3s, box-shadow 0.3s;
-    }
+        .app-item span {
+            font-size: calc(0.5rem + 0.1vw);
+            font-weight: 500;
+        }
 
-    #chatInput:focus {
-      border-color: #4CAF50;
-      box-shadow: 0 2px 8px rgba(76,175,80,0.3);
-    }
+        #fusionBot {
+            position: fixed;
+            bottom: calc(70px + 2vh);
+            right: calc(10px + 1vw);
+            width: calc(60px + 2vw);
+            height: calc(60px + 2vw);
+            background: radial-gradient(circle, #22c55e, #1e293b);
+            border-radius: 50%;
+            box-shadow: var(--glow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            transform: scale(0.5);
+            animation: popInBot 0.5s ease-out 0.7s forwards, float 2s ease-in-out infinite 1.2s;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
 
-    #buttonContainer {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      width: 100%;
-    }
+        #fusionBot:hover {
+            transform: scale(1.1);
+        }
 
-    #sendBtn, #micToggleBtn {
-      width: 120px;
-      padding: 10px 15px;
-      background: #4CAF50; 
-      color: white;
-      border: none;
-      border-radius: 25px;
-      font-size: 14px;
-      cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.1);
-      transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
-      transform: perspective(500px) rotateX(0deg) rotateY(0deg);
-    }
+        #fusionBot img {
+            width: calc(40px + 2vw);
+            height: calc(40px + 2vw);
+        }
 
-    #sendBtn:hover, #micToggleBtn:hover {
-      background: #45a049;
-      box-shadow: 0 6px 15px rgba(0,0,0,0.3), 0 3px 6px rgba(0,0,0,0.15);
-      transform: perspective(500px) rotateX(5deg) rotateY(5deg) scale(1.05);
-    }
+        #speechBubble {
+            position: fixed;
+            bottom: calc(140px + 2vh);
+            right: calc(80px + 2vw);
+            max-width: calc(240px + 5vw);
+            padding: calc(8px + 1vw) calc(12px + 1vw);
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(12px);
+            border: var(--border);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            font-size: calc(0.7rem + 0.5vw);
+            opacity: 0;
+            transform: translateY(15px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            z-index: 999;
+        }
 
-    #sendBtn:active, #micToggleBtn:active {
-      transform: perspective(500px) rotateX(-5deg) rotateY(-5deg) scale(0.95);
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    }
+        #speechBubble.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
 
-    #micToggleBtn.listening {
-      background: #ff4444; 
-    }
+        #chatPanel {
+            position: fixed;
+            bottom: calc(10px + 1vh);
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            width: calc(100% - 20px);
+            max-width: calc(360px + 5vw);
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            border: var(--border);
+            border-radius: 20px;
+            padding: calc(8px + 1vw);
+            box-shadow: var(--shadow);
+            z-index: 1001;
+            opacity: 0;
+            animation: slideUpPanel 0.5s ease-out 0.5s forwards;
+        }
 
-    #micToggleBtn.listening:hover {
-      background: #e53935;
-      box-shadow: 0 6px 15px rgba(0,0,0,0.3), 0 3px 6px rgba(0,0,0,0.15);
-      transform: perspective(500px) rotateX(5deg) rotateY(5deg) scale(1.05);
-    }
+        #chatInput {
+            width: 100%;
+            padding: calc(6px + 1vw) calc(10px + 1vw);
+            border: none;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-color);
+            font-size: calc(0.7rem + 0.5vw);
+            box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.2);
+            outline: none;
+            transition: box-shadow 0.3s ease;
+        }
 
-    #micToggleBtn.listening:active {
-      transform: perspective(500px) rotateX(-5deg) rotateY(-5deg) scale(0.95);
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    }
+        #chatInput:focus {
+            box-shadow: 0 0 8px var(--card-glow);
+        }
 
-    #micToggleBtn::before {
-      content: '🎙️';
-      font-size: 16px;
-    }
-  </style>
+        #buttonContainer {
+            display: flex;
+            justify-content: center;
+            gap: calc(6px + 1vw);
+            margin-top: calc(6px + 1vw);
+        }
+
+        #sendBtn, #micToggleBtn {
+            padding: calc(6px + 1vw) calc(12px + 1vw);
+            background: var(--accent-color);
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            font-size: calc(0.7rem + 0.5vw);
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.2s ease;
+            transform: perspective(500px) rotateX(0deg) rotateY(0deg);
+        }
+
+        #sendBtn:hover, #micToggleBtn:hover {
+            transform: perspective(500px) rotateX(3deg) rotateY(3deg) scale(1.05);
+            box-shadow: var(--glow);
+        }
+
+        #micToggleBtn.listening {
+            background: #ef4444;
+        }
+
+        #micToggleBtn.listening:hover {
+            background: #dc2626;
+        }
+
+        #micToggleBtn::before {
+            content: '🎙️';
+            margin-right: calc(4px + 0.5vw);
+        }
+
+        #loadingOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1002;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        #loadingOverlay.active {
+            opacity: 1;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(34, 197, 94, 0.3);
+            border-top: 4px solid #22c55e;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes fadeInParticles { to { opacity: 1; } }
+        @keyframes fadeInContainer { to { opacity: 1; } }
+        @keyframes fadeInTitle { to { opacity: 1; transform: translateY(0); } }
+        @keyframes unfoldCard { to { opacity: 1; transform: perspective(600px) rotateX(0deg) rotateY(0deg) scale(1); } }
+        @keyframes pulse { 0% { transform: perspective(600px) scale(0.95); } 50% { transform: perspective(600px) scale(1.05); } 100% { transform: perspective(600px) scale(1); } }
+        @keyframes popInBot { to { opacity: 1; transform: scale(1); } }
+        @keyframes slideUpPanel { to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .app-item:nth-child(1) { --delay: 0.3s; }
+        .app-item:nth-child(2) { --delay: 0.4s; }
+        .app-item:nth-child(3) { --delay: 0.5s; }
+        .app-item:nth-child(4) { --delay: 0.6s; }
+        .app-item:nth-child(5) { --delay: 0.7s; }
+        .app-item:nth-child(6) { --delay: 0.8s; }
+
+        @media (max-width: 768px) {
+            .app-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: calc(1px + 0.3vw);
+                max-height: calc(100vh - 120px);
+                padding: calc(1px + 0.3vw);
+            }
+
+            h1 { font-size: calc(1.8rem + 1vw); }
+
+            #chatPanel { max-width: calc(100% - 20px); }
+
+            #fusionBot {
+                width: calc(55px + 2vw);
+                height: calc(55px + 2vw);
+                bottom: calc(65px + 2vh);
+                right: calc(8px + 1vw);
+            }
+
+            #fusionBot img { width: calc(35px + 2vw); height: calc(35px + 2vw); }
+
+            #speechBubble {
+                max-width: calc(180px + 5vw);
+                right: calc(70px + 2vw);
+                bottom: calc(130px + 2vh);
+            }
+
+            .app-item {
+                min-width: calc(45px + 0.5vw);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .app-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: calc(0.5px + 0.3vw);
+                max-height: calc(100vh - 110px);
+                padding: calc(0.5px + 0.3vw);
+            }
+
+            h1 { font-size: calc(1.6rem + 1vw); }
+
+            .app-item {
+                min-width: calc(40px + 0.5vw);
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Welcome to Fusion Hub(PREMIUM)!</h1>
-    <div class="app-grid">
-      <div class="app-item" onclick="window.open('https://chat.openai.com/', '_blank')">
-        <img src="gpt.png" alt="ChatGPT">
-        <span>ChatGPT</span>
-      </div>
-      <div class="app-item" onclick="window.open('https://music.apple.com/in/new', '_blank')">
-        <img src="music.png" alt="Music">
-        <span>Music</span>
-      </div>
-      <div class="app-item" onclick="window.open('https://crazygames.com/', '_blank')">
-        <img src="games.jpg" alt="Games">
-        <span>Game Server 1</span>
-      </div>
-      <div class="app-item" onclick="window.open('https://poki.com/', '_blank')">
-        <img src="games.jpg" alt="Games">
-        <span>Game Server 2</span>
-      </div>
-      <div class="app-item" onclick="window.open('https://aniplaynow.live/', '_blank')">
-        <img src="anime.png" alt="Anime">
-        <span>Anime</span>
-      </div>
-      <div class="app-item" onclick="window.open('https://app.kosmi.io/', '_blank')">
-        <img src="wt.jpg" alt="Watch Together">
-        <span>Watch Together</span>
-      </div>
+    <canvas id="particles"></canvas>
+    <div class="container">
+        <h1>Welcome to Fusion Hub Premium</h1>
+        <div class="app-grid">
+            <div class="app-item" data-url="https://chat.openai.com/">
+                <img src="https://via.placeholder.com/16" alt="ChatGPT">
+                <span>ChatGPT</span>
+            </div>
+            <div class="app-item" data-url="https://music.apple.com/in/new">
+                <img src="https://via.placeholder.com/16" alt="Music">
+                <span>Music</span>
+            </div>
+            <div class="app-item" data-url="https://crazygames.com/">
+                <img src="https://via.placeholder.com/16" alt="Games">
+                <span>Game Server 1</span>
+            </div>
+            <div class="app-item" data-url="https://poki.com/">
+                <img src="https://via.placeholder.com/16" alt="Games">
+                <span>Game Server 2</span>
+            </div>
+            <div class="app-item" data-url="https://aniplaynow.live/">
+                <img src="https://via.placeholder.com/16" alt="Anime">
+                <span>Anime</span>
+            </div>
+            <div class="app-item" data-url="https://app.kosmi.io/">
+                <img src="https://via.placeholder.com/16" alt="Watch Together">
+                <span>Watch Together</span>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <div id="speechBubble"></div>
-
-  <div id="chatPanel">
-    <input type="text" id="chatInput" placeholder="Type your message...">
-    <div id="buttonContainer">
-      <button id="sendBtn">Send</button>
-      <button id="micToggleBtn">On</button>
+    <div id="speechBubble"></div>
+    <div id="chatPanel">
+        <input type="text" id="chatInput" placeholder="Ask FusionBot...">
+        <div id="buttonContainer">
+            <button id="sendBtn">Send</button>
+            <button id="micToggleBtn">On</button>
+        </div>
     </div>
-  </div>
+    <div id="fusionBot">
+        <img src="https://via.placeholder.com/40" alt="FusionBot AI Assistant">
+    </div>
+    <div id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>
 
-  <div id="fusionBot">
-    <img src="ai.gif" alt="FusionBot AI Assistant">
-  </div>
+    <script>
+        // Particle Background and Burst
+        const canvas = document.getElementById('particles');
+        const ctx = canvas.getContext('2d');
+        if (canvas && ctx) {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
 
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      console.log('DOM loaded, initializing...');
-      const bubble = document.getElementById('speechBubble');
-      const chatInput = document.getElementById('chatInput');
-      const sendBtn = document.getElementById('sendBtn');
-      const micToggleBtn = document.getElementById('micToggleBtn');
-
-      if (!bubble || !chatInput || !sendBtn || !micToggleBtn) {
-        console.error('Missing DOM elements:', { bubble, chatInput, sendBtn, micToggleBtn });
-        alert('Error: Required elements not found. Check HTML IDs.');
-        return;
-      }
-
-      // State variables
-      let userName = localStorage.getItem('userName');
-      let isFirstMessage = !userName;
-      let isSettingUp = false;
-      let isMicListening = false;
-      let isWakeWordDetected = false;
-
-      // Preloaded responses
-      const jokes = [
-        "Why don’t skeletons fight each other? Because they don’t have the guts!",
-        "What do you call fake spaghetti? An impasta!",
-        "Why did the scarecrow win an award? Because he was outstanding in his field!",
-        "What do you call a bear with no teeth? A gummy bear!",
-        "Why don’t eggs tell jokes? They’d crack up!",
-        "What do you call cheese that isn’t yours? Nacho cheese!",
-        "Why did the tomato turn red? Because it saw the salad dressing!",
-        "What do you call a lazy kangaroo? A pouch potato!",
-        "Why did the bicycle fall over? Because it was two-tired!",
-        "What do you call a fish with no eyes? A fsh!",
-        "Why did the banana go to the doctor? It wasn’t peeling well!",
-        "What do you call a snowman with a six-pack? An abdominal snowman!",
-        "Why did the math book look sad? Because it had too many problems!",
-        "What do you call a cow with no legs? Ground beef!",
-        "Why did the chicken join a band? Because it had the drumsticks!",
-        "What do you call a dog that can do magic? A labracadabrador!",
-        "Why did the golfer bring two pairs of pants? In case he got a hole in one!",
-        "What do you call a pig that does karate? A pork chop!",
-        "Why did the cookie go to the doctor? It felt crummy!",
-        "What do you call an alligator in a vest? An investi-gator!"
-      ];
-
-      const facts = [
-        "The shortest war in history lasted 38 minutes.",
-        "Honey never spoils; archaeologists found edible honey in ancient Egyptian tombs!",
-        "Octopuses have three hearts.",
-        "The Eiffel Tower can be 15 cm taller in summer due to thermal expansion.",
-        "A group of flamingos is called a 'flamboyance'."
-      ];
-
-      function showBubble(text) {
-        console.log('showBubble:', text);
-        if (!bubble) {
-          console.error('speechBubble not found');
-          return;
-        }
-        bubble.textContent = text;
-        bubble.classList.add('active');
-        setTimeout(() => {
-          bubble.classList.remove('active');
-        }, 5000);
-      }
-
-      function getIndiaTime() {
-        console.log('getIndiaTime called');
-        const now = new Date();
-        const istOffset = 5.5 * 60;
-        const utcOffset = now.getTimezoneOffset();
-        const istTime = new Date(now.getTime() + (istOffset + utcOffset) * 60 * 1000);
-        const options = {
-          timeZone: 'Asia/Kolkata',
-          weekday: 'long',
-          month: 'long',
-          day: 'numeric',
-          year: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: true
-        };
-        const dateString = istTime.toLocaleString('en-US', options);
-        const dayOfWeek = istTime.getDay();
-        const dayType = (dayOfWeek === 0 || dayOfWeek === 6) ? 'a weekend' : 'a weekday';
-        const month = istTime.getMonth();
-        const season = (month >= 2 && month <= 4) ? 'spring' : (month >= 5 && month <= 7) ? 'summer' : (month >= 8 && month <= 10) ? 'autumn' : 'winter';
-        return `${dateString}, ${dayType} in the ${season} season.`;
-      }
-
-      function getRandomJoke() {
-        console.log('getRandomJoke called');
-        return jokes[Math.floor(Math.random() * jokes.length)];
-      }
-
-      function getRandomFact() {
-        console.log('getRandomFact called');
-        return facts[Math.floor(Math.random() * facts.length)];
-      }
-
-      function handleCommand(input) {
-        console.log('handleCommand:', input);
-        const lowerInput = input.toLowerCase().trim();
-
-        if (isFirstMessage) {
-          isFirstMessage = false;
-          isSettingUp = true;
-          return "Please enter your name:";
-        }
-
-        if (isSettingUp) {
-          if (lowerInput) {
-            userName = lowerInput;
-            localStorage.setItem('userName', userName);
-            isSettingUp = false;
-            return `Name set to ${userName}! Welcome to FusionBot! Say "hey TPG", "TPG", or "FusionHub" to start, or type 'help' for commands.`;
-          }
-          return "Please enter a valid name:";
-        }
-
-        if (lowerInput.includes("time")) {
-          return `Here’s the details: ${getIndiaTime()}`;
-        }
-
-        if (lowerInput.includes("weather")) {
-          return `For May 5, 2025, in India, expect warm spring weather, around 30-35°C in most regions, with possible evening showers in the north. Stay hydrated!`;
-        }
-
-        if (lowerInput.includes("fact")) {
-          return getRandomFact();
-        }
-
-        if (lowerInput === "hello" || lowerInput === "hi" || lowerInput === "hey") {
-          const now = new Date();
-          const istOffset = 5.5 * 60;
-          const utcOffset = now.getTimezoneOffset();
-          const istTime = new Date(now.getTime() + (istOffset + utcOffset) * 60 * 1000);
-          const hour = istTime.getHours();
-          const greeting = hour >= 5 && hour < 12 ? "Good morning" : hour >= 12 && hour < 17 ? "Good afternoon" : "Good evening";
-          return `${greeting}, ${userName}! Nice to see you! How can I help today?`;
-        }
-
-        if (lowerInput === "joke") {
-          return getRandomJoke();
-        }
-
-        if (lowerInput === "help") {
-          return "Available commands: hello/hi/hey, time, weather, fact, joke, help, open [chatgpt/music/game server 1/game server 2/anime/watch together]";
-        }
-
-        if (lowerInput.startsWith("open ")) {
-          const link = lowerInput.replace("open ", "");
-          const urls = {
-            "chatgpt": "https://chat.openai.com/",
-            "music": "https://music.apple.com/in/new",
-            "game server 1": "https://crazygames.com/",
-            "game server 2": "https://poki.com/",
-            "anime": "https://aniplaynow.live/",
-            "watch together": "https://app.kosmi.io/"
-          };
-          if (urls[link]) {
-            window.open(urls[link], '_blank');
-            return `Opening ${link}...`;
-          }
-          return "Invalid link. Try: chatgpt, music, game server 1, game server 2, anime, watch together.";
-        }
-
-        return `You said: ${input}. Try: hello, time, weather, fact, joke, help, or open [link].`;
-      }
-
-      function sendMessage() {
-        console.log('sendMessage called');
-        const message = chatInput.value.trim();
-        if (!message) {
-          showBubble("Please type a message.");
-          return;
-        }
-        chatInput.value = '';
-        showBubble('Thinking...');
-        const response = handleCommand(message);
-        showBubble(response);
-      }
-
-      // Event listeners
-      sendBtn.addEventListener('click', () => {
-        console.log('Send button clicked');
-        sendMessage();
-      });
-
-      chatInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-          console.log('Enter key pressed');
-          sendMessage();
-        }
-      });
-
-      // Speech recognition
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      let recognition;
-      if (SpeechRecognition) {
-        console.log('SpeechRecognition supported');
-        recognition = new SpeechRecognition();
-        recognition.lang = 'en-US';
-        recognition.interimResults = false;
-        recognition.maxAlternatives = 1;
-
-        recognition.onresult = (event) => {
-          console.log('Speech recognition result');
-          if (!isMicListening) return;
-          const result = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
-          console.log('Recognized:', result);
-
-          const wakeWords = ["hey tpg", "tpg", "fusionhub"];
-          if (wakeWords.some(word => result.includes(word))) {
-            isWakeWordDetected = true;
-            showBubble('Wake word detected! Say your command...');
-            return;
-          }
-
-          if (isWakeWordDetected) {
-            chatInput.value = result;
-            showBubble('Thinking...');
-            const response = handleCommand(result);
-            showBubble(response);
-            isWakeWordDetected = false;
-          }
-        };
-
-        recognition.onerror = (event) => {
-          console.error('Speech recognition error:', event.error);
-          if (event.error === 'no-speech') {
-            showBubble('No speech detected. Speak clearly.');
-          } else if (event.error === 'not-allowed') {
-            showBubble('Mic access denied. Please allow microphone permissions.');
-          } else {
-            showBubble('Speech error. Try typing instead.');
-          }
-        };
-
-        recognition.onend = () => {
-          console.log('Speech recognition ended');
-          if (isMicListening) {
-            console.log('Restarting recognition...');
-            recognition.start();
-          }
-        };
-
-        micToggleBtn.addEventListener('click', () => {
-          console.log('Mic toggle clicked');
-          if (isMicListening) {
-            isMicListening = false;
-            isWakeWordDetected = false;
-            recognition.stop();
-            micToggleBtn.textContent = 'On';
-            micToggleBtn.classList.remove('listening');
-            showBubble('Mic turned off.');
-          } else {
-            isMicListening = true;
-            try {
-              recognition.start();
-              micToggleBtn.textContent = 'Off';
-              micToggleBtn.classList.add('listening');
-              showBubble('Listening for "hey TPG", "TPG", or "FusionHub"...');
-            } catch (e) {
-              console.error('Mic start error:', e);
-              showBubble('Failed to start mic. Check permissions.');
+            const particlesArray = [];
+            class Particle {
+                constructor(x, y, isBurst = false) {
+                    this.x = x || Math.random() * canvas.width;
+                    this.y = y || Math.random() * canvas.height;
+                    this.size = isBurst ? Math.random() * 3 + 1 : Math.random() * 1.2 + 0.3;
+                    this.speedX = isBurst ? Math.random() * 10 - 5 : Math.random() * 0.2 - 0.1;
+                    this.speedY = isBurst ? Math.random() * 10 - 5 : Math.random() * 0.2 - 0.1;
+                    this.opacity = isBurst ? 1 : 0.2;
+                    this.isBurst = isBurst;
+                }
+                update() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+                    if (this.isBurst) {
+                        this.opacity -= 0.02;
+                        this.size -= 0.05;
+                    } else if (this.size > 0.2) {
+                        this.size -= 0.015;
+                    }
+                }
+                draw() {
+                    ctx.fillStyle = `rgba(34, 197, 94, ${this.opacity})`;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
             }
-          }
-        });
-      } else {
-        console.warn('SpeechRecognition not supported');
-        micToggleBtn.disabled = true;
-        micToggleBtn.textContent = '🎙️ (Not supported)';
-        showBubble('Speech not supported. Use text input.');
-      }
 
-      // Initial welcome
-      if (userName) {
-        console.log('Showing welcome message');
-        setTimeout(() => showBubble(`Welcome back, ${userName}! Say "hey TPG", "TPG", or "FusionHub" to start, or type 'help' for commands.`), 1000);
-      } else {
-        console.log('No userName, prompting for name');
-        setTimeout(() => showBubble('Say "hey TPG" or type your name to start!'), 1000);
-      }
-    });
-  </script>
+            function initParticles() {
+                for (let i = 0; i < 12; i++) particlesArray.push(new Particle());
+            }
+
+            function createBurst(x, y) {
+                for (let i = 0; i < 20; i++) particlesArray.push(new Particle(x, y, true));
+            }
+
+            function animateParticles() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particlesArray.forEach((p, i) => {
+                    p.update();
+                    p.draw();
+                    if (p.size <= 0.2 || (p.isBurst && p.opacity <= 0)) {
+                        particlesArray.splice(i, 1);
+                        if (!p.isBurst) particlesArray.push(new Particle());
+                    }
+                });
+                requestAnimationFrame(animateParticles);
+            }
+
+            initParticles();
+            animateParticles();
+
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+        } else {
+            console.error('Canvas or context not found');
+        }
+
+        // App Open Animation
+        const openApp = (element, url) => {
+            element.classList.add('active');
+            const rect = element.getBoundingClientRect();
+            const x = rect.left + rect.width / 2;
+            const y = rect.top + rect.height / 2;
+            createBurst(x, y);
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.classList.add('active');
+            setTimeout(() => {
+                window.open(url, '_blank');
+                overlay.classList.remove('active');
+                element.classList.remove('active');
+            }, 800);
+        };
+
+        document.querySelectorAll('.app-item').forEach(item => {
+            item.addEventListener('click', () => openApp(item, item.dataset.url));
+        });
+
+        // Chatbot Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const bubble = document.getElementById('speechBubble');
+            const chatInput = document.getElementById('chatInput');
+            const sendBtn = document.getElementById('sendBtn');
+            const micToggleBtn = document.getElementById('micToggleBtn');
+            const fusionBot = document.getElementById('fusionBot');
+
+            if (!bubble || !chatInput || !sendBtn || !micToggleBtn || !fusionBot) {
+                console.error('Missing DOM elements:', { bubble, chatInput, sendBtn, micToggleBtn, fusion artefactBot });
+                alert('Error: Some interface elements failed to load. Check console for details.');
+                return;
+            }
+
+            let userName = localStorage.getItem('userName') || '';
+            let isFirstMessage = !userName;
+            let isSettingUp = false;
+            let isMicListening = false;
+            let isWakeWordDetected = false;
+
+            const urls = {
+                chatgpt: "https://chat.openai.com/",
+                music: "https://music.apple.com/in/new",
+                "game server 1": "https://crazygames.com/",
+                "game server 2": "https://poki.com/",
+                anime: "https://aniplaynow.live/",
+                "watch together": "https://app.kosmi.io/"
+            };
+
+            const showBubble = (text) => {
+                bubble.textContent = text;
+                bubble.classList.add('active');
+                setTimeout(() => bubble.classList.remove('active'), 3500);
+            };
+
+            const getIndiaTime = () => {
+                const now = new Date();
+                const istTime = new Date(now.getTime() + 5.5 * 60 * 60 * 1000);
+                return istTime.toLocaleString('en-US', {
+                    timeZone: 'Asia/Kolkata',
+                    weekday: 'long',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                });
+            };
+
+            const handleCommand = (input) => {
+                const lowerInput = input.toLowerCase().trim();
+                if (isFirstMessage) {
+                    isFirstMessage = false;
+                    isSettingUp = true;
+                    return "Please enter your name:";
+                }
+                if (isSettingUp) {
+                    if (lowerInput) {
+                        userName = lowerInput;
+                        localStorage.setItem('userName', userName);
+                        isSettingUp = false;
+                        return `Welcome, ${userName}! Say "hey TPG" or type 'help' for commands.`;
+                    }
+                    return "Please enter a valid name:";
+                }
+                if (lowerInput.includes("time") || lowerInput.includes("what time")) return `Current time: ${getIndiaTime()}`;
+                if (lowerInput.includes("weather")) return "For June 10, 2025, in India, expect warm summer weather, around 30-38°C, with possible monsoon showers.";
+                if (lowerInput.includes("fact")) return "Octopuses have three hearts.";
+                if (["hello", "hi", "hey", "hola"].includes(lowerInput)) return `Hey ${userName}, what's up?`;
+                if (lowerInput === "joke" || lowerInput.includes("tell me a joke")) return "Why don’t eggs tell jokes? They’d crack up!";
+                if (lowerInput === "help") return "Commands: hello/hi/hey/hola, time, weather, fact, joke, help, open [chatgpt/music/game server 1/game server 2/anime/watch together]";
+                if (lowerInput.startsWith("open ")) {
+                    const link = lowerInput.replace("open ", "");
+                    if (urls[link]) {
+                        const appItem = document.querySelector(`.app-item[data-url="${urls[link]}"]`);
+                        if (appItem) openApp(appItem, urls[link]);
+                        return `Opening ${link}...`;
+                    }
+                    return "Invalid link. Try: chatgpt, music, game server 1, game server 2, anime, watch together.";
+                }
+                if (lowerInput === "i am good") return `Glad to hear that, ${userName}! What's next?`;
+                return `You said: ${input}. Try 'help' for commands.`;
+            };
+
+            const sendMessage = () => {
+                const message = chatInput.value.trim();
+                if (!message) return showBubble("Type a message.");
+                chatInput.value = '';
+                showBubble('Processing...');
+                setTimeout(() => showBubble(handleCommand(message)), 500);
+            };
+
+            let timeout;
+            const debounce = (fn, delay) => {
+                clearTimeout(timeout);
+                timeout = setTimeout(fn, delay);
+            };
+
+            sendBtn.addEventListener('click', () => debounce(sendMessage, 100));
+            chatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') debounce(sendMessage, 100);
+            });
+
+            fusionBot.addEventListener('click', () => showBubble('Ask me anything!'));
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            let recognition;
+            if (SpeechRecognition) {
+                recognition = new SpeechRecognition();
+                recognition.lang = 'en-US';
+                recognition.interimResults = false;
+
+                recognition.onresult = (event) => {
+                    if (!isMicListening) return;
+                    const result = event.results[0][0].transcript.trim().toLowerCase();
+                    if (["hey tpg", "tpg", "fusionhub"].includes(result)) {
+                        isWakeWordDetected = true;
+                        return showBubble('Say your command...');
+                    }
+                    if (isWakeWordDetected) {
+                        chatInput.value = result;
+                        showBubble('Processing...');
+                        setTimeout(() => showBubble(handleCommand(result)), 500);
+                        isWakeWordDetected = false;
+                    }
+                };
+
+                recognition.onerror = (event) => {
+                    showBubble(event.error === 'no-speech' ? 'No speech detected.' : 'Speech error.');
+                    console.error('Speech recognition error:', event.error);
+                };
+
+                recognition.onend = () => {
+                    if (isMicListening) {
+                        try {
+                            recognition.start();
+                        } catch (error) {
+                            console.error('Failed to restart recognition:', error);
+                            isMicListening = false;
+                            micToggleBtn.textContent = 'On';
+                            micToggleBtn.classList.remove('listening');
+                            showBubble('Mic error. Try again.');
+                        }
+                    }
+                };
+
+                micToggleBtn.addEventListener('click', () => {
+                    isMicListening = !isMicListening;
+                    if (isMicListening) {
+                        try {
+                            recognition.start();
+                            micToggleBtn.textContent = 'Off';
+                            micToggleBtn.classList.add('listening');
+                            showBubble('Listening...');
+                        } catch (error) {
+                            console.error('Failed to start recognition:', error);
+                            showBubble('Mic failed to start.');
+                            isMicListening = false;
+                        }
+                    } else {
+                        recognition.stop();
+                        micToggleBtn.textContent = 'On';
+                        micToggleBtn.classList.remove('listening');
+                        showBubble('Mic off.');
+                    }
+                });
+            } else {
+                micToggleBtn.disabled = true;
+                micToggleBtn.textContent = '🎙️';
+                showBubble('Speech not supported.');
+                console.warn('SpeechRecognition API not supported in this browser.');
+            }
+
+            setTimeout(() => showBubble(userName ? `Hey ${userName}, ready to go?` : 'Type your name to start!'), 1000);
+        });
+    </script>
 </body>
 </html>
