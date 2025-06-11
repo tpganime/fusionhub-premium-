@@ -8,13 +8,13 @@
         :root {
             --bg-start: #0f172a;
             --bg-end: #1e293b;
-            --card-bg: rgba(255, 255, 255, 0.06);
-            --card-glow: rgba(34, 197, 94, 0.6);
-            --text-color: #d1d5db;
+            --card-bg: linear-gradient(145deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9));
+            --card-glow: rgba(34, 197, 94, 0.5);
+            --text-color: #e5e7eb;
             --accent-color: #22c55e;
             --shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            --glow: 0 0 8px rgba(34, 197, 94, 0.6);
-            --border: 1px solid rgba(255, 255, 255, 0.1);
+            --glow: 0 0 10px rgba(34, 197, 94, 0.5);
+            --border: 1px solid rgba(34, 197, 94, 0.2);
         }
 
         * {
@@ -85,49 +85,56 @@
         .app-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: calc(2px + 0.3vw);
+            gap: 0;
             width: 100%;
-            max-height: calc(100vh - 150px);
-            height: 100%;
-            padding: calc(2px + 0.3vw);
-            flex-grow: 1;
+            max-height: calc(100vh - 170px);
+            height: auto;
+            padding: 0;
+            justify-items: stretch;
         }
 
         .app-item {
             background: var(--card-bg);
-            backdrop-filter: blur(8px);
+            backdrop-filter: blur(12px);
             border: var(--border);
-            border-radius: 6px;
-            padding: calc(4px + 0.3vw);
+            border-radius: 12px;
+            padding: calc(10px + 0.3vw);
             text-align: center;
-            box-shadow: var(--shadow);
+            box-shadow: var(--shadow), inset 0 0 5px rgba(34, 197, 94, 0.3);
             cursor: pointer;
-            transition: transform 0.3s ease, box-shadow 0.2s ease, filter 0.2s ease;
-            transform: perspective(600px) rotateX(-10deg) rotateY(10deg) scale(0.7);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, filter 0.3s ease;
+            transform: perspective(800px) rotateX(-8deg) rotateY(8deg) scale(0.8);
             will-change: transform, opacity, filter;
             opacity: 0;
             animation: unfoldCard 0.4s ease-out var(--delay) forwards;
-            min-width: calc(50px + 0.5vw);
-            filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.2));
+            width: 100%;
+            height: calc(80px + 0.5vw);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
         .app-item:hover {
-            transform: perspective(600px) rotateX(5deg) rotateY(-5deg) scale(1.05);
-            box-shadow: var(--glow);
-            filter: drop-shadow(0 5px 8px rgba(34, 197, 94, 0.4));
+            transform: perspective(800px) rotateX(5deg) rotateY(-5deg) scale(1.02) translateY(-3px);
+            box-shadow: var(--glow), inset 0 0 5px rgba(34, 197, 94, 0.3);
+            filter: brightness(1.1);
+        }
+
+        .app-item:hover span {
+            color: #86efac;
         }
 
         .app-item:active {
-            transform: perspective(600px) rotateX(0deg) rotateY(0deg) scale(0.95);
+            transform: perspective(800px) rotateX(0deg) rotateY(0deg) scale(0.97);
             animation: pulse 0.3s ease-out;
         }
 
         .app-item img {
-            width: calc(16px + 0.5vw);
-            height: calc(16px + 0.5vw);
-            margin-bottom: calc(2px + 0.3vw);
+            width: calc(28px + 0.5vw);
+            height: calc(28px + 0.5vw);
+            margin-bottom: calc(4px + 0.3vw);
             object-fit: contain;
-            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
             transition: transform 0.3s ease;
         }
 
@@ -136,8 +143,10 @@
         }
 
         .app-item span {
-            font-size: calc(0.5rem + 0.1vw);
-            font-weight: 500;
+            font-size: calc(0.9rem + 0.2vw);
+            font-weight: 600;
+            color: var(--text-color);
+            transition: color 0.3s ease;
         }
 
         #fusionBot {
@@ -230,34 +239,41 @@
         #buttonContainer {
             display: flex;
             justify-content: center;
-            gap: calc(6px + 1vw);
+            gap: 0;
             margin-top: calc(6px + 1vw);
         }
 
         #sendBtn, #micToggleBtn {
-            padding: calc(6px + 1vw) calc(12px + 1vw);
-            background: var(--accent-color);
-            color: #fff;
-            border: none;
-            border-radius: 20px;
-            font-size: calc(0.7rem + 0.5vw);
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: var(--border);
+            border-radius: 12px;
+            box-shadow: var(--shadow), inset 0 0 5px rgba(34, 197, 94, 0.3);
+            color: var(--text-color);
+            font-size: calc(0.9rem + 0.2vw);
+            font-weight: 600;
             cursor: pointer;
-            box-shadow: var(--shadow);
-            transition: transform 0.3s ease, box-shadow 0.2s ease;
-            transform: perspective(500px) rotateX(0deg) rotateY(0deg);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, filter 0.3s ease;
+            transform: perspective(800px) rotateX(-8deg) rotateY(8deg);
+            width: calc(80px + 0.5vw);
+            height: calc(60px + 0.5vw);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         #sendBtn:hover, #micToggleBtn:hover {
-            transform: perspective(500px) rotateX(3deg) rotateY(3deg) scale(1.05);
-            box-shadow: var(--glow);
+            transform: perspective(800px) rotateX(5deg) rotateY(-5deg) scale(1.02) translateY(-3px);
+            box-shadow: var(--glow), inset 0 0 5px rgba(34, 197, 94, 0.3);
+            filter: brightness(1.1);
+        }
+
+        #sendBtn:hover, #micToggleBtn:hover {
+            color: #86efac;
         }
 
         #micToggleBtn.listening {
-            background: #ef4444;
-        }
-
-        #micToggleBtn.listening:hover {
-            background: #dc2626;
+            background: linear-gradient(145deg, rgba(239, 68, 68, 0.9), rgba(220, 38, 38, 0.9));
         }
 
         #micToggleBtn::before {
@@ -289,7 +305,7 @@
         .spinner {
             width: 40px;
             height: 40px;
-            border: 4px solid rgba(34, 197, 94, 0.3);
+            border: 4px solid rgba(34, 751, 94, 0.3);
             border-top: 4px solid #22c55e;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
@@ -298,8 +314,8 @@
         @keyframes fadeInParticles { to { opacity: 1; } }
         @keyframes fadeInContainer { to { opacity: 1; } }
         @keyframes fadeInTitle { to { opacity: 1; transform: translateY(0); } }
-        @keyframes unfoldCard { to { opacity: 1; transform: perspective(600px) rotateX(0deg) rotateY(0deg) scale(1); } }
-        @keyframes pulse { 0% { transform: perspective(600px) scale(0.95); } 50% { transform: perspective(600px) scale(1.05); } 100% { transform: perspective(600px) scale(1); } }
+        @keyframes unfoldCard { to { opacity: 1; transform: perspective(800px) rotateX(0deg) rotateY(0deg) scale(1); } }
+        @keyframes pulse { 0% { transform: perspective(800px) scale(0.97); } 50% { transform: perspective(800px) scale(1.03); } 100% { transform: perspective(800px) scale(1); } }
         @keyframes popInBot { to { opacity: 1; transform: scale(1); } }
         @keyframes slideUpPanel { to { opacity: 1; transform: translateX(-50%) translateY(0); } }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
@@ -315,9 +331,9 @@
         @media (max-width: 768px) {
             .app-grid {
                 grid-template-columns: repeat(2, 1fr);
-                gap: calc(1px + 0.3vw);
-                max-height: calc(100vh - 140px);
-                padding: calc(1px + 0.3vw);
+                gap: 0;
+                max-height: calc(100vh - 160px);
+                padding: 0;
             }
 
             h1 { font-size: calc(1.8rem + 1vw); }
@@ -342,16 +358,31 @@
             }
 
             .app-item {
-                min-width: calc(45px + 0.5vw);
+                height: calc(75px + 0.5vw);
+            }
+
+            .app-item img {
+                width: calc(26px + 0.5vw);
+                height: calc(26px + 0.5vw);
+            }
+
+            .app-item span {
+                font-size: calc(0.8rem + 0.2vw);
+            }
+
+            #sendBtn, #micToggleBtn {
+                width: calc(75px + 0.5vw);
+                height: calc(55px + 0.5vw);
+                font-size: calc(0.8rem + 0.2vw);
             }
         }
 
         @media (max-width: 480px) {
             .app-grid {
                 grid-template-columns: repeat(2, 1fr);
-                gap: calc(0.5px + 0.3vw);
-                max-height: calc(100vh - 130px);
-                padding: calc(0.5px + 0.3vw);
+                gap: 0;
+                max-height: calc(100vh - 150px);
+                padding: 0;
             }
 
             h1 { font-size: calc(1.6rem + 1vw); }
@@ -359,7 +390,22 @@
             #dateTime { font-size: calc(0.6rem + 0.5vw); }
 
             .app-item {
-                min-width: calc(40px + 0.5vw);
+                height: calc(70px + 0.5vw);
+            }
+
+            .app-item img {
+                width: calc(24px + 0.5vw);
+                height: calc(24px + 0.5vw);
+            }
+
+            .app-item span {
+                font-size: calc(0.7rem + 0.2vw);
+            }
+
+            #sendBtn, #micToggleBtn {
+                width: calc(70px + 0.5vw);
+                height: calc(50px + 0.5vw);
+                font-size: calc(0.7rem + 0.2vw);
             }
         }
     </style>
@@ -371,27 +417,27 @@
         <div id="dateTime"></div>
         <div class="app-grid">
             <div class="app-item" data-url="https://chat.openai.com/">
-                <img src="gpt.png" alt="ChatGPT">
+                <img src="https://via.placeholder.com/28" alt="ChatGPT">
                 <span>ChatGPT</span>
             </div>
             <div class="app-item" data-url="https://music.apple.com/in/new">
-                <img src="music.png" alt="Music">
+                <img src="https://via.placeholder.com/28" alt="Music">
                 <span>Music</span>
             </div>
             <div class="app-item" data-url="https://crazygames.com/">
-                <img src="games.jpg" alt="Games">
+                <img src="https://via.placeholder.com/28" alt="Games">
                 <span>Game Server 1</span>
             </div>
             <div class="app-item" data-url="https://poki.com/">
-                <img src="games.jpg" alt="Games">
+                <img src="https://via.placeholder.com/28" alt="Games">
                 <span>Game Server 2</span>
             </div>
             <div class="app-item" data-url="https://aniplaynow.live/">
-                <img src="anime.png" alt="Anime">
+                <img src="https://via.placeholder.com/28" alt="Anime">
                 <span>Anime</span>
             </div>
             <div class="app-item" data-url="https://app.kosmi.io/">
-                <img src="wt.jpg" alt="Watch Together">
+                <img src="https://via.placeholder.com/28" alt="Watch Together">
                 <span>Watch Together</span>
             </div>
         </div>
@@ -406,7 +452,7 @@
         </div>
     </div>
     <div id="fusionBot">
-        <img src="ai.gif" alt="FusionBot AI Assistant">
+        <img src="https://via.placeholder.com/40" alt="FusionBot AI Assistant">
     </div>
     <div id="loadingOverlay">
         <div class="spinner"></div>
@@ -428,7 +474,7 @@
                     this.size = isBurst ? Math.random() * 3 + 1 : Math.random() * 1.2 + 0.3;
                     this.speedX = isBurst ? Math.random() * 10 - 5 : Math.random() * 0.2 - 0.1;
                     this.speedY = isBurst ? Math.random() * 10 - 5 : Math.random() * 0.2 - 0.1;
-                    this.opacity = isBurst ? 1 : 0.2;
+                    this.opacity = isBurst ? 0.8 : 0.2;
                     this.isBurst = isBurst;
                 }
                 update() {
@@ -523,21 +569,25 @@
                 return;
             }
 
-            // Display Date and Time
+            // Display and Update Date and Time
             const getIndiaTime = () => {
-                const now = new Date();
-                const istTime = new Date(now.getTime() + 5.5 * 60 * 60 * 1000);
-                return istTime.toLocaleString('en-US', {
+                return new Date().toLocaleString('en-US', {
                     timeZone: 'Asia/Kolkata',
                     weekday: 'long',
                     month: 'long',
                     day: 'numeric',
                     hour: '2-digit',
                     minute: '2-digit',
+                    second: '2-digit',
                     hour12: true
                 });
             };
+
+            // Initial set and auto-update every second
             dateTime.textContent = getIndiaTime();
+            setInterval(() => {
+                dateTime.textContent = getIndiaTime();
+            }, 1000);
 
             // Add click event listeners to app items
             document.querySelectorAll('.app-item').forEach(item => {
@@ -590,7 +640,7 @@
                     return "Please enter a valid name:";
                 }
                 if (lowerInput.includes("time") || lowerInput.includes("what time")) return `Current time: ${getIndiaTime()}`;
-                if (lowerInput.includes("weather")) return "For June 10, 2025, in India, expect warm summer weather, around 30-38°C, with possible monsoon showers.";
+                if (lowerInput.includes("weather")) return "For June 11, 2025, in India, expect warm summer weather, around 30-38°C, with possible monsoon showers.";
                 if (lowerInput.includes("fact")) return "Octopuses have three hearts.";
                 if (["hello", "hi", "hey", "hola"].includes(lowerInput)) return `Hey ${userName}, what's up?`;
                 if (lowerInput === "joke" || lowerInput.includes("tell me a joke")) return "Why don’t eggs tell jokes? They’d crack up!";
