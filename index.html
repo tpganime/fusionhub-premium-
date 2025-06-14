@@ -91,6 +91,7 @@
             height: auto;
             padding: 0;
             justify-items: stretch;
+            overflow: visible;
         }
 
         .app-item {
@@ -224,7 +225,7 @@
             padding: calc(6px + 1vw) calc(10px + 1vw);
             border: none;
             border-radius: 20px;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 251, 0.1);
             color: var(--text-color);
             font-size: calc(0.7rem + 0.5vw);
             box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.2);
@@ -305,10 +306,117 @@
         .spinner {
             width: 40px;
             height: 40px;
-            border: 4px solid rgba(34, 751, 94, 0.3);
+            border: 4px solid rgba(34, 197, 94, 0.3);
             border-top: 4px solid #22c55e;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
+        }
+
+        /* Time Settings Menu Styles */
+        #timeSettingsMenu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1003;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        #timeSettingsMenu.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .time-settings-content {
+            background: var(--card-bg);
+            border: var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .time-settings-content h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, #22c55e, #86efac);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .time-settings-option {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .time-settings-option label {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .toggle {
+            position: relative;
+            width: 50px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle .slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: #22c55e;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+
+        .toggle input:checked + .slider {
+            transform: translateX(26px);
+        }
+
+        .time-settings-buttons {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .time-settings-buttons button {
+            background: var(--card-bg);
+            border: var(--border);
+            border-radius: 8px;
+            padding: 10px 20px;
+            color: var(--text-color);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .time-settings-buttons button:hover {
+            transform: scale(1.05);
+            box-shadow: var(--glow);
         }
 
         @keyframes fadeInParticles { to { opacity: 1; } }
@@ -417,27 +525,27 @@
         <div id="dateTime"></div>
         <div class="app-grid">
             <div class="app-item" data-url="https://chat.openai.com/">
-                <img src="gpt.png" alt="ChatGPT">
+                <img src="https://via.placeholder.com/28" alt="ChatGPT">
                 <span>ChatGPT</span>
             </div>
             <div class="app-item" data-url="https://open.spotify.com/">
-                <img src="music.png" alt="Music">
+                <img src="https://via.placeholder.com/28" alt="Music">
                 <span>Music</span>
             </div>
             <div class="app-item" data-url="https://crazygames.com/">
-                <img src="games.jpg" alt="Games">
+                <img src="https://via.placeholder.com/28" alt="Games">
                 <span>Game Server 1</span>
             </div>
             <div class="app-item" data-url="https://poki.com/">
-                <img src="games.jpg" alt="Games">
+                <img src="https://via.placeholder.com/28" alt="Games">
                 <span>Game Server 2</span>
             </div>
             <div class="app-item" data-url="https://aniplaynow.live/">
-                <img src="anime.png" alt="Anime">
+                <img src="https://via.placeholder.com/28" alt="Anime">
                 <span>Anime</span>
             </div>
             <div class="app-item" data-url="https://app.kosmi.io/">
-                <img src="wt.jpg" alt="Watch Together">
+                <img src="https://via.placeholder.com/28" alt="Watch Together">
                 <span>Watch Together</span>
             </div>
         </div>
@@ -452,21 +560,49 @@
         </div>
     </div>
     <div id="fusionBot">
-        <img src="ai.gif" alt="FusionBot AI Assistant">
+        <img src="https://via.placeholder.com/40" alt="FusionBot AI Assistant">
     </div>
     <div id="loadingOverlay">
         <div class="spinner"></div>
+    </div>
+
+    <!-- Time Settings Menu -->
+    <div id="timeSettingsMenu">
+        <div class="time-settings-content">
+            <h2>Time Settings</h2>
+            <div class="time-settings-option">
+                <label>Time Format</label>
+                <label class="toggle">
+                    <input type="checkbox" id="timeFormatToggle">
+                    <span class="slider"></span>
+                </label>
+                <span id="timeFormatLabel">12-hour</span>
+            </div>
+            <div class="time-settings-option">
+                <label>Show Seconds</label>
+                <label class="toggle">
+                    <input type="checkbox" id="showSecondsToggle">
+                    <span class="slider"></span>
+                </label>
+                <span id="showSecondsLabel">On</span>
+            </div>
+            <div class="time-settings-buttons">
+                <button id="saveTimeSettings">Save</button>
+                <button id="cancelTimeSettings">Cancel</button>
+            </div>
+        </div>
     </div>
 
     <script>
         // Particle Background and Burst
         const canvas = document.getElementById('particles');
         const ctx = canvas.getContext('2d');
+        let particlesArray = [];
+
         if (canvas && ctx) {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
 
-            const particlesArray = [];
             class Particle {
                 constructor(x, y, isBurst = false) {
                     this.x = x || Math.random() * canvas.width;
@@ -496,6 +632,7 @@
             }
 
             function initParticles() {
+                particlesArray = [];
                 for (let i = 0; i < 12; i++) particlesArray.push(new Particle());
             }
 
@@ -522,9 +659,78 @@
             window.addEventListener('resize', () => {
                 canvas.width = window.innerWidth;
                 canvas.height = window.innerHeight;
+                initParticles(); // Reinitialize particles on resize
             });
         } else {
             console.error('Canvas or context not found');
+        }
+
+        // Reset UI Elements to Initial State
+        function resetUI() {
+            const overlay = document.getElementById('loadingOverlay');
+            const container = document.querySelector('.container');
+            const fusionBot = document.getElementById('fusionBot');
+            const chatPanel = document.getElementById('chatPanel');
+            const speechBubble = document.getElementById('speechBubble');
+            const timeSettingsMenu = document.getElementById('timeSettingsMenu');
+
+            // Reset loading overlay
+            if (overlay) {
+                overlay.classList.remove('active');
+            }
+
+            // Reset container opacity and animation
+            if (container) {
+                container.style.opacity = '0';
+                container.style.animation = 'none';
+                setTimeout(() => {
+                    container.style.animation = 'fadeInContainer 0.25s ease-out forwards';
+                }, 10);
+            }
+
+            // Reset app items animation
+            document.querySelectorAll('.app-item').forEach(item => {
+                item.style.opacity = '0';
+                item.style.transform = 'perspective(800px) rotateX(-8deg) rotateY(8deg) scale(0.8)';
+                item.style.animation = 'none';
+                const delay = item.style.getPropertyValue('--delay') || '0s';
+                setTimeout(() => {
+                    item.style.animation = `unfoldCard 0.4s ease-out ${delay} forwards`;
+                }, 10);
+            });
+
+            // Reset fusionBot animation
+            if (fusionBot) {
+                fusionBot.style.opacity = '0';
+                fusionBot.style.transform = 'scale(0.5)';
+                fusionBot.style.animation = 'none';
+                setTimeout(() => {
+                    fusionBot.style.animation = 'popInBot 0.5s ease-out 0.7s forwards, float 2s ease-in-out infinite 1.2s';
+                }, 10);
+            }
+
+            // Reset chat panel animation
+            if (chatPanel) {
+                chatPanel.style.opacity = '0';
+                chatPanel.style.transform = 'translateX(-50%) translateY(80px)';
+                chatPanel.style.animation = 'none';
+                setTimeout(() => {
+                    chatPanel.style.animation = 'slideUpPanel 0.5s ease-out 0.5s forwards';
+                }, 10);
+            }
+
+            // Reset speech bubble
+            if (speechBubble) {
+                speechBubble.classList.remove('active');
+            }
+
+            // Reset time settings menu
+            if (timeSettingsMenu) {
+                timeSettingsMenu.classList.remove('active');
+            }
+
+            // Reinitialize particles
+            initParticles();
         }
 
         // App Open Function
@@ -536,6 +742,7 @@
             createBurst(x, y);
             const overlay = document.getElementById('loadingOverlay');
             overlay.classList.add('active');
+
             setTimeout(() => {
                 try {
                     const newWindow = window.open(url, '_blank');
@@ -546,13 +753,29 @@
                         console.log('Successfully opened URL:', url);
                     }
                     overlay.classList.remove('active');
+                    resetUI(); // Reset UI after opening the new tab
                 } catch (error) {
                     console.error('Error opening URL:', url, error);
                     alert('Error opening the app. Check console for details.');
                     overlay.classList.remove('active');
+                    resetUI(); // Reset UI even if there's an error
                 }
             }, 800);
         }
+
+        // Handle Browser Back Button
+        window.addEventListener('popstate', () => {
+            console.log('Back button pressed, resetting UI');
+            resetUI();
+        });
+
+        // Handle Page Visibility (when user switches back to the tab)
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                console.log('Tab is visible, resetting UI');
+                resetUI();
+            }
+        });
 
         // Chatbot Logic
         document.addEventListener('DOMContentLoaded', () => {
@@ -562,25 +785,55 @@
             const micToggleBtn = document.getElementById('micToggleBtn');
             const fusionBot = document.getElementById('fusionBot');
             const dateTime = document.getElementById('dateTime');
+            const appGrid = document.querySelector('.app-grid');
+            const timeSettingsMenu = document.getElementById('timeSettingsMenu');
+            const timeFormatToggle = document.getElementById('timeFormatToggle');
+            const timeFormatLabel = document.getElementById('timeFormatLabel');
+            const showSecondsToggle = document.getElementById('showSecondsToggle');
+            const showSecondsLabel = document.getElementById('showSecondsLabel');
+            const saveTimeSettings = document.getElementById('saveTimeSettings');
+            const cancelTimeSettings = document.getElementById('cancelTimeSettings');
 
-            if (!bubble || !chatInput || !sendBtn || !micToggleBtn || !fusionBot || !dateTime) {
-                console.error('Missing DOM elements:', { bubble, chatInput, sendBtn, micToggleBtn, fusionBot, dateTime });
+            // Check if all DOM elements are present
+            if (!bubble || !chatInput || !sendBtn || !micToggleBtn || !fusionBot || !dateTime || !appGrid || !timeSettingsMenu || !timeFormatToggle || !showSecondsToggle) {
+                console.error('Missing DOM elements:', { bubble, chatInput, sendBtn, micToggleBtn, fusionBot, dateTime, appGrid, timeSettingsMenu, timeFormatToggle, showSecondsToggle });
                 alert('Error: Some interface elements failed to load. Check console for details.');
                 return;
             }
 
+            // Verify all app items are present
+            const appItems = document.querySelectorAll('.app-item');
+            if (appItems.length !== 6) {
+                console.error('Expected 6 app items, found:', appItems.length);
+                alert('Error: Not all app buttons are loaded. Check console for details.');
+            } else {
+                console.log('All 6 app items loaded successfully:', Array.from(appItems).map(item => item.querySelector('span').textContent));
+            }
+
+            // Load time settings from localStorage or set defaults
+            const timeSettings = {
+                is24Hour: localStorage.getItem('timeFormat') === '24' || false,
+                showSeconds: localStorage.getItem('showSeconds') === 'false' ? false : true
+            };
+
+            // Temporary settings for the menu
+            let tempSettings = { ...timeSettings };
+
             // Display and Update Date and Time
             const getIndiaTime = () => {
-                return new Date().toLocaleString('en-US', {
+                const options = {
                     timeZone: 'Asia/Kolkata',
                     weekday: 'long',
                     month: 'long',
                     day: 'numeric',
                     hour: '2-digit',
                     minute: '2-digit',
-                    second: '2-digit',
-                    hour12: true
-                });
+                    hour12: !timeSettings.is24Hour
+                };
+                if (timeSettings.showSeconds) {
+                    options.second = '2-digit';
+                }
+                return new Date().toLocaleString('en-US', options);
             };
 
             // Initial set and auto-update every second
@@ -599,7 +852,43 @@
                     });
                 } else {
                     console.error('No URL found for app item:', item);
+                    alert('Error: Missing URL for an app button. Check console for details.');
                 }
+            });
+
+            // Time Settings Menu Logic
+            function openTimeSettingsMenu() {
+                tempSettings = { ...timeSettings };
+                timeFormatToggle.checked = tempSettings.is24Hour;
+                timeFormatLabel.textContent = tempSettings.is24Hour ? '24-hour' : '12-hour';
+                showSecondsToggle.checked = tempSettings.showSeconds;
+                showSecondsLabel.textContent = tempSettings.showSeconds ? 'On' : 'Off';
+                timeSettingsMenu.classList.add('active');
+            }
+
+            timeFormatToggle.addEventListener('change', () => {
+                tempSettings.is24Hour = timeFormatToggle.checked;
+                timeFormatLabel.textContent = tempSettings.is24Hour ? '24-hour' : '12-hour';
+            });
+
+            showSecondsToggle.addEventListener('change', () => {
+                tempSettings.showSeconds = showSecondsToggle.checked;
+                showSecondsLabel.textContent = tempSettings.showSeconds ? 'On' : 'Off';
+            });
+
+            saveTimeSettings.addEventListener('click', () => {
+                timeSettings.is24Hour = tempSettings.is24Hour;
+                timeSettings.showSeconds = tempSettings.showSeconds;
+                localStorage.setItem('timeFormat', timeSettings.is24Hour ? '24' : '12');
+                localStorage.setItem('showSeconds', timeSettings.showSeconds ? 'true' : 'false');
+                dateTime.textContent = getIndiaTime();
+                timeSettingsMenu.classList.remove('active');
+                showBubble('Time settings saved.');
+            });
+
+            cancelTimeSettings.addEventListener('click', () => {
+                timeSettingsMenu.classList.remove('active');
+                showBubble('Time settings cancelled.');
             });
 
             let userName = localStorage.getItem('userName') || '';
@@ -639,12 +928,16 @@
                     }
                     return "Please enter a valid name:";
                 }
+                if (lowerInput === "time settings") {
+                    openTimeSettingsMenu();
+                    return "Opening time settings menu...";
+                }
                 if (lowerInput.includes("time") || lowerInput.includes("what time")) return `Current time: ${getIndiaTime()}`;
-                if (lowerInput.includes("weather")) return "For June 11, 2025, in India, expect warm summer weather, around 30-38°C, with possible monsoon showers.";
+                if (lowerInput.includes("weather")) return "For June 14, 2025, in India, expect warm summer weather, around 30-38°C, with possible monsoon showers.";
                 if (lowerInput.includes("fact")) return "Octopuses have three hearts.";
                 if (["hello", "hi", "hey", "hola"].includes(lowerInput)) return `Hey ${userName}, what's up?`;
                 if (lowerInput === "joke" || lowerInput.includes("tell me a joke")) return "Why don’t eggs tell jokes? They’d crack up!";
-                if (lowerInput === "help") return "Commands: hello/hi/hey/hola, time, weather, fact, joke, help, open [chatgpt/music/game server 1/game server 2/anime/watch together]";
+                if (lowerInput === "help") return "Commands: hello/hi/hey/hola, time, time settings, weather, fact, joke, help, open [chatgpt/music/game server 1/game server 2/anime/watch together]";
                 if (lowerInput.startsWith("open ")) {
                     const link = lowerInput.replace("open ", "");
                     if (urls[link]) {
@@ -655,7 +948,11 @@
                         } else {
                             console.error('App item not found for URL:', urls[link]);
                             try {
-                                window.open(urls[link], '_blank');
+                                const newWindow = window.open(urls[link], '_blank');
+                                if (!newWindow) {
+                                    console.error('Failed to open URL via chatbot:', urls[link], 'Popup blocker may be enabled.');
+                                    return "Failed to open the app. Please allow popups and try again.";
+                                }
                             } catch (error) {
                                 console.error('Failed to open URL via chatbot:', urls[link], error);
                                 return "Error opening the app. Check console for details.";
