@@ -8,13 +8,28 @@
         :root {
             --bg-start: #0f172a;
             --bg-end: #1e293b;
-            --card-bg: linear-gradient(145deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9));
-            --card-glow: rgba(34, 197, 94, 0.5);
-            --text-color: #e5e7eb;
-            --accent-color: #22c55e;
-            --shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            --glow: 0 0 10px rgba(34, 197, 94, 0.5);
-            --border: 1px solid rgba(34, 197, 94, 0.2);
+            --card-bg: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.8));
+            --card-glow: rgba(16, 185, 129, 0.5);
+            --text-color: #f3f4f6;
+            --accent-color: #10b981;
+            --shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            --glow: 0 0 8px rgba(16, 185, 129, 0.4);
+            --border: 1px solid rgba(16, 185, 129, 0.2);
+            --button-gradient: linear-gradient(145deg, #10b981, #1e293b);
+        }
+
+        /* Light Theme Variables */
+        [data-theme="light"] {
+            --bg-start: #e2e8f0;
+            --bg-end: #f1f5f9;
+            --card-bg: linear-gradient(145deg, rgba(255, 255, 255, 0.8), rgba(241, 245, 249, 0.8));
+            --card-glow: rgba(59, 130, 246, 0.5);
+            --text-color: #1e293b;
+            --accent-color: #3b82f6;
+            --shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            --glow: 0 0 8px rgba(59, 130, 246, 0.3);
+            --border: 1px solid rgba(59, 130, 246, 0.2);
+            --button-gradient: linear-gradient(145deg, #3b82f6, #e2e8f0);
         }
 
         * {
@@ -24,7 +39,7 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
             color: var(--text-color);
             height: 100vh;
@@ -32,6 +47,21 @@
             position: relative;
             display: flex;
             flex-direction: column;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(16, 185, 129, 0.05), rgba(15, 23, 42, 0.1));
+            z-index: -2;
+        }
+
+        [data-theme="light"] body::before {
+            background: linear-gradient(45deg, rgba(59, 130, 246, 0.05), rgba(241, 245, 249, 0.1));
         }
 
         #particles {
@@ -50,7 +80,7 @@
             flex-direction: column;
             justify-content: flex-start;
             height: 100vh;
-            padding: 10px;
+            padding: 15px;
             max-width: 1200px;
             margin: 0 auto;
             opacity: 0;
@@ -58,28 +88,38 @@
         }
 
         h1 {
-            font-size: calc(2rem + 1vw);
+            font-size: calc(2.2rem + 1vw);
             font-weight: 700;
-            background: linear-gradient(90deg, #22c55e, #86efac);
+            background: linear-gradient(90deg, #10b981, #6ee7b7);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin: calc(2vh) 0;
             will-change: transform, opacity;
             opacity: 0;
             transform: translateY(-20px);
-            animation: fadeInTitle 0.5s ease-out 0.2s forwards;
+            animation: fadeInTitle 0.4s ease-out 0.2s forwards;
+        }
+
+        [data-theme="light"] h1 {
+            background: linear-gradient(90deg, #3b82f6, #93c5fd);
         }
 
         #dateTime {
-            font-size: calc(0.8rem + 0.5vw);
+            font-size: calc(0.9rem + 0.5vw);
+            font-weight: 500;
             color: #d1d5db;
-            background: linear-gradient(90deg, #22c55e, #86efac);
+            background: linear-gradient(90deg, #10b981, #6ee7b7);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: calc(1vh);
             opacity: 0;
             transform: translateY(-10px);
-            animation: fadeInTitle 0.5s ease-out 0.3s forwards;
+            animation: fadeInTitle 0.4s ease-out 0.3s forwards;
+        }
+
+        [data-theme="light"] #dateTime {
+            color: #64748b;
+            background: linear-gradient(90deg, #3b82f6, #93c5fd);
         }
 
         .app-grid {
@@ -95,40 +135,54 @@
         }
 
         .app-item {
+            position: relative;
             background: var(--card-bg);
-            backdrop-filter: blur(12px);
             border: var(--border);
             border-radius: 12px;
             padding: calc(10px + 0.3vw);
             text-align: center;
-            box-shadow: var(--shadow), inset 0 0 5px rgba(34, 197, 94, 0.3);
+            box-shadow: var(--shadow);
             cursor: pointer;
-            transition: transform 0.3s ease, box-shadow 0.3s ease, filter 0.3s ease;
-            transform: perspective(800px) rotateX(-8deg) rotateY(8deg) scale(0.8);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+            transform: perspective(1000px) rotateX(-10deg) rotateY(10deg) scale(0.85);
             will-change: transform, opacity, filter;
             opacity: 0;
-            animation: unfoldCard 0.4s ease-out var(--delay) forwards;
+            animation: buttonFadeIn 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55) var(--delay) forwards;
             width: 100%;
             height: calc(80px + 0.5vw);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            contain: paint;
+        }
+
+        .app-item.dragging {
+            opacity: 0.5;
+            transform: scale(0.95);
         }
 
         .app-item:hover {
-            transform: perspective(800px) rotateX(5deg) rotateY(-5deg) scale(1.02) translateY(-3px);
-            box-shadow: var(--glow), inset 0 0 5px rgba(34, 197, 94, 0.3);
-            filter: brightness(1.1);
+            transform: perspective(1000px) rotateX(5deg) rotateY(-5deg) scale(1.05) translateY(-5px);
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.5);
+            filter: brightness(1.15);
+        }
+
+        [data-theme="light"] .app-item:hover {
+            box-shadow: 0 0 12px rgba(59, 130, 246, 0.5);
         }
 
         .app-item:hover span {
-            color: #86efac;
+            color: #6ee7b7;
+        }
+
+        [data-theme="light"] .app-item:hover span {
+            color: #93c5fd;
         }
 
         .app-item:active {
-            transform: perspective(800px) rotateX(0deg) rotateY(0deg) scale(0.97);
-            animation: pulse 0.3s ease-out;
+            transform: perspective(1000px) rotateX(0deg) rotateY(0deg) scale(0.95);
+            animation: press 0.25s ease-out;
         }
 
         .app-item img {
@@ -136,18 +190,18 @@
             height: calc(28px + 0.5vw);
             margin-bottom: calc(4px + 0.3vw);
             object-fit: contain;
-            transition: transform 0.3s ease;
+            transition: transform 0.2s ease;
         }
 
         .app-item:hover img {
-            transform: scale(1.1);
+            transform: scale(1.15);
         }
 
         .app-item span {
             font-size: calc(0.9rem + 0.2vw);
             font-weight: 600;
             color: var(--text-color);
-            transition: color 0.3s ease;
+            transition: color 0.2s ease;
         }
 
         #fusionBot {
@@ -156,7 +210,7 @@
             right: calc(10px + 1vw);
             width: calc(60px + 2vw);
             height: calc(60px + 2vw);
-            background: radial-gradient(circle, #22c55e, #1e293b);
+            background: radial-gradient(circle, #10b981, #1e293b);
             border-radius: 50%;
             box-shadow: var(--glow);
             display: flex;
@@ -165,9 +219,13 @@
             z-index: 1000;
             opacity: 0;
             transform: scale(0.5);
-            animation: popInBot 0.5s ease-out 0.7s forwards, float 2s ease-in-out infinite 1.2s;
+            animation: popInBot 0.5s ease-out 0.7s forwards, pulse 2s ease-in-out infinite 1.2s;
             cursor: pointer;
-            transition: transform 0.3s ease;
+            transition: transform 0.2s ease;
+        }
+
+        [data-theme="light"] #fusionBot {
+            background: radial-gradient(circle, #3b82f6, #e2e8f0);
         }
 
         #fusionBot:hover {
@@ -185,16 +243,20 @@
             right: calc(80px + 2vw);
             max-width: calc(240px + 5vw);
             padding: calc(8px + 1vw) calc(12px + 1vw);
-            background: rgba(255, 255, 255, 0.07);
-            backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.1);
             border: var(--border);
             border-radius: 12px;
             box-shadow: var(--shadow);
-            font-size: calc(0.7rem + 0.5vw);
+            font-size: calc(0.8rem + 0.5vw);
+            font-weight: 400;
             opacity: 0;
             transform: translateY(15px);
             transition: opacity 0.3s ease, transform 0.3s ease;
             z-index: 999;
+        }
+
+        [data-theme="light"] #speechBubble {
+            background: rgba(0, 0, 0, 0.05);
         }
 
         #speechBubble.active {
@@ -208,29 +270,39 @@
             left: 50%;
             transform: translateX(-50%) translateY(80px);
             width: calc(100% - 20px);
-            max-width: calc(360px + 5vw);
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(12px);
+            max-width: calc(380px + 5vw);
+            background: rgba(255, 255, 255, 0.08);
             border: var(--border);
             border-radius: 20px;
-            padding: calc(8px + 1vw);
+            padding: calc(10px + 1vw);
             box-shadow: var(--shadow);
             z-index: 1001;
             opacity: 0;
             animation: slideUpPanel 0.5s ease-out 0.5s forwards;
+            contain: paint;
+        }
+
+        [data-theme="light"] #chatPanel {
+            background: rgba(0, 0, 0, 0.05);
         }
 
         #chatInput {
             width: 100%;
-            padding: calc(6px + 1vw) calc(10px + 1vw);
+            padding: calc(8px + 1vw) calc(12px + 1vw);
             border: none;
             border-radius: 20px;
-            background: rgba(255, 255, 251, 0.1);
+            background: rgba(255, 255, 251, 0.15);
             color: var(--text-color);
-            font-size: calc(0.7rem + 0.5vw);
+            font-size: calc(0.8rem + 0.5vw);
+            font-weight: 400;
             box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.2);
             outline: none;
-            transition: box-shadow 0.3s ease;
+            transition: box-shadow 0.2s ease;
+        }
+
+        [data-theme="light"] #chatInput {
+            background: rgba(0, 0, 0, 0.1);
+            box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.1);
         }
 
         #chatInput:focus {
@@ -241,75 +313,136 @@
             display: flex;
             justify-content: center;
             gap: 0;
-            margin-top: calc(6px + 1vw);
+            margin-top: calc(8px + 1vw);
         }
 
-        #sendBtn, #micToggleBtn {
-            background: var(--card-bg);
-            backdrop-filter: blur(12px);
+        #sendBtn {
+            position: relative;
+            background: var(--button-gradient);
             border: var(--border);
             border-radius: 12px;
-            box-shadow: var(--shadow), inset 0 0 5px rgba(34, 197, 94, 0.3);
+            box-shadow: var(--shadow);
             color: var(--text-color);
             font-size: calc(0.9rem + 0.2vw);
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
-            transition: transform 0.3s ease, box-shadow 0.3s ease, filter 0.3s ease;
-            transform: perspective(800px) rotateX(-8deg) rotateY(8deg);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+            transform: perspective(1000px) rotateX(-10deg) rotateY(10deg);
             width: calc(80px + 0.5vw);
             height: calc(60px + 0.5vw);
             display: flex;
             align-items: center;
             justify-content: center;
+            opacity: 0;
+            animation: buttonFadeIn 0.5s ease-out 0.7s forwards;
         }
 
-        #sendBtn:hover, #micToggleBtn:hover {
-            transform: perspective(800px) rotateX(5deg) rotateY(-5deg) scale(1.02) translateY(-3px);
-            box-shadow: var(--glow), inset 0 0 5px rgba(34, 197, 94, 0.3);
-            filter: brightness(1.1);
+        #sendBtn:hover {
+            transform: perspective(1000px) rotateX(5deg) rotateY(-5deg) scale(1.05) translateY(-5px);
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.5);
+            filter: brightness(1.15);
+            color: #6ee7b7;
         }
 
-        #sendBtn:hover, #micToggleBtn:hover {
-            color: #86efac;
+        [data-theme="light"] #sendBtn:hover {
+            box-shadow: 0 0 12px rgba(59, 130, 246, 0.5);
+            color: #93c5fd;
         }
 
-        #micToggleBtn.listening {
-            background: linear-gradient(145deg, rgba(239, 68, 68, 0.9), rgba(220, 38, 38, 0.9));
+        #sendBtn:active {
+            transform: perspective(1000px) rotateX(0deg) rotateY(0deg) scale(0.95);
+            animation: press 0.25s ease-out;
         }
 
-        #micToggleBtn::before {
-            content: '🎙️';
-            margin-right: calc(4px + 0.5vw);
-        }
-
-        #loadingOverlay {
+        /* Internet Connection Pop-Up Styles */
+        #internetPopup {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(10px);
+            background: rgba(15, 23, 42, 0.9);
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 1002;
+            z-index: 1005;
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.3s ease;
         }
 
-        #loadingOverlay.active {
+        [data-theme="light"] #internetPopup {
+            background: rgba(241, 245, 249, 0.9);
+        }
+
+        #internetPopup.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .internet-popup-content {
+            background: var(--card-bg);
+            border: var(--border);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            width: 90%;
+            max-width: 450px;
+            text-align: center;
+            transform: perspective(800px) rotateX(-90deg) rotateY(0deg);
+            opacity: 0;
+            transition: all 0.4s ease;
+        }
+
+        #internetPopup.active .internet-popup-content {
+            transform: perspective(800px) rotateX(0deg) rotateY(0deg);
             opacity: 1;
         }
 
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid rgba(34, 197, 94, 0.3);
-            border-top: 4px solid #22c55e;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
+        .internet-popup-content h2 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, #10b981, #6ee7b7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        [data-theme="light"] .internet-popup-content h2 {
+            background: linear-gradient(90deg, #3b82f6, #93c5fd);
+        }
+
+        .internet-popup-content p {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #d1d5db;
+            margin-bottom: 20px;
+        }
+
+        [data-theme="light"] .internet-popup-content p {
+            color: #64748b;
+        }
+
+        .internet-popup-content button {
+            background: var(--card-bg);
+            border: var(--border);
+            border-radius: 8px;
+            padding: 12px 24px;
+            color: var(--text-color);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        }
+
+        .internet-popup-content button:hover {
+            transform: scale(1.05);
+            box-shadow: var(--glow);
+            background: linear-gradient(145deg, rgba(16, 185, 129, 0.1), rgba(15, 23, 42, 0.95));
+        }
+
+        [data-theme="light"] .internet-popup-content button:hover {
+            background: linear-gradient(145deg, rgba(59, 130, 246, 0.1), rgba(241, 245, 249, 0.95));
         }
 
         /* Time Settings Menu Styles */
@@ -320,7 +453,6 @@
             width: 100%;
             height: 100%;
             background: rgba(15, 23, 42, 0.9);
-            backdrop-filter: blur(10px);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -328,6 +460,10 @@
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.3s ease;
+        }
+
+        [data-theme="light"] #timeSettingsMenu {
+            background: rgba(241, 245, 249, 0.9);
         }
 
         #timeSettingsMenu.active {
@@ -339,7 +475,7 @@
             background: var(--card-bg);
             border: var(--border);
             border-radius: 12px;
-            padding: 20px;
+            padding: 25px;
             box-shadow: var(--shadow);
             width: 90%;
             max-width: 400px;
@@ -347,11 +483,16 @@
         }
 
         .time-settings-content h2 {
-            font-size: 1.5rem;
+            font-size: 1.6rem;
+            font-weight: 700;
             margin-bottom: 20px;
-            background: linear-gradient(90deg, #22c55e, #86efac);
+            background: linear-gradient(90deg, #10b981, #6ee7b7);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+        }
+
+        [data-theme="light"] .time-settings-content h2 {
+            background: linear-gradient(90deg, #3b82f6, #93c5fd);
         }
 
         .time-settings-option {
@@ -363,7 +504,7 @@
 
         .time-settings-option label {
             font-size: 1rem;
-            font-weight: 500;
+            font-weight: 600;
         }
 
         .toggle {
@@ -373,7 +514,11 @@
             background: rgba(255, 255, 255, 0.1);
             border-radius: 12px;
             cursor: pointer;
-            transition: background 0.3s ease;
+            transition: background 0.2s ease;
+        }
+
+        [data-theme="light"] .toggle {
+            background: rgba(0, 0, 0, 0.1);
         }
 
         .toggle input {
@@ -388,9 +533,13 @@
             left: 2px;
             width: 20px;
             height: 20px;
-            background: #22c55e;
+            background: #10b981;
             border-radius: 50%;
-            transition: transform 0.3s ease;
+            transition: transform 0.2s ease;
+        }
+
+        [data-theme="light"] .toggle .slider {
+            background: #3b82f6;
         }
 
         .toggle input:checked + .slider {
@@ -409,9 +558,9 @@
             padding: 10px 20px;
             color: var(--text-color);
             font-size: 1rem;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
         .time-settings-buttons button:hover {
@@ -419,15 +568,385 @@
             box-shadow: var(--glow);
         }
 
+        /* Settings Menu Styles */
+        #settingsMenu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1003;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        [data-theme="light"] #settingsMenu {
+            background: rgba(241, 245, 249, 0.9);
+        }
+
+        #settingsMenu.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .settings-content {
+            background: var(--card-bg);
+            border: var(--border);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .settings-content h2 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, #10b981, #6ee7b7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        [data-theme="light"] .settings-content h2 {
+            background: linear-gradient(90deg, #3b82f6, #93c5fd);
+        }
+
+        .settings-option {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .settings-option label {
+            font-size: 1rem;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        #appOrderList {
+            list-style: none;
+            padding: 0;
+        }
+
+        #appOrderList li {
+            background: rgba(255, 255, 255, 0.1);
+            border: var(--border);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
+            cursor: move;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        [data-theme="light"] #appOrderList li {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        #appOrderList li:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        [data-theme="light"] #appOrderList li:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .settings-buttons {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .settings-buttons button {
+            background: var(--card-bg);
+            border: var(--border);
+            border-radius: 8px;
+            padding: 10px 20px;
+            color: var(--text-color);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .settings-buttons button:hover {
+            transform: scale(1.05);
+            box-shadow: var(--glow);
+        }
+
+        /* Help Menu Styles */
+        #helpMenu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1003;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        [data-theme="light"] #helpMenu {
+            background: rgba(241, 245, 249, 0.9);
+        }
+
+        #helpMenu.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .help-content {
+            background: var(--card-bg);
+            border: var(--border);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            width: 90%;
+            max-width: 450px;
+            text-align: left;
+            transform: perspective(800px) rotateX(-90deg) rotateY(0deg);
+            opacity: 0;
+            transition: all 0.4s ease;
+        }
+
+        #helpMenu.active .help-content {
+            transform: perspective(800px) rotateX(0deg) rotateY(0deg);
+            opacity: 1;
+        }
+
+        .help-content h2 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            background: linear-gradient(90deg, #10b981, #6ee7b7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+        }
+
+        [data-theme="light"] .help-content h2 {
+            background: linear-gradient(90deg, #3b82f6, #93c5fd);
+        }
+
+        .help-content ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .help-content li {
+            font-size: 1rem;
+            font-weight: 400;
+            margin-bottom: 15px;
+            padding-left: 20px;
+            position: relative;
+            color: #d1d5db;
+            cursor: pointer;
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
+
+        [data-theme="light"] .help-content li {
+            color: #64748b;
+        }
+
+        .help-content li:hover {
+            color: #10b981;
+            transform: translateX(5px);
+        }
+
+        [data-theme="light"] .help-content li:hover {
+            color: #3b82f6;
+        }
+
+        .help-content li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: #10b981;
+            font-size: 1.2rem;
+        }
+
+        [data-theme="light"] .help-content li::before {
+            color: #3b82f6;
+        }
+
+        .help-content button {
+            display: block;
+            margin: 20px auto 0;
+            background: var(--card-bg);
+            border: var(--border);
+            border-radius: 8px;
+            padding: 12px 24px;
+            color: var(--text-color);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        }
+
+        .help-content button:hover {
+            transform: scale(1.05);
+            box-shadow: var(--glow);
+            background: linear-gradient(145deg, rgba(16, 185, 129, 0.1), rgba(15, 23, 42, 0.95));
+        }
+
+        [data-theme="light"] .help-content button:hover {
+            background: linear-gradient(145deg, rgba(59, 130, 246, 0.1), rgba(241, 245, 249, 0.95));
+        }
+
+        /* Open Options Sub-Menu */
+        #openOptionsMenu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1004;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        [data-theme="light"] #openOptionsMenu {
+            background: rgba(241, 245, 249, 0.9);
+        }
+
+        #openOptionsMenu.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .open-options-content {
+            background: var(--card-bg);
+            border: var(--border);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            width: 90%;
+            max-width: 450px;
+            text-align: left;
+            transform: perspective(800px) rotateX(-90deg) rotateY(0deg);
+            opacity: 0;
+            transition: all 0.4s ease;
+        }
+
+        #openOptionsMenu.active .open-options-content {
+            transform: perspective(800px) rotateX(0deg) rotateY(0deg);
+            opacity: 1;
+        }
+
+        .open-options-content h3 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, #10b981, #6ee7b7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+        }
+
+        [data-theme="light"] .open-options-content h3 {
+            background: linear-gradient(90deg, #3b82f6, #93c5fd);
+        }
+
+        .open-options-content ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .open-options-content li {
+            font-size: 1rem;
+            font-weight: 400;
+            margin-bottom: 15px;
+            padding-left: 20px;
+            position: relative;
+            color: #d1d5db;
+            cursor: pointer;
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
+
+        [data-theme="light"] .open-options-content li {
+            color: #64748b;
+        }
+
+        .open-options-content li:hover {
+            color: #10b981;
+            transform: translateX(5px);
+        }
+
+        [data-theme="light"] .open-options-content li:hover {
+            color: #3b82f6;
+        }
+
+        .open-options-content li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: #10b981;
+            font-size: 1.2rem;
+        }
+
+        [data-theme="light"] .open-options-content li::before {
+            color: #3b82f6;
+        }
+
+        .open-options-content button {
+            display: block;
+            margin: 20px auto 0;
+            background: var(--card-bg);
+            border: var(--border);
+            border-radius: 8px;
+            padding: 12px 24px;
+            color: var(--text-color);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        }
+
+        .open-options-content button:hover {
+            transform: scale(1.05);
+            box-shadow: var(--glow);
+            background: linear-gradient(145deg, rgba(16, 185, 129, 0.1), rgba(15, 23, 42, 0.95));
+        }
+
+        [data-theme="light"] .open-options-content button:hover {
+            background: linear-gradient(145deg, rgba(59, 130, 246, 0.1), rgba(241, 245, 249, 0.95));
+        }
+
         @keyframes fadeInParticles { to { opacity: 1; } }
         @keyframes fadeInContainer { to { opacity: 1; } }
         @keyframes fadeInTitle { to { opacity: 1; transform: translateY(0); } }
-        @keyframes unfoldCard { to { opacity: 1; transform: perspective(800px) rotateX(0deg) rotateY(0deg) scale(1); } }
-        @keyframes pulse { 0% { transform: perspective(800px) scale(0.97); } 50% { transform: perspective(800px) scale(1.03); } 100% { transform: perspective(800px) scale(1); } }
+        @keyframes buttonFadeIn { 
+            0% { opacity: 0; transform: perspective(1000px) rotateX(-10deg) rotateY(10deg) scale(0.85) translateY(20px); }
+            100% { opacity: 1; transform: perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1); }
+        }
+        @keyframes press { 
+            0% { transform: perspective(1000px) scale(0.95); } 
+            50% { transform: perspective(1000px) scale(1.02); } 
+            100% { transform: perspective(1000px) scale(1); } 
+        }
         @keyframes popInBot { to { opacity: 1; transform: scale(1); } }
+        @keyframes pulse { 
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
         @keyframes slideUpPanel { to { opacity: 1; transform: translateX(-50%) translateY(0); } }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
-        @keyframes spin { to { transform: rotate(360deg); } }
 
         .app-item:nth-child(1) { --delay: 0.3s; }
         .app-item:nth-child(2) { --delay: 0.4s; }
@@ -478,10 +997,24 @@
                 font-size: calc(0.8rem + 0.2vw);
             }
 
-            #sendBtn, #micToggleBtn {
+            #sendBtn {
                 width: calc(75px + 0.5vw);
                 height: calc(55px + 0.5vw);
                 font-size: calc(0.8rem + 0.2vw);
+            }
+
+            .help-content, .open-options-content, .internet-popup-content, .settings-content {
+                padding: 20px;
+                max-width: 380px;
+            }
+
+            .help-content h2, .open-options-content h3, .internet-popup-content h2, .settings-content h2 {
+                font-size: 1.4rem;
+            }
+
+            .help-content li, .open-options-content li {
+                font-size: 0.95rem;
+                margin-bottom: 12px;
             }
         }
 
@@ -510,10 +1043,24 @@
                 font-size: calc(0.7rem + 0.2vw);
             }
 
-            #sendBtn, #micToggleBtn {
+            #sendBtn {
                 width: calc(70px + 0.5vw);
                 height: calc(50px + 0.5vw);
                 font-size: calc(0.7rem + 0.2vw);
+            }
+
+            .help-content, .open-options-content, .internet-popup-content, .settings-content {
+                padding: 15px;
+                max-width: 320px;
+            }
+
+            .help-content h2, .open-options-content h3, .internet-popup-content h2, .settings-content h2 {
+                font-size: 1.3rem;
+            }
+
+            .help-content li, .open-options-content li {
+                font-size: 0.9rem;
+                margin-bottom: 10px;
             }
         }
     </style>
@@ -523,29 +1070,29 @@
     <div class="container">
         <h1>Welcome to Fusion Hub Premium</h1>
         <div id="dateTime"></div>
-        <div class="app-grid">
-            <div class="app-item" data-url="https://chat.openai.com/">
-                <img src="gpt.png" alt="ChatGPT">
+        <div class="app-grid" id="appGrid">
+            <div class="app-item" data-url="https://chat.openai.com/" data-name="ChatGPT">
+                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABYSURBVEhL7dW9AQAwCIRH9/9f2c0EBQETD8A5M0kA8oW8dI4A5At5qRwByBfyUjkCkC/kpXIEIF/Ic4z3/9n8vQeQL+SlcgQgX8hL5QhAvpCXyhGAfCFvH3wBg5Y0wOQAAAAASUVORK5CYII=" alt="ChatGPT">
                 <span>ChatGPT</span>
             </div>
-            <div class="app-item" data-url="https://open.spotify.com/">
-                <img src="music.png" alt="Music">
+            <div class="app-item" data-url="https://open.spotify.com/" data-name="Music">
+                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABYSURBVEhL7dW9AQAwCIRH9/9f2c0EBQETD8A5M0kA8oW8dI4A5At5qRwByBfyUjkCkC/kpXIEIF/Ic4z3/9n8vQeQL+SlcgQgX8hL5QhAvpCXyhGAfCFvH3wBg5Y0wOQAAAAASUVORK5CYII=" alt="Music">
                 <span>Music</span>
             </div>
-            <div class="app-item" data-url="https://crazygames.com/">
-                <img src="games.jpg" alt="Games">
+            <div class="app-item" data-url="https://crazygames.com/" data-name="Game Server 1">
+                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABYSURBVEhL7dW9AQAwCIRH9/9f2c0EBQETD8A5M0kA8oW8dI4A5At5qRwByBfyUjkCkC/kpXIEIF/Ic4z3/9n8vQeQL+SlcgQgX8hL5QhAvpCXyhGAfCFvH3wBg5Y0wOQAAAAASUVORK5CYII=" alt="Games">
                 <span>Game Server 1</span>
             </div>
-            <div class="app-item" data-url="https://poki.com/">
-                <img src="games.jpg" alt="Games">
+            <div class="app-item" data-url="https://poki.com/" data-name="Game Server 2">
+                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABYSURBVEhL7dW9AQAwCIRH9/9f2c0EBQETD8A5M0kA8oW8dI4A5At5qRwByBfyUjkCkC/kpXIEIF/Ic4z3/9n8vQeQL+SlcgQgX8hL5QhAvpCXyhGAfCFvH3wBg5Y0wOQAAAAASUVORK5CYII=" alt="Games">
                 <span>Game Server 2</span>
             </div>
-            <div class="app-item" data-url="https://aniplaynow.live/">
-                <img src="anime.png" alt="Anime">
+            <div class="app-item" data-url="https://aniplaynow.live/" data-name="Anime">
+                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABYSURBVEhL7dW9AQAwCIRH9/9f2c0EBQETD8A5M0kA8oW8dI4A5At5qRwByBfyUjkCkC/kpXIEIF/Ic4z3/9n8vQeQL+SlcgQgX8hL5QhAvpCXyhGAfCFvH3wBg5Y0wOQAAAAASUVORK5CYII=" alt="Anime">
                 <span>Anime</span>
             </div>
-            <div class="app-item" data-url="https://app.kosmi.io/">
-                <img src="wt.jpg" alt="Watch Together">
+            <div class="app-item" data-url="https://app.kosmi.io/" data-name="Watch Together">
+                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABYSURBVEhL7dW9AQAwCIRH9/9f2c0EBQETD8A5M0kA8oW8dI4A5At5qRwByBfyUjkCkC/kpXIEIF/Ic4z3/9n8vQeQL+SlcgQgX8hL5QhAvpCXyhGAfCFvH3wBg5Y0wOQAAAAASUVORK5CYII=" alt="Watch Together">
                 <span>Watch Together</span>
             </div>
         </div>
@@ -556,14 +1103,19 @@
         <input type="text" id="chatInput" placeholder="Ask FusionBot...">
         <div id="buttonContainer">
             <button id="sendBtn">Send</button>
-            <button id="micToggleBtn">On</button>
         </div>
     </div>
     <div id="fusionBot">
-        <img src="ai.gif" alt="FusionBot AI Assistant">
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABeSURBVFhH7dW9AQAwCIRH9/9f2c0EBQETD8A5M0kA8oW8dI4A5At5qRwByBfyUjkCkC/kpXIEIF/Ic4z3/9n8vQeQL+SlcgQgX8hL5QhAvpCXyhGAfCFvH3wBg5Y0wOQAAAAASUVORK5CYII=" alt="FusionBot AI Assistant">
     </div>
-    <div id="loadingOverlay">
-        <div class="spinner"></div>
+
+    <!-- Internet Connection Pop-Up -->
+    <div id="internetPopup">
+        <div class="internet-popup-content">
+            <h2>No Internet Connection</h2>
+            <p>Please connect to the internet.</p>
+            <button id="retryConnection">Retry</button>
+        </div>
     </div>
 
     <!-- Time Settings Menu -->
@@ -593,7 +1145,129 @@
         </div>
     </div>
 
+    <!-- Settings Menu -->
+    <div id="settingsMenu">
+        <div class="settings-content">
+            <h2>Settings</h2>
+            <div class="settings-option">
+                <label>App Order (Drag to reorder)</label>
+                <ul id="appOrderList">
+                    <li data-name="ChatGPT">ChatGPT</li>
+                    <li data-name="Music">Music</li>
+                    <li data-name="Game Server 1">Game Server 1</li>
+                    <li data-name="Game Server 2">Game Server 2</li>
+                    <li data-name="Anime">Anime</li>
+                    <li data-name="Watch Together">Watch Together</li>
+                </ul>
+            </div>
+            <div class="settings-option">
+                <label>Theme</label>
+                <div class="time-settings-option">
+                    <label class="toggle">
+                        <input type="checkbox" id="themeToggle">
+                        <span class="slider"></span>
+                    </label>
+                    <span id="themeLabel">Dark</span>
+                </div>
+            </div>
+            <div class="settings-option">
+                <label>Chatbot Response Speed</label>
+                <select id="chatbotSpeed">
+                    <option value="fast">Fast</option>
+                    <option value="detailed">Detailed</option>
+                </select>
+            </div>
+            <div class="settings-buttons">
+                <button id="saveSettings">Save</button>
+                <button id="cancelSettings">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Menu -->
+    <div id="helpMenu">
+        <div class="help-content">
+            <h2>Available Commands</h2>
+            <ul>
+                <li data-command="hello">hello/hi/hey/hola</li>
+                <li data-command="time">time</li>
+                <li data-command="time settings">time settings</li>
+                <li data-command="settings">settings</li>
+                <li data-command="weather">weather</li>
+                <li data-command="help">help</li>
+                <li id="openCommand">open [chatgpt/music/game server 1/game server 2/anime/watch together]</li>
+            </ul>
+            <button id="closeHelpMenu">Close</button>
+        </div>
+    </div>
+
+    <!-- Open Options Sub-Menu -->
+    <div id="openOptionsMenu">
+        <div class="open-options-content">
+            <h3>Choose an App to Open</h3>
+            <ul>
+                <li data-command="open chatgpt">ChatGPT</li>
+                <li data-command="open music">Music</li>
+                <li data-command="open game server 1">Game Server 1</li>
+                <li data-command="open game server 2">Game Server 2</li>
+                <li data-command="open anime">Anime</li>
+                <li data-command="open watch together">Watch Together</li>
+            </ul>
+            <button id="closeOpenOptionsMenu">Cancel</button>
+        </div>
+    </div>
+
     <script>
+        // Load and Save User Settings
+        const defaultSettings = {
+            timeFormat: '12',
+            showSeconds: true,
+            userName: '',
+            appOrder: ['ChatGPT', 'Music', 'Game Server 1', 'Game Server 2', 'Anime', 'Watch Together'],
+            theme: 'dark',
+            chatbotSpeed: 'detailed'
+        };
+
+        let userSettings = JSON.parse(localStorage.getItem('userSettings')) || defaultSettings;
+
+        function saveSettings() {
+            localStorage.setItem('userSettings', JSON.stringify(userSettings));
+        }
+
+        function applySettings() {
+            document.body.setAttribute('data-theme', userSettings.theme);
+            const themeToggle = document.getElementById('themeToggle');
+            const themeLabel = document.getElementById('themeLabel');
+            if (themeToggle && themeLabel) {
+                themeToggle.checked = userSettings.theme === 'light';
+                themeLabel.textContent = userSettings.theme === 'light' ? 'Light' : 'Dark';
+            }
+
+            const chatbotSpeed = document.getElementById('chatbotSpeed');
+            if (chatbotSpeed) {
+                chatbotSpeed.value = userSettings.chatbotSpeed;
+            }
+
+            const appGrid = document.getElementById('appGrid');
+            const appOrderList = document.getElementById('appOrderList');
+            if (appGrid && appOrderList) {
+                const apps = Array.from(appGrid.children);
+                const sortedApps = userSettings.appOrder.map(name => 
+                    apps.find(app => app.dataset.name === name)
+                ).filter(app => app);
+                appGrid.innerHTML = '';
+                sortedApps.forEach(app => appGrid.appendChild(app));
+
+                appOrderList.innerHTML = '';
+                userSettings.appOrder.forEach(name => {
+                    const li = document.createElement('li');
+                    li.dataset.name = name;
+                    li.textContent = name;
+                    appOrderList.appendChild(li);
+                });
+            }
+        }
+
         // Particle Background and Burst
         const canvas = document.getElementById('particles');
         const ctx = canvas.getContext('2d');
@@ -617,14 +1291,14 @@
                     this.x += this.speedX;
                     this.y += this.speedY;
                     if (this.isBurst) {
-                        this.opacity -= 0.02;
+                        this.opacity -= 0.015;
                         this.size -= 0.05;
                     } else if (this.size > 0.2) {
-                        this.size -= 0.015;
+                        this.size -= 0.01;
                     }
                 }
                 draw() {
-                    ctx.fillStyle = `rgba(34, 197, 94, ${this.opacity})`;
+                    ctx.fillStyle = `rgba(16, 185, 129, ${this.opacity})`;
                     ctx.beginPath();
                     ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
                     ctx.fill();
@@ -633,11 +1307,11 @@
 
             function initParticles() {
                 particlesArray = [];
-                for (let i = 0; i < 12; i++) particlesArray.push(new Particle());
+                for (let i = 0; i < 8; i++) particlesArray.push(new Particle());
             }
 
             function createBurst(x, y) {
-                for (let i = 0; i < 20; i++) particlesArray.push(new Particle(x, y, true));
+                for (let i = 0; i < 15; i++) particlesArray.push(new Particle(x, y, true));
             }
 
             function animateParticles() {
@@ -659,7 +1333,7 @@
             window.addEventListener('resize', () => {
                 canvas.width = window.innerWidth;
                 canvas.height = window.innerHeight;
-                initParticles(); // Reinitialize particles on resize
+                initParticles();
             });
         } else {
             console.error('Canvas or context not found');
@@ -667,19 +1341,15 @@
 
         // Reset UI Elements to Initial State
         function resetUI() {
-            const overlay = document.getElementById('loadingOverlay');
             const container = document.querySelector('.container');
             const fusionBot = document.getElementById('fusionBot');
             const chatPanel = document.getElementById('chatPanel');
             const speechBubble = document.getElementById('speechBubble');
             const timeSettingsMenu = document.getElementById('timeSettingsMenu');
+            const settingsMenu = document.getElementById('settingsMenu');
+            const helpMenu = document.getElementById('helpMenu');
+            const openOptionsMenu = document.getElementById('openOptionsMenu');
 
-            // Reset loading overlay
-            if (overlay) {
-                overlay.classList.remove('active');
-            }
-
-            // Reset container opacity and animation
             if (container) {
                 container.style.opacity = '0';
                 container.style.animation = 'none';
@@ -687,29 +1357,23 @@
                     container.style.animation = 'fadeInContainer 0.25s ease-out forwards';
                 }, 10);
             }
-
-            // Reset app items animation
             document.querySelectorAll('.app-item').forEach(item => {
                 item.style.opacity = '0';
-                item.style.transform = 'perspective(800px) rotateX(-8deg) rotateY(8deg) scale(0.8)';
+                item.style.transform = 'perspective(1000px) rotateX(-10deg) rotateY(10deg) scale(0.85)';
                 item.style.animation = 'none';
                 const delay = item.style.getPropertyValue('--delay') || '0s';
                 setTimeout(() => {
-                    item.style.animation = `unfoldCard 0.4s ease-out ${delay} forwards`;
+                    item.style.animation = `buttonFadeIn 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55) ${delay} forwards`;
                 }, 10);
             });
-
-            // Reset fusionBot animation
             if (fusionBot) {
                 fusionBot.style.opacity = '0';
                 fusionBot.style.transform = 'scale(0.5)';
                 fusionBot.style.animation = 'none';
                 setTimeout(() => {
-                    fusionBot.style.animation = 'popInBot 0.5s ease-out 0.7s forwards, float 2s ease-in-out infinite 1.2s';
+                    fusionBot.style.animation = 'popInBot 0.5s ease-out 0.7s forwards, pulse 2s ease-in-out infinite 1.2s';
                 }, 10);
             }
-
-            // Reset chat panel animation
             if (chatPanel) {
                 chatPanel.style.opacity = '0';
                 chatPanel.style.transform = 'translateX(-50%) translateY(80px)';
@@ -718,50 +1382,74 @@
                     chatPanel.style.animation = 'slideUpPanel 0.5s ease-out 0.5s forwards';
                 }, 10);
             }
-
-            // Reset speech bubble
-            if (speechBubble) {
-                speechBubble.classList.remove('active');
-            }
-
-            // Reset time settings menu
-            if (timeSettingsMenu) {
-                timeSettingsMenu.classList.remove('active');
-            }
-
-            // Reinitialize particles
+            if (speechBubble) speechBubble.classList.remove('active');
+            if (timeSettingsMenu) timeSettingsMenu.classList.remove('active');
+            if (settingsMenu) settingsMenu.classList.remove('active');
+            if (helpMenu) helpMenu.classList.remove('active');
+            if (openOptionsMenu) openOptionsMenu.classList.remove('active');
             initParticles();
         }
 
-        // App Open Function
-        function openApp(element, url) {
-            console.log('Opening app:', url);
+        // Internet Connection Check
+        const internetPopup = document.getElementById('internetPopup');
+        const retryButton = document.getElementById('retryConnection');
+
+        function checkInternetConnection() {
+            if (navigator.onLine) {
+                internetPopup.classList.remove('active');
+            } else {
+                internetPopup.classList.add('active');
+            }
+        }
+
+        window.addEventListener('load', () => {
+            applySettings();
+            checkInternetConnection();
+        });
+
+        window.addEventListener('online', () => {
+            internetPopup.classList.remove('active');
+            showBubble('Connected to the internet.');
+        });
+
+        window.addEventListener('offline', () => {
+            internetPopup.classList.add('active');
+            showBubble('Lost internet connection.');
+        });
+
+        retryButton.addEventListener('click', () => {
+            checkInternetConnection();
+            if (navigator.onLine) {
+                showBubble('Connected to the internet.');
+            } else {
+                showBubble('Still offline. Please connect to the internet.');
+            }
+        });
+
+        // Open App in New Tab
+        function openApp(element, url, appName) {
+            if (!navigator.onLine) {
+                showBubble('Please connect to the internet to open apps.');
+                internetPopup.classList.add('active');
+                return;
+            }
+
+            console.log('Opening app in new tab:', url);
             const rect = element.getBoundingClientRect();
             const x = rect.left + rect.width / 2;
             const y = rect.top + rect.height / 2;
             createBurst(x, y);
-            const overlay = document.getElementById('loadingOverlay');
-            overlay.classList.add('active');
 
-            setTimeout(() => {
-                try {
-                    const newWindow = window.open(url, '_blank');
-                    if (!newWindow) {
-                        console.error('Failed to open URL:', url, 'Popup blocker may be enabled.');
-                        alert('Failed to open the app. Please allow popups and try again.');
-                    } else {
-                        console.log('Successfully opened URL:', url);
-                    }
-                    overlay.classList.remove('active');
-                    resetUI(); // Reset UI after opening the new tab
-                } catch (error) {
-                    console.error('Error opening URL:', url, error);
-                    alert('Error opening the app. Check console for details.');
-                    overlay.classList.remove('active');
-                    resetUI(); // Reset UI even if there's an error
-                }
-            }, 800);
+            window.open(url, '_blank');
         }
+
+        // Add Particle Burst on Send Button Click
+        document.getElementById('sendBtn').addEventListener('click', (e) => {
+            const rect = e.target.getBoundingClientRect();
+            const x = rect.left + rect.width / 2;
+            const y = rect.top + rect.height / 2;
+            createBurst(x, y);
+        });
 
         // Handle Browser Back Button
         window.addEventListener('popstate', () => {
@@ -769,7 +1457,7 @@
             resetUI();
         });
 
-        // Handle Page Visibility (when user switches back to the tab)
+        // Handle Page Visibility
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') {
                 console.log('Tab is visible, resetting UI');
@@ -782,26 +1470,34 @@
             const bubble = document.getElementById('speechBubble');
             const chatInput = document.getElementById('chatInput');
             const sendBtn = document.getElementById('sendBtn');
-            const micToggleBtn = document.getElementById('micToggleBtn');
             const fusionBot = document.getElementById('fusionBot');
             const dateTime = document.getElementById('dateTime');
-            const appGrid = document.querySelector('.app-grid');
+            const appGrid = document.getElementById('appGrid');
             const timeSettingsMenu = document.getElementById('timeSettingsMenu');
             const timeFormatToggle = document.getElementById('timeFormatToggle');
             const timeFormatLabel = document.getElementById('timeFormatLabel');
             const showSecondsToggle = document.getElementById('showSecondsToggle');
             const showSecondsLabel = document.getElementById('showSecondsLabel');
             const saveTimeSettings = document.getElementById('saveTimeSettings');
-            const cancelTimeSettings = document.getElementById('cancelTimeSettings');
+            const cancelTimeSettings = document.getElementById('saveTimeSettings');
+            const settingsMenu = document.getElementById('settingsMenu');
+            const themeToggle = document.getElementById('themeToggle');
+            const themeLabel = document.getElementById('themeLabel');
+            const chatbotSpeed = document.getElementById('chatbotSpeed');
+            const saveSettings = document.getElementById('saveSettings');
+            const cancelSettings = document.getElementById('cancelSettings');
+            const helpMenu = document.getElementById('helpMenu');
+            const closeHelpMenu = document.getElementById('closeHelpMenu');
+            const openCommand = document.getElementById('openCommand');
+            const openOptionsMenu = document.getElementById('openOptionsMenu');
+            const closeOpenOptionsMenu = document.getElementById('closeOpenOptionsMenu');
 
-            // Check if all DOM elements are present
-            if (!bubble || !chatInput || !sendBtn || !micToggleBtn || !fusionBot || !dateTime || !appGrid || !timeSettingsMenu || !timeFormatToggle || !showSecondsToggle) {
-                console.error('Missing DOM elements:', { bubble, chatInput, sendBtn, micToggleBtn, fusionBot, dateTime, appGrid, timeSettingsMenu, timeFormatToggle, showSecondsToggle });
+            if (!bubble || !chatInput || !sendBtn || !fusionBot || !dateTime || !appGrid || !timeSettingsMenu || !timeFormatToggle || !showSecondsToggle || !settingsMenu || !themeToggle || !chatbotSpeed || !saveSettings || !cancelSettings || !helpMenu || !closeHelpMenu || !openCommand || !openOptionsMenu || !closeOpenOptionsMenu) {
+                console.error('Missing DOM elements');
                 alert('Error: Some interface elements failed to load. Check console for details.');
                 return;
             }
 
-            // Verify all app items are present
             const appItems = document.querySelectorAll('.app-item');
             if (appItems.length !== 6) {
                 console.error('Expected 6 app items, found:', appItems.length);
@@ -810,16 +1506,14 @@
                 console.log('All 6 app items loaded successfully:', Array.from(appItems).map(item => item.querySelector('span').textContent));
             }
 
-            // Load time settings from localStorage or set defaults
             const timeSettings = {
-                is24Hour: localStorage.getItem('timeFormat') === '24' || false,
-                showSeconds: localStorage.getItem('showSeconds') === 'false' ? false : true
+                is24Hour: userSettings.timeFormat === '24',
+                showSeconds: userSettings.showSeconds
             };
 
-            // Temporary settings for the menu
-            let tempSettings = { ...timeSettings };
+            let tempTimeSettings = { ...timeSettings };
+            let tempSettings = { ...userSettings };
 
-            // Display and Update Date and Time
             const getIndiaTime = () => {
                 const options = {
                     timeZone: 'Asia/Kolkata',
@@ -836,226 +1530,248 @@
                 return new Date().toLocaleString('en-US', options);
             };
 
-            // Initial set and auto-update every second
             dateTime.textContent = getIndiaTime();
             setInterval(() => {
                 dateTime.textContent = getIndiaTime();
             }, 1000);
 
-            // Add click event listeners to app items
             document.querySelectorAll('.app-item').forEach(item => {
                 const url = item.dataset.url;
-                if (url) {
+                const appName = item.dataset.name;
+                if (url && appName) {
                     item.addEventListener('click', () => {
-                        console.log('App item clicked:', url);
-                        openApp(item, url);
+                        console.log('App item clicked:', appName);
+                        openApp(item, url, appName);
                     });
                 } else {
-                    console.error('No URL found for app item:', item);
-                    alert('Error: Missing URL for an app button. Check console for details.');
+                    console.error('App item missing data-url or data-name:', item);
                 }
             });
 
-            // Time Settings Menu Logic
-            function openTimeSettingsMenu() {
-                tempSettings = { ...timeSettings };
-                timeFormatToggle.checked = tempSettings.is24Hour;
-                timeFormatLabel.textContent = tempSettings.is24Hour ? '24-hour' : '12-hour';
-                showSecondsToggle.checked = tempSettings.showSeconds;
-                showSecondsLabel.textContent = tempSettings.showSeconds ? 'On' : 'Off';
-                timeSettingsMenu.classList.add('active');
+            function showBubble(message) {
+                bubble.textContent = message;
+                bubble.classList.add('active');
+                setTimeout(() => bubble.classList.remove('active'), 3000);
             }
 
+            fusionBot.addEventListener('click', () => {
+                showBubble('Hello! How can I assist you today?');
+            });
+
+            function processCommand(command) {
+                command = command.toLowerCase().trim();
+                console.log('Processing command:', command);
+
+                if (['hello', 'hi', 'hey', 'hola'].includes(command)) {
+                    showBubble(`Hello${userSettings.userName ? ' ' + userSettings.userName : ''}! How can I assist you today?`);
+                } else if (command === 'time') {
+                    const timeStr = new Date().toLocaleTimeString('en-US', {
+                        timeZone: 'Asia/Kolkata',
+                        hour12: !timeSettings.is24Hour,
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: timeSettings.showSeconds ? '2-digit' : undefined
+                    });
+                    showBubble(`The current time in India is ${timeStr}.`);
+                } else if (command === 'time settings') {
+                    timeSettingsMenu.classList.add('active');
+                    timeFormatToggle.checked = tempTimeSettings.is24Hour;
+                    timeFormatLabel.textContent = tempTimeSettings.is24Hour ? '24-hour' : '12-hour';
+                    showSecondsToggle.checked = tempTimeSettings.showSeconds;
+                    showSecondsLabel.textContent = tempTimeSettings.showSeconds ? 'On' : 'Off';
+                } else if (command === 'settings') {
+                    settingsMenu.classList.add('active');
+                    themeToggle.checked = tempSettings.theme === 'light';
+                    themeLabel.textContent = tempSettings.theme === 'light' ? 'Light' : 'Dark';
+                    chatbotSpeed.value = tempSettings.chatbotSpeed;
+                } else if (command === 'weather') {
+                    if (!navigator.onLine) {
+                        showBubble('Please connect to the internet to check the weather.');
+                        internetPopup.classList.add('active');
+                        return;
+                    }
+                    showBubble('Weather feature coming soon!');
+                } else if (command === 'help') {
+                    helpMenu.classList.add('active');
+                } else if (command.startsWith('open')) {
+                    const appName = command.replace('open', '').trim();
+                    const apps = Array.from(appGrid.children).map(item => ({
+                        name: item.dataset.name.toLowerCase(),
+                        element: item,
+                        url: item.dataset.url
+                    }));
+
+                    if (!appName) {
+                        openOptionsMenu.classList.add('active');
+                        return;
+                    }
+
+                    const app = apps.find(a => a.name === appName);
+                    if (app) {
+                        console.log('Opening app via command:', app.name);
+                        openApp(app.element, app.url, app.name);
+                        showBubble(`Opening ${app.name}...`);
+                    } else {
+                        showBubble('App not found. Try "open chatgpt", "open music", etc.');
+                        openOptionsMenu.classList.add('active');
+                    }
+                } else {
+                    showBubble('Sorry, I didn’t understand that. Type "help" for available commands.');
+                }
+            }
+
+            sendBtn.addEventListener('click', () => {
+                const command = chatInput.value;
+                if (command) {
+                    console.log('Send button clicked with command:', command);
+                    processCommand(command);
+                    chatInput.value = '';
+                }
+            });
+
+            chatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    const command = chatInput.value;
+                    if (command) {
+                        console.log('Enter key pressed with command:', command);
+                        processCommand(command);
+                        chatInput.value = '';
+                    }
+                }
+            });
+
             timeFormatToggle.addEventListener('change', () => {
-                tempSettings.is24Hour = timeFormatToggle.checked;
-                timeFormatLabel.textContent = tempSettings.is24Hour ? '24-hour' : '12-hour';
+                tempTimeSettings.is24Hour = timeFormatToggle.checked;
+                timeFormatLabel.textContent = tempTimeSettings.is24Hour ? '24-hour' : '12-hour';
+                dateTime.textContent = getIndiaTime();
             });
 
             showSecondsToggle.addEventListener('change', () => {
-                tempSettings.showSeconds = showSecondsToggle.checked;
-                showSecondsLabel.textContent = tempSettings.showSeconds ? 'On' : 'Off';
+                tempTimeSettings.showSeconds = showSecondsToggle.checked;
+                showSecondsLabel.textContent = tempTimeSettings.showSeconds ? 'On' : 'Off';
+                dateTime.textContent = getIndiaTime();
             });
 
             saveTimeSettings.addEventListener('click', () => {
-                timeSettings.is24Hour = tempSettings.is24Hour;
-                timeSettings.showSeconds = tempSettings.showSeconds;
-                localStorage.setItem('timeFormat', timeSettings.is24Hour ? '24' : '12');
-                localStorage.setItem('showSeconds', timeSettings.showSeconds ? 'true' : 'false');
-                dateTime.textContent = getIndiaTime();
+                timeSettings.is24Hour = tempTimeSettings.is24Hour;
+                timeSettings.showSeconds = tempTimeSettings.showSeconds;
+                userSettings.timeFormat = timeSettings.is24Hour ? '24' : '12';
+                userSettings.showSeconds = timeSettings.showSeconds;
+                saveSettings();
                 timeSettingsMenu.classList.remove('active');
                 showBubble('Time settings saved.');
+                dateTime.textContent = getIndiaTime();
             });
 
             cancelTimeSettings.addEventListener('click', () => {
+                tempTimeSettings = { ...timeSettings };
                 timeSettingsMenu.classList.remove('active');
-                showBubble('Time settings cancelled.');
+                showBubble('Time settings unchanged.');
             });
 
-            let userName = localStorage.getItem('userName') || '';
-            let isFirstMessage = !userName;
-            let isSettingUp = false;
-            let isMicListening = false;
-            let isWakeWordDetected = false;
-
-            const urls = {
-                chatgpt: "https://chat.openai.com/",
-                music: "https://open.spotify.com/",
-                "game server 1": "https://crazygames.com/",
-                "game server 2": "https://poki.com/",
-                anime: "https://aniplaynow.live/",
-                "watch together": "https://app.kosmi.io/"
-            };
-
-            const showBubble = (text) => {
-                bubble.textContent = text;
-                bubble.classList.add('active');
-                setTimeout(() => bubble.classList.remove('active'), 3500);
-            };
-
-            const handleCommand = (input) => {
-                const lowerInput = input.toLowerCase().trim();
-                if (isFirstMessage) {
-                    isFirstMessage = false;
-                    isSettingUp = true;
-                    return "Please enter your name:";
-                }
-                if (isSettingUp) {
-                    if (lowerInput) {
-                        userName = lowerInput;
-                        localStorage.setItem('userName', userName);
-                        isSettingUp = false;
-                        return `Welcome, ${userName}! Say "hey TPG" or type 'help' for commands.`;
-                    }
-                    return "Please enter a valid name:";
-                }
-                if (lowerInput === "time settings") {
-                    openTimeSettingsMenu();
-                    return "Opening time settings menu...";
-                }
-                if (lowerInput.includes("time") || lowerInput.includes("what time")) return `Current time: ${getIndiaTime()}`;
-                if (lowerInput.includes("weather")) return "For June 14, 2025, in India, expect warm summer weather, around 30-38°C, with possible monsoon showers.";
-                if (lowerInput.includes("fact")) return "Octopuses have three hearts.";
-                if (["hello", "hi", "hey", "hola"].includes(lowerInput)) return `Hey ${userName}, what's up?`;
-                if (lowerInput === "joke" || lowerInput.includes("tell me a joke")) return "Why don’t eggs tell jokes? They’d crack up!";
-                if (lowerInput === "help") return "Commands: hello/hi/hey/hola, time, time settings, weather, fact, joke, help, open [chatgpt/music/game server 1/game server 2/anime/watch together]";
-                if (lowerInput.startsWith("open ")) {
-                    const link = lowerInput.replace("open ", "");
-                    if (urls[link]) {
-                        const appItem = document.querySelector(`.app-item[data-url="${urls[link]}"]`);
-                        if (appItem) {
-                            console.log('Chatbot opening app:', urls[link]);
-                            openApp(appItem, urls[link]);
-                        } else {
-                            console.error('App item not found for URL:', urls[link]);
-                            try {
-                                const newWindow = window.open(urls[link], '_blank');
-                                if (!newWindow) {
-                                    console.error('Failed to open URL via chatbot:', urls[link], 'Popup blocker may be enabled.');
-                                    return "Failed to open the app. Please allow popups and try again.";
-                                }
-                            } catch (error) {
-                                console.error('Failed to open URL via chatbot:', urls[link], error);
-                                return "Error opening the app. Check console for details.";
-                            }
-                        }
-                        return `Opening ${link}...`;
-                    }
-                    return "Invalid link. Try: chatgpt, music, game server 1, game server 2, anime, watch together.";
-                }
-                if (lowerInput === "i am good") return `Glad to hear that, ${userName}! What's next?`;
-                return `You said: ${input}. Try 'help' for commands.`;
-            };
-
-            const sendMessage = () => {
-                const message = chatInput.value.trim();
-                if (!message) return showBubble("Type a message.");
-                chatInput.value = '';
-                showBubble('Processing...');
-                setTimeout(() => showBubble(handleCommand(message)), 500);
-            };
-
-            let timeout;
-            const debounce = (fn, delay) => {
-                clearTimeout(timeout);
-                timeout = setTimeout(fn, delay);
-            };
-
-            sendBtn.addEventListener('click', () => debounce(sendMessage, 100));
-            chatInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') debounce(sendMessage, 100);
+            themeToggle.addEventListener('change', () => {
+                tempSettings.theme = themeToggle.checked ? 'light' : 'dark';
+                themeLabel.textContent = tempSettings.theme === 'light' ? 'Light' : 'Dark';
             });
 
-            fusionBot.addEventListener('click', () => showBubble('Ask me anything!'));
+            chatbotSpeed.addEventListener('change', () => {
+                tempSettings.chatbotSpeed = chatbotSpeed.value;
+            });
 
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            let recognition;
-            if (SpeechRecognition) {
-                recognition = new SpeechRecognition();
-                recognition.lang = 'en-US';
-                recognition.interimResults = false;
+            saveSettings.addEventListener('click', () => {
+                userSettings.theme = tempSettings.theme;
+                userSettings.chatbotSpeed = tempSettings.chatbotSpeed;
+                const appOrderList = document.getElementById('appOrderList');
+                userSettings.appOrder = Array.from(appOrderList.children).map(li => li.dataset.name);
+                saveSettings();
+                applySettings();
+                settingsMenu.classList.remove('active');
+                showBubble('Settings saved.');
+            });
 
-                recognition.onresult = (event) => {
-                    if (!isMicListening) return;
-                    const result = event.results[0][0].transcript.trim().toLowerCase();
-                    if (["hey tpg", "tpg", "fusionhub"].includes(result)) {
-                        isWakeWordDetected = true;
-                        return showBubble('Say your command...');
-                    }
-                    if (isWakeWordDetected) {
-                        chatInput.value = result;
-                        showBubble('Processing...');
-                        setTimeout(() => showBubble(handleCommand(result)), 500);
-                        isWakeWordDetected = false;
-                    }
-                };
+            cancelSettings.addEventListener('click', () => {
+                tempSettings = { ...userSettings };
+                settingsMenu.classList.remove('active');
+                showBubble('Settings unchanged.');
+            });
 
-                recognition.onerror = (event) => {
-                    showBubble(event.error === 'no-speech' ? 'No speech detected.' : 'Speech error.');
-                    console.error('Speech recognition error:', event.error);
-                };
+            // Drag-and-Drop for App Order
+            let draggedItem = null;
 
-                recognition.onend = () => {
-                    if (isMicListening) {
-                        try {
-                            recognition.start();
-                        } catch (error) {
-                            console.error('Failed to restart recognition:', error);
-                            isMicListening = false;
-                            micToggleBtn.textContent = 'On';
-                            micToggleBtn.classList.remove('listening');
-                            showBubble('Mic error. Try again.');
-                        }
-                    }
-                };
+            document.getElementById('appOrderList').addEventListener('dragstart', (e) => {
+                draggedItem = e.target;
+                setTimeout(() => {
+                    draggedItem.style.display = 'none';
+                }, 0);
+            });
 
-                micToggleBtn.addEventListener('click', () => {
-                    isMicListening = !isMicListening;
-                    if (isMicListening) {
-                        try {
-                            recognition.start();
-                            micToggleBtn.textContent = 'Off';
-                            micToggleBtn.classList.add('listening');
-                            showBubble('Listening...');
-                        } catch (error) {
-                            console.error('Failed to start recognition:', error);
-                            showBubble('Mic failed to start.');
-                            isMicListening = false;
-                        }
+            document.getElementById('appOrderList').addEventListener('dragend', (e) => {
+                setTimeout(() => {
+                    draggedItem.style.display = 'flex';
+                    draggedItem = null;
+                }, 0);
+            });
+
+            document.getElementById('appOrderList').addEventListener('dragover', (e) => {
+                e.preventDefault();
+            });
+
+            document.getElementById('appOrderList').addEventListener('dragenter', (e) => {
+                e.preventDefault();
+                if (e.target.tagName === 'LI') {
+                    e.target.classList.add('dragging');
+                }
+            });
+
+            document.getElementById('appOrderList').addEventListener('dragleave', (e) => {
+                if (e.target.tagName === 'LI') {
+                    e.target.classList.remove('dragging');
+                }
+            });
+
+            document.getElementById('appOrderList').addEventListener('drop', (e) => {
+                e.preventDefault();
+                if (e.target.tagName === 'LI' && draggedItem !== e.target) {
+                    const allItems = Array.from(document.getElementById('appOrderList').children);
+                    const draggedIndex = allItems.indexOf(draggedItem);
+                    const targetIndex = allItems.indexOf(e.target);
+                    if (draggedIndex < targetIndex) {
+                        e.target.after(draggedItem);
                     } else {
-                        recognition.stop();
-                        micToggleBtn.textContent = 'On';
-                        micToggleBtn.classList.remove('listening');
-                        showBubble('Mic off.');
+                        e.target.before(draggedItem);
                     }
-                });
-            } else {
-                micToggleBtn.disabled = true;
-                micToggleBtn.textContent = '🎙️';
-                showBubble('Speech not supported.');
-                console.warn('SpeechRecognition API not supported in this browser.');
-            }
+                }
+                e.target.classList.remove('dragging');
+            });
 
-            setTimeout(() => showBubble(userName ? `Hey ${userName}, ready to go?` : 'Type your name to start!'), 1000);
+            closeHelpMenu.addEventListener('click', () => {
+                helpMenu.classList.remove('active');
+            });
+
+            document.querySelectorAll('.help-content li').forEach(item => {
+                item.addEventListener('click', () => {
+                    const command = item.dataset.command || item.textContent;
+                    helpMenu.classList.remove('active');
+                    processCommand(command);
+                });
+            });
+
+            openCommand.addEventListener('click', () => {
+                helpMenu.classList.remove('active');
+                openOptionsMenu.classList.add('active');
+            });
+
+            document.querySelectorAll('.open-options-content li').forEach(item => {
+                item.addEventListener('click', () => {
+                    const command = item.dataset.command;
+                    openOptionsMenu.classList.remove('active');
+                    processCommand(command);
+                });
+            });
+
+            closeOpenOptionsMenu.addEventListener('click', () => {
+                openOptionsMenu.classList.remove('active');
+            });
         });
     </script>
 </body>
