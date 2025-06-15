@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fusion Hub Premium</title>
+    <!-- Using Inter font from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-start: #0f172a;
@@ -47,6 +51,7 @@
             position: relative;
             display: flex;
             flex-direction: column;
+            transition: background 0.3s ease, color 0.3s ease;
         }
 
         body::before {
@@ -58,6 +63,7 @@
             height: 100%;
             background: linear-gradient(45deg, rgba(16, 185, 129, 0.05), rgba(15, 23, 42, 0.1));
             z-index: -2;
+            transition: background 0.3s ease;
         }
 
         [data-theme="light"] body::before {
@@ -73,6 +79,23 @@
             z-index: -1;
             opacity: 0;
             animation: fadeInParticles 0.4s ease-out 0s forwards;
+        }
+        
+        #settings-icon {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            z-index: 1002;
+            fill: var(--text-color);
+            transition: transform 0.2s ease, fill 0.2s ease;
+        }
+
+        #settings-icon:hover {
+            transform: scale(1.1) rotate(20deg);
+            fill: var(--accent-color);
         }
 
         .container {
@@ -115,6 +138,11 @@
             opacity: 0;
             transform: translateY(-10px);
             animation: fadeInTitle 0.4s ease-out 0.3s forwards;
+            cursor: pointer;
+        }
+        
+        #dateTime:hover {
+            filter: brightness(1.2);
         }
 
         [data-theme="light"] #dateTime {
@@ -124,14 +152,12 @@
 
         .app-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 0;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
             width: 100%;
-            max-height: calc(100vh - 170px);
-            height: auto;
-            padding: 0;
-            justify-items: stretch;
-            overflow: visible;
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+            padding: 10px;
         }
 
         .app-item {
@@ -144,17 +170,15 @@
             box-shadow: var(--shadow);
             cursor: pointer;
             transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
-            transform: perspective(1000px) rotateX(-10deg) rotateY(10deg) scale(0.85);
+            transform: perspective(1000px) scale(1);
             will-change: transform, opacity, filter;
             opacity: 0;
             animation: buttonFadeIn 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55) var(--delay) forwards;
-            width: 100%;
-            height: calc(80px + 0.5vw);
+            min-height: 120px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            contain: paint;
         }
 
         .app-item.dragging {
@@ -163,34 +187,27 @@
         }
 
         .app-item:hover {
-            transform: perspective(1000px) rotateX(5deg) rotateY(-5deg) scale(1.05) translateY(-5px);
-            box-shadow: 0 0 12px rgba(16, 185, 129, 0.5);
+            transform: perspective(1000px) scale(1.05) translateY(-5px);
+            box-shadow: 0 0 12px var(--card-glow);
             filter: brightness(1.15);
         }
 
-        [data-theme="light"] .app-item:hover {
-            box-shadow: 0 0 12px rgba(59, 130, 246, 0.5);
-        }
-
         .app-item:hover span {
-            color: #6ee7b7;
-        }
-
-        [data-theme="light"] .app-item:hover span {
-            color: #93c5fd;
+            color: var(--accent-color);
         }
 
         .app-item:active {
-            transform: perspective(1000px) rotateX(0deg) rotateY(0deg) scale(0.95);
+            transform: perspective(1000px) scale(0.98);
             animation: press 0.25s ease-out;
         }
 
         .app-item img {
-            width: calc(28px + 0.5vw);
-            height: calc(28px + 0.5vw);
-            margin-bottom: calc(4px + 0.3vw);
+            width: calc(32px + 0.5vw);
+            height: calc(32px + 0.5vw);
+            margin-bottom: calc(8px + 0.3vw);
             object-fit: contain;
             transition: transform 0.2s ease;
+            border-radius: 8px;
         }
 
         .app-item:hover img {
@@ -208,9 +225,9 @@
             position: fixed;
             bottom: calc(70px + 2vh);
             right: calc(10px + 1vw);
-            width: calc(60px + 2vw);
-            height: calc(60px + 2vw);
-            background: radial-gradient(circle, #10b981, #1e293b);
+            width: calc(60px + 1vw);
+            height: calc(60px + 1vw);
+            background: radial-gradient(circle, var(--accent-color), var(--bg-end));
             border-radius: 50%;
             box-shadow: var(--glow);
             display: flex;
@@ -221,20 +238,16 @@
             transform: scale(0.5);
             animation: popInBot 0.5s ease-out 0.7s forwards, pulse 2s ease-in-out infinite 1.2s;
             cursor: pointer;
-            transition: transform 0.2s ease;
+            transition: transform 0.2s ease, background 0.3s ease;
         }
-
-        [data-theme="light"] #fusionBot {
-            background: radial-gradient(circle, #3b82f6, #e2e8f0);
-        }
-
+        
         #fusionBot:hover {
             transform: scale(1.1);
         }
 
         #fusionBot img {
-            width: calc(40px + 2vw);
-            height: calc(40px + 2vw);
+            width: 60%;
+            height: 60%;
         }
 
         #speechBubble {
@@ -253,8 +266,9 @@
             transform: translateY(15px);
             transition: opacity 0.3s ease, transform 0.3s ease;
             z-index: 999;
+            pointer-events: none;
         }
-
+        
         [data-theme="light"] #speechBubble {
             background: rgba(0, 0, 0, 0.05);
         }
@@ -268,18 +282,19 @@
             position: fixed;
             bottom: calc(10px + 1vh);
             left: 50%;
-            transform: translateX(-50%) translateY(80px);
+            transform: translateX(-50%) translateY(120px);
             width: calc(100% - 20px);
             max-width: calc(380px + 5vw);
             background: rgba(255, 255, 255, 0.08);
             border: var(--border);
             border-radius: 20px;
-            padding: calc(10px + 1vw);
+            padding: calc(8px + 0.5vw);
             box-shadow: var(--shadow);
             z-index: 1001;
             opacity: 0;
             animation: slideUpPanel 0.5s ease-out 0.5s forwards;
-            contain: paint;
+            display: flex;
+            gap: 10px;
         }
 
         [data-theme="light"] #chatPanel {
@@ -288,9 +303,9 @@
 
         #chatInput {
             width: 100%;
-            padding: calc(8px + 1vw) calc(12px + 1vw);
+            padding: calc(8px + 0.5vw) calc(12px + 0.5vw);
             border: none;
-            border-radius: 20px;
+            border-radius: 15px;
             background: rgba(255, 255, 251, 0.15);
             color: var(--text-color);
             font-size: calc(0.8rem + 0.5vw);
@@ -309,144 +324,30 @@
             box-shadow: 0 0 8px var(--card-glow);
         }
 
-        #buttonContainer {
-            display: flex;
-            justify-content: center;
-            gap: 0;
-            margin-top: calc(8px + 1vw);
-        }
-
         #sendBtn {
-            position: relative;
             background: var(--button-gradient);
             border: var(--border);
-            border-radius: 12px;
+            border-radius: 15px;
             box-shadow: var(--shadow);
             color: var(--text-color);
             font-size: calc(0.9rem + 0.2vw);
             font-weight: 700;
             cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
-            transform: perspective(1000px) rotateX(-10deg) rotateY(10deg);
-            width: calc(80px + 0.5vw);
-            height: calc(60px + 0.5vw);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease, background 0.3s ease;
+            width: 100px;
             display: flex;
             align-items: center;
             justify-content: center;
-            opacity: 0;
-            animation: buttonFadeIn 0.5s ease-out 0.7s forwards;
         }
 
         #sendBtn:hover {
-            transform: perspective(1000px) rotateX(5deg) rotateY(-5deg) scale(1.05) translateY(-5px);
-            box-shadow: 0 0 12px rgba(16, 185, 129, 0.5);
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 0 12px var(--card-glow);
             filter: brightness(1.15);
-            color: #6ee7b7;
         }
-
-        [data-theme="light"] #sendBtn:hover {
-            box-shadow: 0 0 12px rgba(59, 130, 246, 0.5);
-            color: #93c5fd;
-        }
-
-        #sendBtn:active {
-            transform: perspective(1000px) rotateX(0deg) rotateY(0deg) scale(0.95);
-            animation: press 0.25s ease-out;
-        }
-
-        /* Internet Connection Pop-Up Styles */
-        #internetPopup {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(15, 23, 42, 0.9);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1005;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-
-        [data-theme="light"] #internetPopup {
-            background: rgba(241, 245, 249, 0.9);
-        }
-
-        #internetPopup.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .internet-popup-content {
-            background: var(--card-bg);
-            border: var(--border);
-            border-radius: 16px;
-            padding: 30px;
-            box-shadow: var(--shadow);
-            width: 90%;
-            max-width: 450px;
-            text-align: center;
-            transform: perspective(800px) rotateX(-90deg) rotateY(0deg);
-            opacity: 0;
-            transition: all 0.4s ease;
-        }
-
-        #internetPopup.active .internet-popup-content {
-            transform: perspective(800px) rotateX(0deg) rotateY(0deg);
-            opacity: 1;
-        }
-
-        .internet-popup-content h2 {
-            font-size: 1.6rem;
-            font-weight: 700;
-            margin-bottom: 20px;
-            background: linear-gradient(90deg, #10b981, #6ee7b7);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        [data-theme="light"] .internet-popup-content h2 {
-            background: linear-gradient(90deg, #3b82f6, #93c5fd);
-        }
-
-        .internet-popup-content p {
-            font-size: 1rem;
-            font-weight: 400;
-            color: #d1d5db;
-            margin-bottom: 20px;
-        }
-
-        [data-theme="light"] .internet-popup-content p {
-            color: #64748b;
-        }
-
-        .internet-popup-content button {
-            background: var(--card-bg);
-            border: var(--border);
-            border-radius: 8px;
-            padding: 12px 24px;
-            color: var(--text-color);
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-        }
-
-        .internet-popup-content button:hover {
-            transform: scale(1.05);
-            box-shadow: var(--glow);
-            background: linear-gradient(145deg, rgba(16, 185, 129, 0.1), rgba(15, 23, 42, 0.95));
-        }
-
-        [data-theme="light"] .internet-popup-content button:hover {
-            background: linear-gradient(145deg, rgba(59, 130, 246, 0.1), rgba(241, 245, 249, 0.95));
-        }
-
-        /* Time Settings Menu Styles */
-        #timeSettingsMenu {
+        
+        /* Modal Styles */
+        .modal {
             position: fixed;
             top: 0;
             left: 0;
@@ -462,47 +363,68 @@
             transition: opacity 0.3s ease;
         }
 
-        [data-theme="light"] #timeSettingsMenu {
+        [data-theme="light"] .modal {
             background: rgba(241, 245, 249, 0.9);
         }
 
-        #timeSettingsMenu.active {
+        .modal.active {
             opacity: 1;
             pointer-events: auto;
         }
 
-        .time-settings-content {
+        .modal-content {
             background: var(--card-bg);
             border: var(--border);
-            border-radius: 12px;
-            padding: 25px;
+            border-radius: 16px;
+            padding: 30px;
             box-shadow: var(--shadow);
             width: 90%;
-            max-width: 400px;
+            max-width: 450px;
             text-align: center;
+            transform: scale(0.9);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .time-settings-content h2 {
+        .modal.active .modal-content {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .modal-content h2 {
             font-size: 1.6rem;
             font-weight: 700;
             margin-bottom: 20px;
-            background: linear-gradient(90deg, #10b981, #6ee7b7);
+            background: linear-gradient(90deg, var(--accent-color), #6ee7b7);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-
-        [data-theme="light"] .time-settings-content h2 {
-            background: linear-gradient(90deg, #3b82f6, #93c5fd);
+        
+        [data-theme="light"] .modal-content h2 {
+             background: linear-gradient(90deg, var(--accent-color), #93c5fd);
         }
 
-        .time-settings-option {
+        .modal-content p {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #d1d5db;
+            margin-bottom: 20px;
+        }
+        
+        [data-theme="light"] .modal-content p {
+            color: #64748b;
+        }
+        
+        /* Form elements inside modal */
+        .settings-option {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            text-align: left;
         }
-
-        .time-settings-option label {
+        
+        .settings-option label, .time-settings-option label {
             font-size: 1rem;
             font-weight: 600;
         }
@@ -520,12 +442,8 @@
         [data-theme="light"] .toggle {
             background: rgba(0, 0, 0, 0.1);
         }
-
-        .toggle input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
+        
+        .toggle input { opacity: 0; width: 0; height: 0; }
 
         .toggle .slider {
             position: absolute;
@@ -533,108 +451,17 @@
             left: 2px;
             width: 20px;
             height: 20px;
-            background: #10b981;
+            background: var(--accent-color);
             border-radius: 50%;
-            transition: transform 0.2s ease;
+            transition: transform 0.2s ease, background 0.3s ease;
         }
-
-        [data-theme="light"] .toggle .slider {
-            background: #3b82f6;
-        }
-
+        
         .toggle input:checked + .slider {
             transform: translateX(26px);
         }
-
-        .time-settings-buttons {
-            display: flex;
-            justify-content: space-around;
-        }
-
-        .time-settings-buttons button {
-            background: var(--card-bg);
-            border: var(--border);
-            border-radius: 8px;
-            padding: 10px 20px;
-            color: var(--text-color);
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .time-settings-buttons button:hover {
-            transform: scale(1.05);
-            box-shadow: var(--glow);
-        }
-
-        /* Settings Menu Styles */
-        #settingsMenu {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(15, 23, 42, 0.9);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1003;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-
-        [data-theme="light"] #settingsMenu {
-            background: rgba(241, 245, 249, 0.9);
-        }
-
-        #settingsMenu.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .settings-content {
-            background: var(--card-bg);
-            border: var(--border);
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: var(--shadow);
-            width: 90%;
-            max-width: 400px;
-            text-align: center;
-        }
-
-        .settings-content h2 {
-            font-size: 1.6rem;
-            font-weight: 700;
-            margin-bottom: 20px;
-            background: linear-gradient(90deg, #10b981, #6ee7b7);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        [data-theme="light"] .settings-content h2 {
-            background: linear-gradient(90deg, #3b82f6, #93c5fd);
-        }
-
-        .settings-option {
-            margin-bottom: 20px;
-            text-align: left;
-        }
-
-        .settings-option label {
-            font-size: 1rem;
-            font-weight: 600;
-            display: block;
-            margin-bottom: 8px;
-        }
-
-        #appOrderList {
-            list-style: none;
-            padding: 0;
-        }
-
+        
+        #appOrderList { list-style: none; padding: 0; }
+        
         #appOrderList li {
             background: rgba(255, 255, 255, 0.1);
             border: var(--border);
@@ -647,25 +474,15 @@
             align-items: center;
         }
 
-        [data-theme="light"] #appOrderList li {
-            background: rgba(0, 0, 0, 0.05);
-        }
-
-        #appOrderList li:hover {
-            background: rgba(255, 255, 255, 0.15);
-        }
-
-        [data-theme="light"] #appOrderList li:hover {
-            background: rgba(0, 0, 0, 0.1);
-        }
-
-        .settings-buttons {
+        .modal-buttons {
             display: flex;
-            justify-content: space-around;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 20px;
         }
 
-        .settings-buttons button {
-            background: var(--card-bg);
+        .modal-buttons button {
+            background: transparent;
             border: var(--border);
             border-radius: 8px;
             padding: 10px 20px;
@@ -673,273 +490,34 @@
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .settings-buttons button:hover {
-            transform: scale(1.05);
-            box-shadow: var(--glow);
-        }
-
-        /* Help Menu Styles */
-        #helpMenu {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(15, 23, 42, 0.9);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1003;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-
-        [data-theme="light"] #helpMenu {
-            background: rgba(241, 245, 249, 0.9);
-        }
-
-        #helpMenu.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .help-content {
-            background: var(--card-bg);
-            border: var(--border);
-            border-radius: 16px;
-            padding: 30px;
-            box-shadow: var(--shadow);
-            width: 90%;
-            max-width: 450px;
-            text-align: left;
-            transform: perspective(800px) rotateX(-90deg) rotateY(0deg);
-            opacity: 0;
-            transition: all 0.4s ease;
-        }
-
-        #helpMenu.active .help-content {
-            transform: perspective(800px) rotateX(0deg) rotateY(0deg);
-            opacity: 1;
-        }
-
-        .help-content h2 {
-            font-size: 1.6rem;
-            font-weight: 700;
-            margin-bottom: 25px;
-            background: linear-gradient(90deg, #10b981, #6ee7b7);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-align: center;
-        }
-
-        [data-theme="light"] .help-content h2 {
-            background: linear-gradient(90deg, #3b82f6, #93c5fd);
-        }
-
-        .help-content ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .help-content li {
-            font-size: 1rem;
-            font-weight: 400;
-            margin-bottom: 15px;
-            padding-left: 20px;
-            position: relative;
-            color: #d1d5db;
-            cursor: pointer;
-            transition: color 0.2s ease, transform 0.2s ease;
-        }
-
-        [data-theme="light"] .help-content li {
-            color: #64748b;
-        }
-
-        .help-content li:hover {
-            color: #10b981;
-            transform: translateX(5px);
-        }
-
-        [data-theme="light"] .help-content li:hover {
-            color: #3b82f6;
-        }
-
-        .help-content li::before {
-            content: '•';
-            position: absolute;
-            left: 0;
-            color: #10b981;
-            font-size: 1.2rem;
-        }
-
-        [data-theme="light"] .help-content li::before {
-            color: #3b82f6;
-        }
-
-        .help-content button {
-            display: block;
-            margin: 20px auto 0;
-            background: var(--card-bg);
-            border: var(--border);
-            border-radius: 8px;
-            padding: 12px 24px;
-            color: var(--text-color);
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
             transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
         }
 
-        .help-content button:hover {
+        .modal-buttons button:hover {
             transform: scale(1.05);
             box-shadow: var(--glow);
-            background: linear-gradient(145deg, rgba(16, 185, 129, 0.1), rgba(15, 23, 42, 0.95));
         }
-
-        [data-theme="light"] .help-content button:hover {
-            background: linear-gradient(145deg, rgba(59, 130, 246, 0.1), rgba(241, 245, 249, 0.95));
+        
+        .modal-buttons button.primary {
+            background: var(--accent-color);
+            border-color: var(--accent-color);
+            color: white;
         }
-
-        /* Open Options Sub-Menu */
-        #openOptionsMenu {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(15, 23, 42, 0.9);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1004;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-
-        [data-theme="light"] #openOptionsMenu {
-            background: rgba(241, 245, 249, 0.9);
-        }
-
-        #openOptionsMenu.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .open-options-content {
-            background: var(--card-bg);
-            border: var(--border);
-            border-radius: 16px;
-            padding: 30px;
-            box-shadow: var(--shadow);
-            width: 90%;
-            max-width: 450px;
-            text-align: left;
-            transform: perspective(800px) rotateX(-90deg) rotateY(0deg);
-            opacity: 0;
-            transition: all 0.4s ease;
-        }
-
-        #openOptionsMenu.active .open-options-content {
-            transform: perspective(800px) rotateX(0deg) rotateY(0deg);
-            opacity: 1;
-        }
-
-        .open-options-content h3 {
-            font-size: 1.4rem;
-            font-weight: 700;
-            margin-bottom: 20px;
-            background: linear-gradient(90deg, #10b981, #6ee7b7);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-align: center;
-        }
-
-        [data-theme="light"] .open-options-content h3 {
-            background: linear-gradient(90deg, #3b82f6, #93c5fd);
-        }
-
-        .open-options-content ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .open-options-content li {
-            font-size: 1rem;
-            font-weight: 400;
-            margin-bottom: 15px;
-            padding-left: 20px;
-            position: relative;
-            color: #d1d5db;
-            cursor: pointer;
-            transition: color 0.2s ease, transform 0.2s ease;
-        }
-
-        [data-theme="light"] .open-options-content li {
-            color: #64748b;
-        }
-
-        .open-options-content li:hover {
-            color: #10b981;
-            transform: translateX(5px);
-        }
-
-        [data-theme="light"] .open-options-content li:hover {
-            color: #3b82f6;
-        }
-
-        .open-options-content li::before {
-            content: '•';
-            position: absolute;
-            left: 0;
-            color: #10b981;
-            font-size: 1.2rem;
-        }
-
-        [data-theme="light"] .open-options-content li::before {
-            color: #3b82f6;
-        }
-
-        .open-options-content button {
-            display: block;
-            margin: 20px auto 0;
-            background: var(--card-bg);
-            border: var(--border);
-            border-radius: 8px;
-            padding: 12px 24px;
-            color: var(--text-color);
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-        }
-
-        .open-options-content button:hover {
-            transform: scale(1.05);
-            box-shadow: var(--glow);
-            background: linear-gradient(145deg, rgba(16, 185, 129, 0.1), rgba(15, 23, 42, 0.95));
-        }
-
-        [data-theme="light"] .open-options-content button:hover {
-            background: linear-gradient(145deg, rgba(59, 130, 246, 0.1), rgba(241, 245, 249, 0.95));
+        
+        .modal-buttons button.primary:hover {
+             filter: brightness(1.1);
         }
 
         @keyframes fadeInParticles { to { opacity: 1; } }
         @keyframes fadeInContainer { to { opacity: 1; } }
         @keyframes fadeInTitle { to { opacity: 1; transform: translateY(0); } }
         @keyframes buttonFadeIn { 
-            0% { opacity: 0; transform: perspective(1000px) rotateX(-10deg) rotateY(10deg) scale(0.85) translateY(20px); }
-            100% { opacity: 1; transform: perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1); }
+            from { opacity: 0; transform: translateY(20px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
         @keyframes press { 
-            0% { transform: perspective(1000px) scale(0.95); } 
-            50% { transform: perspective(1000px) scale(1.02); } 
-            100% { transform: perspective(1000px) scale(1); } 
+            from { transform: perspective(1000px) scale(1); } 
+            to { transform: perspective(1000px) scale(0.98); } 
         }
         @keyframes popInBot { to { opacity: 1; transform: scale(1); } }
         @keyframes pulse { 
@@ -949,572 +527,251 @@
         @keyframes slideUpPanel { to { opacity: 1; transform: translateX(-50%) translateY(0); } }
 
         .app-item:nth-child(1) { --delay: 0.3s; }
-        .app-item:nth-child(2) { --delay: 0.4s; }
-        .app-item:nth-child(3) { --delay: 0.5s; }
-        .app-item:nth-child(4) { --delay: 0.6s; }
-        .app-item:nth-child(5) { --delay: 0.7s; }
-        .app-item:nth-child(6) { --delay: 0.8s; }
+        .app-item:nth-child(2) { --delay: 0.35s; }
+        .app-item:nth-child(3) { --delay: 0.4s; }
+        .app-item:nth-child(4) { --delay: 0.45s; }
+        .app-item:nth-child(5) { --delay: 0.5s; }
+        .app-item:nth-child(6) { --delay: 0.55s; }
 
-        @media (max-width: 768px) {
-            .app-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 0;
-                max-height: calc(100vh - 160px);
-                padding: 0;
-            }
-
-            h1 { font-size: calc(1.8rem + 1vw); }
-
-            #dateTime { font-size: calc(0.7rem + 0.5vw); }
-
-            #chatPanel { max-width: calc(100% - 20px); }
-
-            #fusionBot {
-                width: calc(55px + 2vw);
-                height: calc(55px + 2vw);
-                bottom: calc(65px + 2vh);
-                right: calc(8px + 1vw);
-            }
-
-            #fusionBot img { width: calc(35px + 2vw); height: calc(35px + 2vw); }
-
-            #speechBubble {
-                max-width: calc(180px + 5vw);
-                right: calc(70px + 2vw);
-                bottom: calc(130px + 2vh);
-            }
-
-            .app-item {
-                height: calc(75px + 0.5vw);
-            }
-
-            .app-item img {
-                width: calc(26px + 0.5vw);
-                height: calc(26px + 0.5vw);
-            }
-
-            .app-item span {
-                font-size: calc(0.8rem + 0.2vw);
-            }
-
-            #sendBtn {
-                width: calc(75px + 0.5vw);
-                height: calc(55px + 0.5vw);
-                font-size: calc(0.8rem + 0.2vw);
-            }
-
-            .help-content, .open-options-content, .internet-popup-content, .settings-content {
-                padding: 20px;
-                max-width: 380px;
-            }
-
-            .help-content h2, .open-options-content h3, .internet-popup-content h2, .settings-content h2 {
-                font-size: 1.4rem;
-            }
-
-            .help-content li, .open-options-content li {
-                font-size: 0.95rem;
-                margin-bottom: 12px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .app-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 0;
-                max-height: calc(100vh - 150px);
-                padding: 0;
-            }
-
-            h1 { font-size: calc(1.6rem + 1vw); }
-
-            #dateTime { font-size: calc(0.6rem + 0.5vw); }
-
-            .app-item {
-                height: calc(70px + 0.5vw);
-            }
-
-            .app-item img {
-                width: calc(24px + 0.5vw);
-                height: calc(24px + 0.5vw);
-            }
-
-            .app-item span {
-                font-size: calc(0.7rem + 0.2vw);
-            }
-
-            #sendBtn {
-                width: calc(70px + 0.5vw);
-                height: calc(50px + 0.5vw);
-                font-size: calc(0.7rem + 0.2vw);
-            }
-
-            .help-content, .open-options-content, .internet-popup-content, .settings-content {
-                padding: 15px;
-                max-width: 320px;
-            }
-
-            .help-content h2, .open-options-content h3, .internet-popup-content h2, .settings-content h2 {
-                font-size: 1.3rem;
-            }
-
-            .help-content li, .open-options-content li {
-                font-size: 0.9rem;
-                margin-bottom: 10px;
-            }
-        }
     </style>
 </head>
 <body>
     <canvas id="particles"></canvas>
+    
+    <svg id="settings-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.44,0.17-0.48,0.41L9.22,5.7c-0.59,0.24-1.12,0.56-1.62,0.94l-2.39-0.96c-0.22-0.08-0.47,0-0.59,0.22 L2.7,9.21c-0.11,0.2-0.06,0.47,0.12,0.61l2.03,1.58C4.8,11.66,4.78,11.96,4.78,12.27c0,0.31,0.02,0.61,0.07,0.91 l-2.03,1.58c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94 l0.38,2.91c0.04,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.48-0.41l0.38-2.91c0.59-0.24,1.12-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.11-0.2,0.06-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"></path>
+    </svg>
+
     <div class="container">
-        <h1>Welcome to Fusion Hub Premium</h1>
+        <h1>Welcome to Fusion Hub</h1>
         <div id="dateTime"></div>
         <div class="app-grid" id="appGrid">
-            <div class="app-item" data-url="https://chat.openai.com/" data-name="ChatGPT">
-                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABYSURBVEhL7dW9AQAwCIRH9/9f2c0EBQETD8A5M0kA8oW8dI4A5At5qRwByBfyUjkCkC/kpXIEIF/Ic4z3/9n8vQeQL+SlcgQgX8hL5QhAvpCXyhGAfCFvH3wBg5Y0wOQAAAAASUVORK5CYII=" alt="ChatGPT">
-                <span>ChatGPT</span>
-            </div>
-            <div class="app-item" data-url="https://open.spotify.com/" data-name="Music">
-                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABYSURBVEhL7dW9AQAwCIRH9/9f2c0EBQETD8A5M0kA8oW8dI4A5At5qRwByBfyUjkCkC/kpXIEIF/Ic4z3/9n8vQeQL+SlcgQgX8hL5QhAvpCXyhGAfCFvH3wBg5Y0wOQAAAAASUVORK5CYII=" alt="Music">
-                <span>Music</span>
-            </div>
-            <div class="app-item" data-url="https://crazygames.com/" data-name="Game Server 1">
-                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABYSURBVEhL7dW9AQAwCIRH9/9f2c0EBQETD8A5M0kA8oW8dI4A5At5qRwByBfyUjkCkC/kpXIEIF/Ic4z3/9n8vQeQL+SlcgQgX8hL5QhAvpCXyhGAfCFvH3wBg5Y0wOQAAAAASUVORK5CYII=" alt="Games">
-                <span>Game Server 1</span>
-            </div>
-            <div class="app-item" data-url="https://poki.com/" data-name="Game Server 2">
-                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABYSURBVEhL7dW9AQAwCIRH9/9f2c0EBQETD8A5M0kA8oW8dI4A5At5qRwByBfyUjkCkC/kpXIEIF/Ic4z3/9n8vQeQL+SlcgQgX8hL5QhAvpCXyhGAfCFvH3wBg5Y0wOQAAAAASUVORK5CYII=" alt="Games">
-                <span>Game Server 2</span>
-            </div>
-            <div class="app-item" data-url="https://aniplaynow.live/" data-name="Anime">
-                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABYSURBVEhL7dW9AQAwCIRH9/9f2c0EBQETD8A5M0kA8oW8dI4A5At5qRwByBfyUjkCkC/kpXIEIF/Ic4z3/9n8vQeQL+SlcgQgX8hL5QhAvpCXyhGAfCFvH3wBg5Y0wOQAAAAASUVORK5CYII=" alt="Anime">
-                <span>Anime</span>
-            </div>
-            <div class="app-item" data-url="https://app.kosmi.io/" data-name="Watch Together">
-                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABYSURBVEhL7dW9AQAwCIRH9/9f2c0EBQETD8A5M0kA8oW8dI4A5At5qRwByBfyUjkCkC/kpXIEIF/Ic4z3/9n8vQeQL+SlcgQgX8hL5QhAvpCXyhGAfCFvH3wBg5Y0wOQAAAAASUVORK5CYII=" alt="Watch Together">
-                <span>Watch Together</span>
-            </div>
+            <!-- App items will be dynamically generated by JavaScript -->
         </div>
     </div>
 
     <div id="speechBubble"></div>
     <div id="chatPanel">
         <input type="text" id="chatInput" placeholder="Ask FusionBot...">
-        <div id="buttonContainer">
-            <button id="sendBtn">Send</button>
-        </div>
+        <button id="sendBtn">Send</button>
     </div>
     <div id="fusionBot">
-        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABeSURBVFhH7dW9AQAwCIRH9/9f2c0EBQETD8A5M0kA8oW8dI4A5At5qRwByBfyUjkCkC/kpXIEIF/Ic4z3/9n8vQeQL+SlcgQgX8hL5QhAvpCXyhGAfCFvH3wBg5Y0wOQAAAAASUVORK5CYII=" alt="FusionBot AI Assistant">
+        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2ZmZmZmZiI+PHBhdGggZD0iTTEyIDJDNi40ODQgMiAyIDYuNDg0IDIgMTJzNC40ODQgMTAgMTAgMTAgMTAtNC40ODQgMTAtMTBTMTcuNTE2IDIgMTIgMnptMCAxOGMtNC40MTEgMC04LTMuNTg5LTgtOHMzLjU4OS04IDgtOCA4IDMuNTg5IDggOC0zLjU4OSA4LTggOHoiLz48cGF0aCBkPSJtMTggMTAtMS40MTQtMS40MTQtMi41ODYgMi41ODZMMTIgOS4xN2wtMS40MTQgMS40MTQgMi4wODYgMi4wODZMMTAuNTg2IDE0SDl2MmgxLjQxNGwyLjc5My0yLjc5MyAyLjc5MyAyLjc5M0gxN3YtMmgtMS41ODZsLTEuNTg2LTEuNTg2IDIuNTg2LTIuNTg2WiIvPjwvc3ZnPg==" alt="FusionBot AI Assistant">
     </div>
 
     <!-- Internet Connection Pop-Up -->
-    <div id="internetPopup">
-        <div class="internet-popup-content">
+    <div id="internetPopup" class="modal">
+        <div class="modal-content">
             <h2>No Internet Connection</h2>
-            <p>Please connect to the internet.</p>
-            <button id="retryConnection">Retry</button>
+            <p>Please connect to the internet to use online features.</p>
+            <div class="modal-buttons" style="justify-content: center;">
+                 <button id="retryConnection" class="primary">Retry</button>
+            </div>
         </div>
     </div>
 
     <!-- Time Settings Menu -->
-    <div id="timeSettingsMenu">
-        <div class="time-settings-content">
+    <div id="timeSettingsMenu" class="modal">
+        <div class="modal-content">
             <h2>Time Settings</h2>
-            <div class="time-settings-option">
-                <label>Time Format</label>
+            <div class="settings-option">
+                <label for="timeFormatToggle">24-hour Format</label>
                 <label class="toggle">
                     <input type="checkbox" id="timeFormatToggle">
                     <span class="slider"></span>
                 </label>
-                <span id="timeFormatLabel">12-hour</span>
             </div>
-            <div class="time-settings-option">
-                <label>Show Seconds</label>
+            <div class="settings-option">
+                <label for="showSecondsToggle">Show Seconds</label>
                 <label class="toggle">
                     <input type="checkbox" id="showSecondsToggle">
                     <span class="slider"></span>
                 </label>
-                <span id="showSecondsLabel">On</span>
             </div>
-            <div class="time-settings-buttons">
-                <button id="saveTimeSettings">Save</button>
+            <div class="modal-buttons">
                 <button id="cancelTimeSettings">Cancel</button>
+                <button id="saveTimeSettings" class="primary">Save</button>
             </div>
         </div>
     </div>
 
-    <!-- Settings Menu -->
-    <div id="settingsMenu">
-        <div class="settings-content">
+    <!-- Main Settings Menu -->
+    <div id="settingsMenu" class="modal">
+        <div class="modal-content">
             <h2>Settings</h2>
             <div class="settings-option">
+                <label for="themeToggle">Light Theme</label>
+                <label class="toggle">
+                    <input type="checkbox" id="themeToggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="settings-option" style="flex-direction: column; align-items: flex-start; gap: 10px;">
                 <label>App Order (Drag to reorder)</label>
-                <ul id="appOrderList">
-                    <li data-name="ChatGPT">ChatGPT</li>
-                    <li data-name="Music">Music</li>
-                    <li data-name="Game Server 1">Game Server 1</li>
-                    <li data-name="Game Server 2">Game Server 2</li>
-                    <li data-name="Anime">Anime</li>
-                    <li data-name="Watch Together">Watch Together</li>
-                </ul>
+                <ul id="appOrderList" style="width: 100%;"></ul>
             </div>
-            <div class="settings-option">
-                <label>Theme</label>
-                <div class="time-settings-option">
-                    <label class="toggle">
-                        <input type="checkbox" id="themeToggle">
-                        <span class="slider"></span>
-                    </label>
-                    <span id="themeLabel">Dark</span>
-                </div>
-            </div>
-            <div class="settings-option">
-                <label>Chatbot Response Speed</label>
-                <select id="chatbotSpeed">
-                    <option value="fast">Fast</option>
-                    <option value="detailed">Detailed</option>
-                </select>
-            </div>
-            <div class="settings-buttons">
-                <button id="saveSettings">Save</button>
+            <div class="modal-buttons">
                 <button id="cancelSettings">Cancel</button>
+                <button id="saveSettings" class="primary">Save</button>
             </div>
         </div>
     </div>
 
     <!-- Help Menu -->
-    <div id="helpMenu">
-        <div class="help-content">
+    <div id="helpMenu" class="modal">
+        <div class="modal-content">
             <h2>Available Commands</h2>
-            <ul>
-                <li data-command="hello">hello/hi/hey/hola</li>
-                <li data-command="time">time</li>
-                <li data-command="time settings">time settings</li>
-                <li data-command="settings">settings</li>
-                <li data-command="weather">weather</li>
-                <li data-command="help">help</li>
-                <li id="openCommand">open [chatgpt/music/game server 1/game server 2/anime/watch together]</li>
+             <ul style="text-align: left; list-style-position: inside;">
+                <li>`hello`/`hi` - Greet the bot.</li>
+                <li>`time` - Get the current time.</li>
+                <li>`time settings` - Open time settings.</li>
+                <li>`settings` - Open main settings.</li>
+                <li>`help` - Show this help menu.</li>
+                <li>`open [app name]` - Open an application.</li>
             </ul>
-            <button id="closeHelpMenu">Close</button>
-        </div>
-    </div>
-
-    <!-- Open Options Sub-Menu -->
-    <div id="openOptionsMenu">
-        <div class="open-options-content">
-            <h3>Choose an App to Open</h3>
-            <ul>
-                <li data-command="open chatgpt">ChatGPT</li>
-                <li data-command="open music">Music</li>
-                <li data-command="open game server 1">Game Server 1</li>
-                <li data-command="open game server 2">Game Server 2</li>
-                <li data-command="open anime">Anime</li>
-                <li data-command="open watch together">Watch Together</li>
-            </ul>
-            <button id="closeOpenOptionsMenu">Cancel</button>
+            <div class="modal-buttons" style="justify-content: center;">
+                <button id="closeHelpMenu" class="primary">Close</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // Load and Save User Settings
+    document.addEventListener('DOMContentLoaded', () => {
+
+        // --- DOM ELEMENT REFERENCES ---
+        const getEl = (id) => document.getElementById(id);
+        const queryEl = (sel) => document.querySelector(sel);
+
+        const canvas = getEl('particles');
+        const ctx = canvas.getContext('2d');
+        const appGrid = getEl('appGrid');
+        const dateTimeEl = getEl('dateTime');
+        const fusionBot = getEl('fusionBot');
+        const speechBubble = getEl('speechBubble');
+        const chatInput = getEl('chatInput');
+        const sendBtn = getEl('sendBtn');
+        const settingsIcon = getEl('settings-icon');
+
+        // Modals
+        const internetPopup = getEl('internetPopup');
+        const timeSettingsMenu = getEl('timeSettingsMenu');
+        const settingsMenu = getEl('settingsMenu');
+        const helpMenu = getEl('helpMenu');
+
+        // Modal Controls
+        const retryConnectionBtn = getEl('retryConnection');
+        const saveTimeSettingsBtn = getEl('saveTimeSettings');
+        const cancelTimeSettingsBtn = getEl('cancelTimeSettings');
+        const saveSettingsBtn = getEl('saveSettings');
+        const cancelSettingsBtn = getEl('cancelSettings');
+        const closeHelpMenuBtn = getEl('closeHelpMenu');
+
+        // Setting Inputs
+        const timeFormatToggle = getEl('timeFormatToggle');
+        const showSecondsToggle = getEl('showSecondsToggle');
+        const themeToggle = getEl('themeToggle');
+        const appOrderList = getEl('appOrderList');
+
+        // --- INITIAL DATA & SETTINGS ---
+        const initialApps = [
+            { name: "ChatGPT", url: "https://chat.openai.com/", icon: "openai.com" },
+            { name: "Music", url: "https://open.spotify.com/", icon: "spotify.com" },
+            { name: "Game Server 1", url: "https://crazygames.com/", icon: "crazygames.com" },
+            { name: "Game Server 2", url: "https://poki.com/", icon: "poki.com" },
+            { name: "Anime", url: "https://aniplaynow.live/", icon: "crunchyroll.com" },
+            { name: "Watch Together", url: "https://app.kosmi.io/", icon: "kosmi.io" }
+        ];
+
         const defaultSettings = {
-            timeFormat: '12',
+            timeFormat24h: false,
             showSeconds: true,
-            userName: '',
-            appOrder: ['ChatGPT', 'Music', 'Game Server 1', 'Game Server 2', 'Anime', 'Watch Together'],
             theme: 'dark',
-            chatbotSpeed: 'detailed'
+            appOrder: initialApps.map(app => app.name)
         };
 
-        let userSettings = JSON.parse(localStorage.getItem('userSettings')) || defaultSettings;
+        let userSettings = {};
+        let tempSettings = {};
+        let timeUpdateInterval;
 
-        function saveSettings() {
-            localStorage.setItem('userSettings', JSON.stringify(userSettings));
-        }
+        // --- CORE FUNCTIONS ---
 
-        function applySettings() {
-            document.body.setAttribute('data-theme', userSettings.theme);
-            const themeToggle = document.getElementById('themeToggle');
-            const themeLabel = document.getElementById('themeLabel');
-            if (themeToggle && themeLabel) {
-                themeToggle.checked = userSettings.theme === 'light';
-                themeLabel.textContent = userSettings.theme === 'light' ? 'Light' : 'Dark';
-            }
-
-            const chatbotSpeed = document.getElementById('chatbotSpeed');
-            if (chatbotSpeed) {
-                chatbotSpeed.value = userSettings.chatbotSpeed;
-            }
-
-            const appGrid = document.getElementById('appGrid');
-            const appOrderList = document.getElementById('appOrderList');
-            if (appGrid && appOrderList) {
-                const apps = Array.from(appGrid.children);
-                const sortedApps = userSettings.appOrder.map(name => 
-                    apps.find(app => app.dataset.name === name)
-                ).filter(app => app);
-                appGrid.innerHTML = '';
-                sortedApps.forEach(app => appGrid.appendChild(app));
-
-                appOrderList.innerHTML = '';
-                userSettings.appOrder.forEach(name => {
-                    const li = document.createElement('li');
-                    li.dataset.name = name;
-                    li.textContent = name;
-                    appOrderList.appendChild(li);
-                });
-            }
-        }
-
-        // Particle Background and Burst
-        const canvas = document.getElementById('particles');
-        const ctx = canvas.getContext('2d');
-        let particlesArray = [];
-
-        if (canvas && ctx) {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-
-            class Particle {
-                constructor(x, y, isBurst = false) {
-                    this.x = x || Math.random() * canvas.width;
-                    this.y = y || Math.random() * canvas.height;
-                    this.size = isBurst ? Math.random() * 3 + 1 : Math.random() * 1.2 + 0.3;
-                    this.speedX = isBurst ? Math.random() * 10 - 5 : Math.random() * 0.2 - 0.1;
-                    this.speedY = isBurst ? Math.random() * 10 - 5 : Math.random() * 0.2 - 0.1;
-                    this.opacity = isBurst ? 0.8 : 0.2;
-                    this.isBurst = isBurst;
-                }
-                update() {
-                    this.x += this.speedX;
-                    this.y += this.speedY;
-                    if (this.isBurst) {
-                        this.opacity -= 0.015;
-                        this.size -= 0.05;
-                    } else if (this.size > 0.2) {
-                        this.size -= 0.01;
+        /**
+         * Loads settings from localStorage or uses defaults.
+         */
+        function loadSettings() {
+            try {
+                const saved = localStorage.getItem('fusionHubSettings');
+                userSettings = saved ? JSON.parse(saved) : { ...defaultSettings };
+                 // Ensure all default keys exist
+                for (const key in defaultSettings) {
+                    if (!(key in userSettings)) {
+                        userSettings[key] = defaultSettings[key];
                     }
                 }
-                draw() {
-                    ctx.fillStyle = `rgba(16, 185, 129, ${this.opacity})`;
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                    ctx.fill();
+            } catch (e) {
+                console.error("Failed to load settings:", e);
+                userSettings = { ...defaultSettings };
+            }
+        }
+
+        /**
+         * Saves the current userSettings to localStorage.
+         */
+        function saveUserSettings() {
+            try {
+                localStorage.setItem('fusionHubSettings', JSON.stringify(userSettings));
+            } catch (e) {
+                console.error("Failed to save settings:", e);
+            }
+        }
+
+        /**
+         * Applies all settings to the UI.
+         */
+        function applyAllSettings() {
+            // Apply Theme
+            document.body.dataset.theme = userSettings.theme;
+
+            // Apply App Order
+            renderAppGrid();
+            
+            // Update Time Display
+            updateTime();
+        }
+        
+        /**
+         * Renders the app grid based on the current appOrder in userSettings.
+         */
+        function renderAppGrid() {
+            appGrid.innerHTML = '';
+            let delay = 0.3;
+            userSettings.appOrder.forEach(appName => {
+                const appData = initialApps.find(app => app.name === appName);
+                if (appData) {
+                    const appItem = document.createElement('div');
+                    appItem.className = 'app-item';
+                    appItem.dataset.url = appData.url;
+                    appItem.dataset.name = appData.name;
+                    appItem.style.setProperty('--delay', `${delay}s`);
+                    
+                    appItem.innerHTML = `
+                        <img src="https://icon.horse/icon/${appData.icon}" alt="${appData.name} icon" onerror="this.src='https://placehold.co/64x64/334155/f1f5f9?text=${appData.name.charAt(0)}'">
+                        <span>${appData.name}</span>
+                    `;
+                    
+                    appItem.addEventListener('click', () => openApp(appItem, appData.url));
+                    appGrid.appendChild(appItem);
+                    delay += 0.05;
                 }
-            }
-
-            function initParticles() {
-                particlesArray = [];
-                for (let i = 0; i < 8; i++) particlesArray.push(new Particle());
-            }
-
-            function createBurst(x, y) {
-                for (let i = 0; i < 15; i++) particlesArray.push(new Particle(x, y, true));
-            }
-
-            function animateParticles() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                particlesArray.forEach((p, i) => {
-                    p.update();
-                    p.draw();
-                    if (p.size <= 0.2 || (p.isBurst && p.opacity <= 0)) {
-                        particlesArray.splice(i, 1);
-                        if (!p.isBurst) particlesArray.push(new Particle());
-                    }
-                });
-                requestAnimationFrame(animateParticles);
-            }
-
-            initParticles();
-            animateParticles();
-
-            window.addEventListener('resize', () => {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-                initParticles();
             });
-        } else {
-            console.error('Canvas or context not found');
         }
-
-        // Reset UI Elements to Initial State
-        function resetUI() {
-            const container = document.querySelector('.container');
-            const fusionBot = document.getElementById('fusionBot');
-            const chatPanel = document.getElementById('chatPanel');
-            const speechBubble = document.getElementById('speechBubble');
-            const timeSettingsMenu = document.getElementById('timeSettingsMenu');
-            const settingsMenu = document.getElementById('settingsMenu');
-            const helpMenu = document.getElementById('helpMenu');
-            const openOptionsMenu = document.getElementById('openOptionsMenu');
-
-            if (container) {
-                container.style.opacity = '0';
-                container.style.animation = 'none';
-                setTimeout(() => {
-                    container.style.animation = 'fadeInContainer 0.25s ease-out forwards';
-                }, 10);
-            }
-            document.querySelectorAll('.app-item').forEach(item => {
-                item.style.opacity = '0';
-                item.style.transform = 'perspective(1000px) rotateX(-10deg) rotateY(10deg) scale(0.85)';
-                item.style.animation = 'none';
-                const delay = item.style.getPropertyValue('--delay') || '0s';
-                setTimeout(() => {
-                    item.style.animation = `buttonFadeIn 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55) ${delay} forwards`;
-                }, 10);
-            });
-            if (fusionBot) {
-                fusionBot.style.opacity = '0';
-                fusionBot.style.transform = 'scale(0.5)';
-                fusionBot.style.animation = 'none';
-                setTimeout(() => {
-                    fusionBot.style.animation = 'popInBot 0.5s ease-out 0.7s forwards, pulse 2s ease-in-out infinite 1.2s';
-                }, 10);
-            }
-            if (chatPanel) {
-                chatPanel.style.opacity = '0';
-                chatPanel.style.transform = 'translateX(-50%) translateY(80px)';
-                chatPanel.style.animation = 'none';
-                setTimeout(() => {
-                    chatPanel.style.animation = 'slideUpPanel 0.5s ease-out 0.5s forwards';
-                }, 10);
-            }
-            if (speechBubble) speechBubble.classList.remove('active');
-            if (timeSettingsMenu) timeSettingsMenu.classList.remove('active');
-            if (settingsMenu) settingsMenu.classList.remove('active');
-            if (helpMenu) helpMenu.classList.remove('active');
-            if (openOptionsMenu) openOptionsMenu.classList.remove('active');
-            initParticles();
-        }
-
-        // Internet Connection Check
-        const internetPopup = document.getElementById('internetPopup');
-        const retryButton = document.getElementById('retryConnection');
-
-        function checkInternetConnection() {
-            if (navigator.onLine) {
-                internetPopup.classList.remove('active');
-            } else {
-                internetPopup.classList.add('active');
-            }
-        }
-
-        window.addEventListener('load', () => {
-            applySettings();
-            checkInternetConnection();
-        });
-
-        window.addEventListener('online', () => {
-            internetPopup.classList.remove('active');
-            showBubble('Connected to the internet.');
-        });
-
-        window.addEventListener('offline', () => {
-            internetPopup.classList.add('active');
-            showBubble('Lost internet connection.');
-        });
-
-        retryButton.addEventListener('click', () => {
-            checkInternetConnection();
-            if (navigator.onLine) {
-                showBubble('Connected to the internet.');
-            } else {
-                showBubble('Still offline. Please connect to the internet.');
-            }
-        });
-
-        // Open App in New Tab
-        function openApp(element, url, appName) {
-            if (!navigator.onLine) {
-                showBubble('Please connect to the internet to open apps.');
-                internetPopup.classList.add('active');
-                return;
-            }
-
-            console.log('Opening app in new tab:', url);
-            const rect = element.getBoundingClientRect();
-            const x = rect.left + rect.width / 2;
-            const y = rect.top + rect.height / 2;
-            createBurst(x, y);
-
-            window.open(url, '_blank');
-        }
-
-        // Add Particle Burst on Send Button Click
-        document.getElementById('sendBtn').addEventListener('click', (e) => {
-            const rect = e.target.getBoundingClientRect();
-            const x = rect.left + rect.width / 2;
-            const y = rect.top + rect.height / 2;
-            createBurst(x, y);
-        });
-
-        // Handle Browser Back Button
-        window.addEventListener('popstate', () => {
-            console.log('Back button pressed, resetting UI');
-            resetUI();
-        });
-
-        // Handle Page Visibility
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') {
-                console.log('Tab is visible, resetting UI');
-                resetUI();
-            }
-        });
-
-        // Chatbot Logic
-        document.addEventListener('DOMContentLoaded', () => {
-            const bubble = document.getElementById('speechBubble');
-            const chatInput = document.getElementById('chatInput');
-            const sendBtn = document.getElementById('sendBtn');
-            const fusionBot = document.getElementById('fusionBot');
-            const dateTime = document.getElementById('dateTime');
-            const appGrid = document.getElementById('appGrid');
-            const timeSettingsMenu = document.getElementById('timeSettingsMenu');
-            const timeFormatToggle = document.getElementById('timeFormatToggle');
-            const timeFormatLabel = document.getElementById('timeFormatLabel');
-            const showSecondsToggle = document.getElementById('showSecondsToggle');
-            const showSecondsLabel = document.getElementById('showSecondsLabel');
-            const saveTimeSettings = document.getElementById('saveTimeSettings');
-            const cancelTimeSettings = document.getElementById('saveTimeSettings');
-            const settingsMenu = document.getElementById('settingsMenu');
-            const themeToggle = document.getElementById('themeToggle');
-            const themeLabel = document.getElementById('themeLabel');
-            const chatbotSpeed = document.getElementById('chatbotSpeed');
-            const saveSettings = document.getElementById('saveSettings');
-            const cancelSettings = document.getElementById('cancelSettings');
-            const helpMenu = document.getElementById('helpMenu');
-            const closeHelpMenu = document.getElementById('closeHelpMenu');
-            const openCommand = document.getElementById('openCommand');
-            const openOptionsMenu = document.getElementById('openOptionsMenu');
-            const closeOpenOptionsMenu = document.getElementById('closeOpenOptionsMenu');
-
-            if (!bubble || !chatInput || !sendBtn || !fusionBot || !dateTime || !appGrid || !timeSettingsMenu || !timeFormatToggle || !showSecondsToggle || !settingsMenu || !themeToggle || !chatbotSpeed || !saveSettings || !cancelSettings || !helpMenu || !closeHelpMenu || !openCommand || !openOptionsMenu || !closeOpenOptionsMenu) {
-                console.error('Missing DOM elements');
-                alert('Error: Some interface elements failed to load. Check console for details.');
-                return;
-            }
-
-            const appItems = document.querySelectorAll('.app-item');
-            if (appItems.length !== 6) {
-                console.error('Expected 6 app items, found:', appItems.length);
-                alert('Error: Not all app buttons are loaded. Check console for details.');
-            } else {
-                console.log('All 6 app items loaded successfully:', Array.from(appItems).map(item => item.querySelector('span').textContent));
-            }
-
-            const timeSettings = {
-                is24Hour: userSettings.timeFormat === '24',
-                showSeconds: userSettings.showSeconds
-            };
-
-            let tempTimeSettings = { ...timeSettings };
-            let tempSettings = { ...userSettings };
-
-            const getIndiaTime = () => {
+        
+        /**
+         * Updates the date and time display based on current settings.
+         */
+        function updateTime() {
+            clearInterval(timeUpdateInterval);
+            const render = () => {
                 const options = {
                     timeZone: 'Asia/Kolkata',
                     weekday: 'long',
@@ -1522,257 +779,284 @@
                     day: 'numeric',
                     hour: '2-digit',
                     minute: '2-digit',
-                    hour12: !timeSettings.is24Hour
+                    hour12: !userSettings.timeFormat24h,
                 };
-                if (timeSettings.showSeconds) {
+                if (userSettings.showSeconds) {
                     options.second = '2-digit';
                 }
-                return new Date().toLocaleString('en-US', options);
+                dateTimeEl.textContent = new Date().toLocaleString('en-US', options);
             };
+            render();
+            timeUpdateInterval = setInterval(render, 1000);
+        }
 
-            dateTime.textContent = getIndiaTime();
-            setInterval(() => {
-                dateTime.textContent = getIndiaTime();
-            }, 1000);
-
-            document.querySelectorAll('.app-item').forEach(item => {
-                const url = item.dataset.url;
-                const appName = item.dataset.name;
-                if (url && appName) {
-                    item.addEventListener('click', () => {
-                        console.log('App item clicked:', appName);
-                        openApp(item, url, appName);
-                    });
-                } else {
-                    console.error('App item missing data-url or data-name:', item);
-                }
-            });
-
-            function showBubble(message) {
-                bubble.textContent = message;
-                bubble.classList.add('active');
-                setTimeout(() => bubble.classList.remove('active'), 3000);
+        /**
+         * Opens an app in a new tab with a particle burst effect.
+         */
+        function openApp(element, url) {
+            if (!navigator.onLine) {
+                showBubble('Please connect to the internet.');
+                internetPopup.classList.add('active');
+                return;
             }
+            const rect = element.getBoundingClientRect();
+            createBurst(rect.left + rect.width / 2, rect.top + rect.height / 2);
+            window.open(url, '_blank');
+        }
 
-            fusionBot.addEventListener('click', () => {
-                showBubble('Hello! How can I assist you today?');
-            });
+        /**
+         * Shows a temporary message in the speech bubble.
+         */
+        function showBubble(message, duration = 3000) {
+            speechBubble.textContent = message;
+            speechBubble.classList.add('active');
+            setTimeout(() => speechBubble.classList.remove('active'), duration);
+        }
 
-            function processCommand(command) {
-                command = command.toLowerCase().trim();
-                console.log('Processing command:', command);
+        // --- SETTINGS MENUS LOGIC ---
 
-                if (['hello', 'hi', 'hey', 'hola'].includes(command)) {
-                    showBubble(`Hello${userSettings.userName ? ' ' + userSettings.userName : ''}! How can I assist you today?`);
-                } else if (command === 'time') {
-                    const timeStr = new Date().toLocaleTimeString('en-US', {
-                        timeZone: 'Asia/Kolkata',
-                        hour12: !timeSettings.is24Hour,
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        second: timeSettings.showSeconds ? '2-digit' : undefined
-                    });
-                    showBubble(`The current time in India is ${timeStr}.`);
-                } else if (command === 'time settings') {
-                    timeSettingsMenu.classList.add('active');
-                    timeFormatToggle.checked = tempTimeSettings.is24Hour;
-                    timeFormatLabel.textContent = tempTimeSettings.is24Hour ? '24-hour' : '12-hour';
-                    showSecondsToggle.checked = tempTimeSettings.showSeconds;
-                    showSecondsLabel.textContent = tempTimeSettings.showSeconds ? 'On' : 'Off';
-                } else if (command === 'settings') {
-                    settingsMenu.classList.add('active');
-                    themeToggle.checked = tempSettings.theme === 'light';
-                    themeLabel.textContent = tempSettings.theme === 'light' ? 'Light' : 'Dark';
-                    chatbotSpeed.value = tempSettings.chatbotSpeed;
-                } else if (command === 'weather') {
-                    if (!navigator.onLine) {
-                        showBubble('Please connect to the internet to check the weather.');
-                        internetPopup.classList.add('active');
-                        return;
-                    }
-                    showBubble('Weather feature coming soon!');
-                } else if (command === 'help') {
-                    helpMenu.classList.add('active');
-                } else if (command.startsWith('open')) {
-                    const appName = command.replace('open', '').trim();
-                    const apps = Array.from(appGrid.children).map(item => ({
-                        name: item.dataset.name.toLowerCase(),
-                        element: item,
-                        url: item.dataset.url
-                    }));
-
-                    if (!appName) {
-                        openOptionsMenu.classList.add('active');
-                        return;
-                    }
-
-                    const app = apps.find(a => a.name === appName);
-                    if (app) {
-                        console.log('Opening app via command:', app.name);
-                        openApp(app.element, app.url, app.name);
-                        showBubble(`Opening ${app.name}...`);
-                    } else {
-                        showBubble('App not found. Try "open chatgpt", "open music", etc.');
-                        openOptionsMenu.classList.add('active');
-                    }
-                } else {
-                    showBubble('Sorry, I didn’t understand that. Type "help" for available commands.');
-                }
+        function openModal(modalElement) {
+            // Create deep copy of settings for temporary changes
+            tempSettings = JSON.parse(JSON.stringify(userSettings));
+            
+            if (modalElement === settingsMenu) {
+                populateSettingsMenu();
+            } else if (modalElement === timeSettingsMenu) {
+                populateTimeSettingsMenu();
             }
+            
+            modalElement.classList.add('active');
+        }
 
-            sendBtn.addEventListener('click', () => {
-                const command = chatInput.value;
-                if (command) {
-                    console.log('Send button clicked with command:', command);
-                    processCommand(command);
-                    chatInput.value = '';
-                }
+        function closeModal(modalElement) {
+             modalElement.classList.remove('active');
+        }
+
+        // Main Settings
+        function populateSettingsMenu() {
+            themeToggle.checked = tempSettings.theme === 'light';
+            
+            appOrderList.innerHTML = '';
+            tempSettings.appOrder.forEach(name => {
+                const li = document.createElement('li');
+                li.dataset.name = name;
+                li.textContent = name;
+                li.draggable = true;
+                appOrderList.appendChild(li);
             });
+        }
 
-            chatInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    const command = chatInput.value;
-                    if (command) {
-                        console.log('Enter key pressed with command:', command);
-                        processCommand(command);
-                        chatInput.value = '';
-                    }
-                }
-            });
-
-            timeFormatToggle.addEventListener('change', () => {
-                tempTimeSettings.is24Hour = timeFormatToggle.checked;
-                timeFormatLabel.textContent = tempTimeSettings.is24Hour ? '24-hour' : '12-hour';
-                dateTime.textContent = getIndiaTime();
-            });
-
-            showSecondsToggle.addEventListener('change', () => {
-                tempTimeSettings.showSeconds = showSecondsToggle.checked;
-                showSecondsLabel.textContent = tempTimeSettings.showSeconds ? 'On' : 'Off';
-                dateTime.textContent = getIndiaTime();
-            });
-
-            saveTimeSettings.addEventListener('click', () => {
-                timeSettings.is24Hour = tempTimeSettings.is24Hour;
-                timeSettings.showSeconds = tempTimeSettings.showSeconds;
-                userSettings.timeFormat = timeSettings.is24Hour ? '24' : '12';
-                userSettings.showSeconds = timeSettings.showSeconds;
-                saveSettings();
-                timeSettingsMenu.classList.remove('active');
-                showBubble('Time settings saved.');
-                dateTime.textContent = getIndiaTime();
-            });
-
-            cancelTimeSettings.addEventListener('click', () => {
-                tempTimeSettings = { ...timeSettings };
-                timeSettingsMenu.classList.remove('active');
-                showBubble('Time settings unchanged.');
-            });
-
-            themeToggle.addEventListener('change', () => {
-                tempSettings.theme = themeToggle.checked ? 'light' : 'dark';
-                themeLabel.textContent = tempSettings.theme === 'light' ? 'Light' : 'Dark';
-            });
-
-            chatbotSpeed.addEventListener('change', () => {
-                tempSettings.chatbotSpeed = chatbotSpeed.value;
-            });
-
-            saveSettings.addEventListener('click', () => {
-                userSettings.theme = tempSettings.theme;
-                userSettings.chatbotSpeed = tempSettings.chatbotSpeed;
-                const appOrderList = document.getElementById('appOrderList');
-                userSettings.appOrder = Array.from(appOrderList.children).map(li => li.dataset.name);
-                saveSettings();
-                applySettings();
-                settingsMenu.classList.remove('active');
-                showBubble('Settings saved.');
-            });
-
-            cancelSettings.addEventListener('click', () => {
-                tempSettings = { ...userSettings };
-                settingsMenu.classList.remove('active');
-                showBubble('Settings unchanged.');
-            });
-
-            // Drag-and-Drop for App Order
-            let draggedItem = null;
-
-            document.getElementById('appOrderList').addEventListener('dragstart', (e) => {
-                draggedItem = e.target;
-                setTimeout(() => {
-                    draggedItem.style.display = 'none';
-                }, 0);
-            });
-
-            document.getElementById('appOrderList').addEventListener('dragend', (e) => {
-                setTimeout(() => {
-                    draggedItem.style.display = 'flex';
-                    draggedItem = null;
-                }, 0);
-            });
-
-            document.getElementById('appOrderList').addEventListener('dragover', (e) => {
-                e.preventDefault();
-            });
-
-            document.getElementById('appOrderList').addEventListener('dragenter', (e) => {
-                e.preventDefault();
-                if (e.target.tagName === 'LI') {
-                    e.target.classList.add('dragging');
-                }
-            });
-
-            document.getElementById('appOrderList').addEventListener('dragleave', (e) => {
-                if (e.target.tagName === 'LI') {
-                    e.target.classList.remove('dragging');
-                }
-            });
-
-            document.getElementById('appOrderList').addEventListener('drop', (e) => {
-                e.preventDefault();
-                if (e.target.tagName === 'LI' && draggedItem !== e.target) {
-                    const allItems = Array.from(document.getElementById('appOrderList').children);
-                    const draggedIndex = allItems.indexOf(draggedItem);
-                    const targetIndex = allItems.indexOf(e.target);
-                    if (draggedIndex < targetIndex) {
-                        e.target.after(draggedItem);
-                    } else {
-                        e.target.before(draggedItem);
-                    }
-                }
-                e.target.classList.remove('dragging');
-            });
-
-            closeHelpMenu.addEventListener('click', () => {
-                helpMenu.classList.remove('active');
-            });
-
-            document.querySelectorAll('.help-content li').forEach(item => {
-                item.addEventListener('click', () => {
-                    const command = item.dataset.command || item.textContent;
-                    helpMenu.classList.remove('active');
-                    processCommand(command);
-                });
-            });
-
-            openCommand.addEventListener('click', () => {
-                helpMenu.classList.remove('active');
-                openOptionsMenu.classList.add('active');
-            });
-
-            document.querySelectorAll('.open-options-content li').forEach(item => {
-                item.addEventListener('click', () => {
-                    const command = item.dataset.command;
-                    openOptionsMenu.classList.remove('active');
-                    processCommand(command);
-                });
-            });
-
-            closeOpenOptionsMenu.addEventListener('click', () => {
-                openOptionsMenu.classList.remove('active');
-            });
+        themeToggle.addEventListener('change', () => {
+            tempSettings.theme = themeToggle.checked ? 'light' : 'dark';
+            document.body.dataset.theme = tempSettings.theme; // Live preview
         });
+
+        saveSettingsBtn.addEventListener('click', () => {
+             userSettings.theme = tempSettings.theme;
+             const newOrder = Array.from(appOrderList.children).map(li => li.dataset.name);
+             userSettings.appOrder = newOrder;
+             
+             saveUserSettings();
+             applyAllSettings();
+             closeModal(settingsMenu);
+             showBubble('Settings saved.');
+        });
+        
+        cancelSettingsBtn.addEventListener('click', () => {
+            closeModal(settingsMenu);
+            // Revert visual changes by applying original settings
+            document.body.dataset.theme = userSettings.theme;
+            showBubble('Changes discarded.');
+        });
+
+        // Time Settings
+        function populateTimeSettingsMenu() {
+            timeFormatToggle.checked = tempSettings.timeFormat24h;
+            showSecondsToggle.checked = tempSettings.showSeconds;
+        }
+
+        timeFormatToggle.addEventListener('change', () => { tempSettings.timeFormat24h = timeFormatToggle.checked; });
+        showSecondsToggle.addEventListener('change', () => { tempSettings.showSeconds = showSecondsToggle.checked; });
+
+        saveTimeSettingsBtn.addEventListener('click', () => {
+            userSettings.timeFormat24h = tempSettings.timeFormat24h;
+            userSettings.showSeconds = tempSettings.showSeconds;
+            
+            saveUserSettings();
+            updateTime();
+            closeModal(timeSettingsMenu);
+            showBubble('Time settings saved.');
+        });
+        
+        cancelTimeSettingsBtn.addEventListener('click', () => {
+            closeModal(timeSettingsMenu);
+            showBubble('Changes discarded.');
+        });
+        
+        // Generic close for other modals
+        closeHelpMenuBtn.addEventListener('click', () => closeModal(helpMenu));
+
+        // Event Listeners for opening menus
+        settingsIcon.addEventListener('click', () => openModal(settingsMenu));
+        dateTimeEl.addEventListener('click', () => openModal(timeSettingsMenu));
+
+
+        // --- CHATBOT LOGIC ---
+        function processCommand(command) {
+            command = command.toLowerCase().trim();
+            if (!command) return;
+
+            if (['hello', 'hi', 'hey', 'hola'].includes(command)) {
+                showBubble('Hello! How can I assist you today?');
+            } else if (command === 'time') {
+                showBubble(`The current time is ${dateTimeEl.textContent}.`);
+            } else if (command === 'time settings') {
+                openModal(timeSettingsMenu);
+            } else if (command === 'settings') {
+                openModal(settingsMenu);
+            } else if (command === 'help') {
+                openModal(helpMenu);
+            } else if (command.startsWith('open ')) {
+                const appName = command.replace('open ', '').trim();
+                const app = queryEl(`.app-item[data-name='${appName}' i]`);
+                if (app) {
+                    openApp(app, app.dataset.url);
+                    showBubble(`Opening ${app.dataset.name}...`);
+                } else {
+                    showBubble(`App '${appName}' not found. Try 'help'.`);
+                }
+            } else {
+                showBubble("Sorry, I don't understand that. Type 'help' for commands.");
+            }
+            chatInput.value = '';
+        }
+        
+        sendBtn.addEventListener('click', () => processCommand(chatInput.value));
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') processCommand(chatInput.value);
+        });
+        fusionBot.addEventListener('click', () => showBubble('Hello! Ask me something or type "help".'));
+
+
+        // --- INTERNET CONNECTION ---
+        function checkInternet() {
+            internetPopup.classList.toggle('active', !navigator.onLine);
+        }
+        retryConnectionBtn.addEventListener('click', checkInternet);
+        window.addEventListener('online', () => internetPopup.classList.remove('active'));
+        window.addEventListener('offline', () => internetPopup.classList.add('active'));
+
+
+        // --- DRAG & DROP FOR APP ORDER ---
+        let draggedItem = null;
+        appOrderList.addEventListener('dragstart', e => {
+            draggedItem = e.target;
+            setTimeout(() => e.target.style.opacity = '0.5', 0);
+        });
+        appOrderList.addEventListener('dragend', e => {
+            e.target.style.opacity = '1';
+        });
+        appOrderList.addEventListener('dragover', e => {
+            e.preventDefault();
+            const afterElement = getDragAfterElement(appOrderList, e.clientY);
+            if (afterElement == null) {
+                appOrderList.appendChild(draggedItem);
+            } else {
+                appOrderList.insertBefore(draggedItem, afterElement);
+            }
+        });
+        
+        function getDragAfterElement(container, y) {
+            const draggableElements = [...container.querySelectorAll('li:not(.dragging)')];
+            return draggableElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = y - box.top - box.height / 2;
+                if (offset < 0 && offset > closest.offset) {
+                    return { offset: offset, element: child };
+                } else {
+                    return closest;
+                }
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
+        }
+
+        // --- PARTICLE ANIMATION ---
+        let particlesArray = [];
+        function initParticles() {
+            if (!canvas || !ctx) return;
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            particlesArray = [];
+            for (let i = 0; i < 50; i++) {
+                particlesArray.push(new Particle());
+            }
+        }
+
+        class Particle {
+            constructor(x, y, isBurst = false) {
+                this.x = x || Math.random() * canvas.width;
+                this.y = y || Math.random() * canvas.height;
+                this.isBurst = isBurst;
+                this.size = isBurst ? Math.random() * 3 + 1 : Math.random() * 1.5 + 0.5;
+                const angle = Math.random() * Math.PI * 2;
+                const speed = isBurst ? Math.random() * 4 + 2 : Math.random() * 0.4 - 0.2;
+                this.speedX = isBurst ? Math.cos(angle) * speed : Math.random() * 0.2 - 0.1;
+                this.speedY = isBurst ? Math.sin(angle) * speed : Math.random() * 0.2 - 0.1;
+                this.opacity = isBurst ? 1 : Math.random() * 0.5;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.isBurst) {
+                    this.opacity -= 0.02;
+                    this.size -= 0.05;
+                }
+            }
+            draw() {
+                const theme = document.body.dataset.theme || 'dark';
+                const color = theme === 'light' ? '59, 130, 246' : '16, 185, 129';
+                ctx.fillStyle = `rgba(${color}, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        
+        function createBurst(x, y) {
+            for (let i = 0; i < 30; i++) {
+                particlesArray.push(new Particle(x, y, true));
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = particlesArray.length - 1; i >= 0; i--) {
+                const p = particlesArray[i];
+                p.update();
+                p.draw();
+                if (p.size <= 0.2 || p.opacity <= 0) {
+                    particlesArray.splice(i, 1);
+                    if (!p.isBurst && particlesArray.length < 50) {
+                       particlesArray.push(new Particle());
+                    }
+                }
+            }
+            requestAnimationFrame(animateParticles);
+        }
+        window.addEventListener('resize', initParticles);
+
+
+        // --- INITIALIZATION ---
+        function init() {
+            loadSettings();
+            applyAllSettings();
+            checkInternet();
+            initParticles();
+            animateParticles();
+        }
+
+        init();
+    });
+
     </script>
 </body>
 </html>
