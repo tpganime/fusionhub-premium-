@@ -8,32 +8,38 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Three.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         :root {
-            --bg-start: #0f172a;
-            --bg-end: #1e293b;
+            --bg-color: #0f172a;
             --card-bg: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.8));
             --card-glow: rgba(16, 185, 129, 0.5);
             --text-color: #f3f4f6;
+            --subtle-text-color: #94a3b8;
             --accent-color: #10b981;
-            --shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            --shadow: 0 4px_10px rgba(0, 0, 0, 0.2);
             --glow: 0 0 8px rgba(16, 185, 129, 0.4);
             --border: 1px solid rgba(16, 185, 129, 0.2);
-            --button-gradient: linear-gradient(145deg, #10b981, #1e293b);
+            --selection-bg: rgba(16, 185, 129, 0.3);
         }
 
-        /* Light Theme Variables */
         [data-theme="light"] {
-            --bg-start: #e2e8f0;
-            --bg-end: #f1f5f9;
-            --card-bg: linear-gradient(145deg, rgba(255, 255, 255, 0.8), rgba(241, 245, 249, 0.8));
+            --bg-color: #f1f5f9;
+            --card-bg: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(241, 245, 249, 0.9));
             --card-glow: rgba(59, 130, 246, 0.5);
             --text-color: #1e293b;
+            --subtle-text-color: #475569;
             --accent-color: #3b82f6;
             --shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             --glow: 0 0 8px rgba(59, 130, 246, 0.3);
             --border: 1px solid rgba(59, 130, 246, 0.2);
-            --button-gradient: linear-gradient(145deg, #3b82f6, #e2e8f0);
+            --selection-bg: rgba(59, 130, 246, 0.3);
+        }
+
+        ::selection {
+            background-color: var(--selection-bg);
+            color: var(--text-color);
         }
 
         * {
@@ -44,7 +50,7 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
+            background-color: var(--bg-color);
             color: var(--text-color);
             height: 100vh;
             overflow: hidden;
@@ -54,48 +60,14 @@
             transition: background 0.3s ease, color 0.3s ease;
         }
 
-        body::before {
-            content: '';
+        #three-canvas {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(45deg, rgba(16, 185, 129, 0.05), rgba(15, 23, 42, 0.1));
-            z-index: -2;
-            transition: background 0.3s ease;
-        }
-
-        [data-theme="light"] body::before {
-            background: linear-gradient(45deg, rgba(59, 130, 246, 0.05), rgba(241, 245, 249, 0.1));
-        }
-
-        #particles {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            height: 100%;
             pointer-events: none;
             z-index: -1;
-            opacity: 0;
-            animation: fadeInParticles 0.4s ease-out 0s forwards;
-        }
-        
-        #settings-icon {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            width: 40px;
-            height: 40px;
-            cursor: pointer;
-            z-index: 1002;
-            fill: var(--text-color);
-            transition: transform 0.2s ease, fill 0.2s ease;
-        }
-
-        #settings-icon:hover {
-            transform: scale(1.1) rotate(20deg);
-            fill: var(--accent-color);
         }
 
         .container {
@@ -103,59 +75,70 @@
             flex-direction: column;
             justify-content: flex-start;
             height: 100vh;
-            padding: 15px;
+            padding: 25px;
             max-width: 1200px;
             margin: 0 auto;
-            opacity: 0;
-            animation: fadeInContainer 0.25s ease-out forwards;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        
+        .ai-button {
+            background: var(--card-bg);
+            border: var(--border);
+            color: var(--accent-color);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .ai-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 8px var(--card-glow);
         }
 
         h1 {
             font-size: calc(2.2rem + 1vw);
             font-weight: 700;
-            background: linear-gradient(90deg, #10b981, #6ee7b7);
+            background: linear-gradient(90deg, var(--accent-color), #6ee7b7);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin: calc(2vh) 0;
-            will-change: transform, opacity;
-            opacity: 0;
-            transform: translateY(-20px);
-            animation: fadeInTitle 0.4s ease-out 0.2s forwards;
         }
-
-        [data-theme="light"] h1 {
-            background: linear-gradient(90deg, #3b82f6, #93c5fd);
+        
+        #welcomeMessage {
+            font-size: calc(1rem + 0.5vw);
+            font-weight: 500;
+            color: var(--subtle-text-color);
+            margin-bottom: 15px;
         }
 
         #dateTime {
             font-size: calc(0.9rem + 0.5vw);
             font-weight: 500;
-            color: #d1d5db;
-            background: linear-gradient(90deg, #10b981, #6ee7b7);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: calc(1vh);
-            opacity: 0;
-            transform: translateY(-10px);
-            animation: fadeInTitle 0.4s ease-out 0.3s forwards;
+            margin-bottom: 20px;
             cursor: pointer;
+            color: var(--subtle-text-color);
+            transition: color 0.2s ease;
         }
         
         #dateTime:hover {
-            filter: brightness(1.2);
+            color: var(--accent-color);
         }
-
-        [data-theme="light"] #dateTime {
-            color: #64748b;
-            background: linear-gradient(90deg, #3b82f6, #93c5fd);
-        }
-
+        
         .app-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
             gap: 15px;
             width: 100%;
-            max-height: calc(100vh - 200px);
+            max-height: calc(100vh - 250px);
             overflow-y: auto;
             padding: 10px;
         }
@@ -170,10 +153,6 @@
             box-shadow: var(--shadow);
             cursor: pointer;
             transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
-            transform: perspective(1000px) scale(1);
-            will-change: transform, opacity, filter;
-            opacity: 0;
-            animation: buttonFadeIn 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55) var(--delay) forwards;
             min-height: 120px;
             display: flex;
             flex-direction: column;
@@ -181,25 +160,13 @@
             justify-content: center;
         }
 
-        .app-item.dragging {
-            opacity: 0.5;
-            transform: scale(0.95);
-        }
-
         .app-item:hover {
-            transform: perspective(1000px) scale(1.05) translateY(-5px);
+            transform: scale(1.05) translateY(-5px);
             box-shadow: 0 0 12px var(--card-glow);
             filter: brightness(1.15);
         }
 
-        .app-item:hover span {
-            color: var(--accent-color);
-        }
-
-        .app-item:active {
-            transform: perspective(1000px) scale(0.98);
-            animation: press 0.25s ease-out;
-        }
+        .app-item:hover span { color: var(--accent-color); }
 
         .app-item img {
             width: calc(32px + 0.5vw);
@@ -210,150 +177,94 @@
             border-radius: 8px;
         }
 
-        .app-item:hover img {
-            transform: scale(1.15);
-        }
-
         .app-item span {
             font-size: calc(0.9rem + 0.2vw);
             font-weight: 600;
             color: var(--text-color);
             transition: color 0.2s ease;
         }
-
-        #fusionBot {
-            position: fixed;
-            bottom: calc(70px + 2vh);
-            right: calc(10px + 1vw);
-            width: calc(60px + 1vw);
-            height: calc(60px + 1vw);
-            background: radial-gradient(circle, var(--accent-color), var(--bg-end));
-            border-radius: 50%;
-            box-shadow: var(--glow);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            opacity: 0;
-            transform: scale(0.5);
-            animation: popInBot 0.5s ease-out 0.7s forwards, pulse 2s ease-in-out infinite 1.2s;
-            cursor: pointer;
-            transition: transform 0.2s ease, background 0.3s ease;
-        }
         
-        #fusionBot:hover {
-            transform: scale(1.1);
-        }
-
-        #fusionBot img {
-            width: 60%;
-            height: 60%;
-        }
-
         #speechBubble {
             position: fixed;
-            bottom: calc(140px + 2vh);
-            right: calc(80px + 2vw);
-            max-width: calc(240px + 5vw);
-            padding: calc(8px + 1vw) calc(12px + 1vw);
-            background: rgba(255, 255, 255, 0.1);
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: calc(380px + 5vw);
+            padding: 12px 18px;
+            background: var(--card-bg);
             border: var(--border);
             border-radius: 12px;
             box-shadow: var(--shadow);
-            font-size: calc(0.8rem + 0.5vw);
-            font-weight: 400;
+            font-size: 1rem;
+            font-weight: 500;
             opacity: 0;
-            transform: translateY(15px);
             transition: opacity 0.3s ease, transform 0.3s ease;
             z-index: 999;
             pointer-events: none;
         }
         
-        [data-theme="light"] #speechBubble {
-            background: rgba(0, 0, 0, 0.05);
-        }
-
         #speechBubble.active {
             opacity: 1;
-            transform: translateY(0);
+            transform: translateX(-50%) translateY(-20px);
         }
 
         #chatPanel {
             position: fixed;
-            bottom: calc(10px + 1vh);
+            bottom: 15px;
             left: 50%;
-            transform: translateX(-50%) translateY(120px);
-            width: calc(100% - 20px);
-            max-width: calc(380px + 5vw);
-            background: rgba(255, 255, 255, 0.08);
+            transform: translateX(-50%);
+            width: calc(100% - 30px);
+            max-width: 420px;
+            background: var(--card-bg);
             border: var(--border);
             border-radius: 20px;
-            padding: calc(8px + 0.5vw);
+            padding: 8px;
             box-shadow: var(--shadow);
             z-index: 1001;
-            opacity: 0;
-            animation: slideUpPanel 0.5s ease-out 0.5s forwards;
             display: flex;
-            gap: 10px;
-        }
-
-        [data-theme="light"] #chatPanel {
-            background: rgba(0, 0, 0, 0.05);
+            gap: 8px;
         }
 
         #chatInput {
             width: 100%;
-            padding: calc(8px + 0.5vw) calc(12px + 0.5vw);
+            padding: 10px 15px;
             border: none;
             border-radius: 15px;
-            background: rgba(255, 255, 251, 0.15);
-            color: var(--text-color);
-            font-size: calc(0.8rem + 0.5vw);
-            font-weight: 400;
-            box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.2);
-            outline: none;
-            transition: box-shadow 0.2s ease;
-        }
-
-        [data-theme="light"] #chatInput {
             background: rgba(0, 0, 0, 0.1);
-            box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        #chatInput:focus {
-            box-shadow: 0 0 8px var(--card-glow);
-        }
-
-        #sendBtn {
-            background: var(--button-gradient);
-            border: var(--border);
-            border-radius: 15px;
-            box-shadow: var(--shadow);
             color: var(--text-color);
-            font-size: calc(0.9rem + 0.2vw);
-            font-weight: 700;
+            font-size: 1rem;
+            outline: none;
+        }
+        
+        [data-theme="light"] #chatInput {
+             background: rgba(0, 0, 0, 0.05);
+        }
+        
+        #sendBtn {
+            background: var(--accent-color);
+            border: none;
+            border-radius: 15px;
+            color: white;
+            font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease, background 0.3s ease;
-            width: 100px;
+            width: 90px;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: filter 0.2s ease;
         }
-
+        
         #sendBtn:hover {
-            transform: scale(1.05) translateY(-2px);
-            box-shadow: 0 0 12px var(--card-glow);
             filter: brightness(1.15);
         }
         
-        /* Modal Styles */
         .modal {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(15, 23, 42, 0.9);
+            background: rgba(15, 23, 42, 0.95);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -363,9 +274,7 @@
             transition: opacity 0.3s ease;
         }
 
-        [data-theme="light"] .modal {
-            background: rgba(241, 245, 249, 0.9);
-        }
+        [data-theme="light"] .modal { background: rgba(241, 245, 249, 0.95); }
 
         .modal.active {
             opacity: 1;
@@ -390,45 +299,114 @@
             transform: scale(1);
             opacity: 1;
         }
-
-        .modal-content h2 {
+        
+        .modal-content h2, .modal-content h3 {
             font-size: 1.6rem;
-            font-weight: 700;
             margin-bottom: 20px;
             background: linear-gradient(90deg, var(--accent-color), #6ee7b7);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
         
-        [data-theme="light"] .modal-content h2 {
-             background: linear-gradient(90deg, var(--accent-color), #93c5fd);
-        }
-
         .modal-content p {
             font-size: 1rem;
-            font-weight: 400;
-            color: #d1d5db;
-            margin-bottom: 20px;
+            color: var(--subtle-text-color);
+            margin-bottom: 25px;
         }
         
-        [data-theme="light"] .modal-content p {
-            color: #64748b;
+        #helpMenu .command-list, #appSuggestionContent .command-list {
+            list-style: none;
+            padding: 0;
+            text-align: left;
         }
         
-        /* Form elements inside modal */
+        #helpMenu .command-list li, #appSuggestionContent .command-list li {
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+        
+        #helpMenu .command-list code {
+            background: rgba(0,0,0,0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: var(--border);
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--text-color);
+            font-size: 1rem;
+        }
+        
         .settings-option {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-            text-align: left;
         }
         
-        .settings-option label, .time-settings-option label {
-            font-size: 1rem;
-            font-weight: 600;
+        #appOrderList { list-style: none; padding: 0; }
+        
+        #appOrderList li {
+            background: rgba(255, 255, 255, 0.1);
+            border: var(--border);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            cursor: move;
+            transition: background-color 0.2s ease, opacity 0.2s ease;
+        }
+        
+        #appOrderList li.dragging {
+            opacity: 0.5;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 25px;
         }
 
+        .modal-buttons button {
+            background: transparent;
+            border: 1px solid var(--accent-color);
+            border-radius: 8px;
+            padding: 10px 20px;
+            color: var(--accent-color);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .modal-buttons button.primary {
+            background: var(--accent-color);
+            color: white;
+        }
+        
+        .modal-buttons button:hover {
+            transform: scale(1.05);
+            filter: brightness(1.1);
+        }
+        
         .toggle {
             position: relative;
             width: 50px;
@@ -436,14 +414,7 @@
             background: rgba(255, 255, 255, 0.1);
             border-radius: 12px;
             cursor: pointer;
-            transition: background 0.2s ease;
         }
-
-        [data-theme="light"] .toggle {
-            background: rgba(0, 0, 0, 0.1);
-        }
-        
-        .toggle input { opacity: 0; width: 0; height: 0; }
 
         .toggle .slider {
             position: absolute;
@@ -453,511 +424,338 @@
             height: 20px;
             background: var(--accent-color);
             border-radius: 50%;
-            transition: transform 0.2s ease, background 0.3s ease;
+            transition: transform 0.2s ease;
         }
         
-        .toggle input:checked + .slider {
-            transform: translateX(26px);
-        }
-        
-        #appOrderList { list-style: none; padding: 0; }
-        
-        #appOrderList li {
-            background: rgba(255, 255, 255, 0.1);
-            border: var(--border);
-            border-radius: 8px;
-            padding: 10px;
-            margin-bottom: 10px;
-            cursor: move;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-buttons {
-            display: flex;
-            justify-content: flex-end;
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .modal-buttons button {
-            background: transparent;
-            border: var(--border);
-            border-radius: 8px;
-            padding: 10px 20px;
-            color: var(--text-color);
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-        }
-
-        .modal-buttons button:hover {
-            transform: scale(1.05);
-            box-shadow: var(--glow);
-        }
-        
-        .modal-buttons button.primary {
-            background: var(--accent-color);
-            border-color: var(--accent-color);
-            color: white;
-        }
-        
-        .modal-buttons button.primary:hover {
-             filter: brightness(1.1);
-        }
-
-        @keyframes fadeInParticles { to { opacity: 1; } }
-        @keyframes fadeInContainer { to { opacity: 1; } }
-        @keyframes fadeInTitle { to { opacity: 1; transform: translateY(0); } }
-        @keyframes buttonFadeIn { 
-            from { opacity: 0; transform: translateY(20px) scale(0.95); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        @keyframes press { 
-            from { transform: perspective(1000px) scale(1); } 
-            to { transform: perspective(1000px) scale(0.98); } 
-        }
-        @keyframes popInBot { to { opacity: 1; transform: scale(1); } }
-        @keyframes pulse { 
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-        @keyframes slideUpPanel { to { opacity: 1; transform: translateX(-50%) translateY(0); } }
-
-        .app-item:nth-child(1) { --delay: 0.3s; }
-        .app-item:nth-child(2) { --delay: 0.35s; }
-        .app-item:nth-child(3) { --delay: 0.4s; }
-        .app-item:nth-child(4) { --delay: 0.45s; }
-        .app-item:nth-child(5) { --delay: 0.5s; }
-        .app-item:nth-child(6) { --delay: 0.55s; }
-
+        .toggle input { opacity: 0; width: 0; height: 0; }
+        .toggle input:checked + .slider { transform: translateX(26px); }
     </style>
 </head>
 <body>
-    <canvas id="particles"></canvas>
-    
-    <svg id="settings-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.44,0.17-0.48,0.41L9.22,5.7c-0.59,0.24-1.12,0.56-1.62,0.94l-2.39-0.96c-0.22-0.08-0.47,0-0.59,0.22 L2.7,9.21c-0.11,0.2-0.06,0.47,0.12,0.61l2.03,1.58C4.8,11.66,4.78,11.96,4.78,12.27c0,0.31,0.02,0.61,0.07,0.91 l-2.03,1.58c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94 l0.38,2.91c0.04,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.48-0.41l0.38-2.91c0.59-0.24,1.12-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.11-0.2,0.06-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"></path>
-    </svg>
+    <canvas id="three-canvas"></canvas>
 
     <div class="container">
-        <h1>Welcome to Fusion Hub</h1>
-        <div id="dateTime"></div>
-        <div class="app-grid" id="appGrid">
-            <!-- App items will be dynamically generated by JavaScript -->
+        <div class="header">
+            <h1>Fusion Hub</h1>
         </div>
+        <h2 id="welcomeMessage"></h2>
+        <div id="dateTime"></div>
+        <div class="app-grid" id="appGrid"></div>
     </div>
-
+    
     <div id="speechBubble"></div>
     <div id="chatPanel">
-        <input type="text" id="chatInput" placeholder="Ask FusionBot...">
+        <input type="text" id="chatInput" placeholder="Ask FusionBot or type 'help'">
         <button id="sendBtn">Send</button>
     </div>
-    <div id="fusionBot">
-        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2ZmZmZmZiI+PHBhdGggZD0iTTEyIDJDNi40ODQgMiAyIDYuNDg0IDIgMTJzNC40ODQgMTAgMTAgMTAgMTAtNC40ODQgMTAtMTBTMTcuNTE2IDIgMTIgMnptMCAxOGMtNC40MTEgMC04LTMuNTg5LTgtOHMzLjU4OS04IDgtOCA4IDMuNTg5IDggOC0zLjU4OSA4LTggOHoiLz48cGF0aCBkPSJtMTggMTAtMS40MTQtMS40MTQtMi41ODYgMi41ODZMMTIgOS4xN2wtMS40MTQgMS40MTQgMi4wODYgMi4wODZMMTAuNTg2IDE0SDl2MmgxLjQxNGwyLjc5My0yLjc5MyAyLjc5MyAyLjc5M0gxN3YtMmgtMS41ODZsLTEuNTg2LTEuNTg2IDIuNTg2LTIuNTg2WiIvPjwvc3ZnPg==" alt="FusionBot AI Assistant">
-    </div>
 
-    <!-- Internet Connection Pop-Up -->
-    <div id="internetPopup" class="modal">
+    <!-- Setup Modal -->
+    <div id="setupModal" class="modal">
         <div class="modal-content">
-            <h2>No Internet Connection</h2>
-            <p>Please connect to the internet to use online features.</p>
-            <div class="modal-buttons" style="justify-content: center;">
-                 <button id="retryConnection" class="primary">Retry</button>
-            </div>
+            <h2>Welcome to Fusion Hub!</h2>
+            <p>This information is stored on your device only.</p>
+            <form id="setupForm">
+                <div class="form-group"><label for="userNameInput">Name</label><input type="text" id="userNameInput" required></div>
+                <div class="form-group"><label for="userAgeInput">Age</label><input type="number" id="userAgeInput" required min="1"></div>
+                <div class="form-group"><label for="userGenderSelect">Gender</label><select id="userGenderSelect" required><option value="" disabled selected>Select...</option><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option></select></div>
+                <div class="modal-buttons" style="margin-top: 15px;"><button type="submit" class="primary">Get Started</button></div>
+            </form>
         </div>
     </div>
-
-    <!-- Time Settings Menu -->
+    
+    <!-- Modals -->
     <div id="timeSettingsMenu" class="modal">
         <div class="modal-content">
-            <h2>Time Settings</h2>
-            <div class="settings-option">
-                <label for="timeFormatToggle">24-hour Format</label>
-                <label class="toggle">
-                    <input type="checkbox" id="timeFormatToggle">
-                    <span class="slider"></span>
-                </label>
-            </div>
-            <div class="settings-option">
-                <label for="showSecondsToggle">Show Seconds</label>
-                <label class="toggle">
-                    <input type="checkbox" id="showSecondsToggle">
-                    <span class="slider"></span>
-                </label>
-            </div>
-            <div class="modal-buttons">
-                <button id="cancelTimeSettings">Cancel</button>
-                <button id="saveTimeSettings" class="primary">Save</button>
-            </div>
+            <h3>Time Settings</h3>
+            <div class="settings-option"><label for="timeFormatToggle">24-hour Format</label><label class="toggle"><input type="checkbox" id="timeFormatToggle"><span class="slider"></span></label></div>
+            <div class="settings-option"><label for="showSecondsToggle">Show Seconds</label><label class="toggle"><input type="checkbox" id="showSecondsToggle"><span class="slider"></span></label></div>
+            <div class="modal-buttons"><button id="cancelTimeSettings">Cancel</button><button id="saveTimeSettings" class="primary">Save</button></div>
         </div>
     </div>
 
-    <!-- Main Settings Menu -->
     <div id="settingsMenu" class="modal">
         <div class="modal-content">
-            <h2>Settings</h2>
-            <div class="settings-option">
-                <label for="themeToggle">Light Theme</label>
-                <label class="toggle">
-                    <input type="checkbox" id="themeToggle">
-                    <span class="slider"></span>
-                </label>
-            </div>
-            <div class="settings-option" style="flex-direction: column; align-items: flex-start; gap: 10px;">
-                <label>App Order (Drag to reorder)</label>
-                <ul id="appOrderList" style="width: 100%;"></ul>
-            </div>
+            <h3>Settings</h3>
+            <div class="settings-option"><label for="themeToggle">Light Theme</label><label class="toggle"><input type="checkbox" id="themeToggle"><span class="slider"></span></label></div>
+            <div class="settings-option" style="flex-direction: column; align-items: flex-start; gap: 10px;"><label>App Order (Drag to reorder)</label><ul id="appOrderList" style="width: 100%;"></ul></div>
+            <button id="suggestAppBtn" class="ai-button" style="width: 100%; margin-top: 10px;">✨ Suggest New App</button>
+            <div class="modal-buttons"><button id="cancelSettings">Cancel</button><button id="saveSettings" class="primary">Save</button></div>
+        </div>
+    </div>
+    
+    <div id="helpMenu" class="modal">
+        <div class="modal-content">
+            <h3>Help & Commands</h3>
+            <ul class="command-list">
+                <li><code>hello</code> - Get a friendly greeting.</li>
+                <li><code>settings</code> - Open the main settings panel.</li>
+                <li><code>time settings</code> - Open time display settings.</li>
+                <li><code>open [app name]</code> - Open an app directly.</li>
+                <li>Ask any general question!</li>
+            </ul>
+            <div class="modal-buttons" style="justify-content: center;"><button id="closeHelpMenu" class="primary">Got it</button></div>
+        </div>
+    </div>
+
+    <div id="appSuggestionModal" class="modal">
+        <div class="modal-content">
+            <h3>✨ AI Suggestion</h3>
+            <div id="appSuggestionContent"><p>Thinking of the perfect app for you...</p></div>
             <div class="modal-buttons">
-                <button id="cancelSettings">Cancel</button>
-                <button id="saveSettings" class="primary">Save</button>
+                <button id="cancelSuggestion">Maybe Later</button>
+                <button id="addSuggestedApp" class="primary" style="display:none;">Add to Hub</button>
             </div>
         </div>
     </div>
 
-    <!-- Help Menu -->
-    <div id="helpMenu" class="modal">
-        <div class="modal-content">
-            <h2>Available Commands</h2>
-             <ul style="text-align: left; list-style-position: inside;">
-                <li>`hello`/`hi` - Greet the bot.</li>
-                <li>`time` - Get the current time.</li>
-                <li>`time settings` - Open time settings.</li>
-                <li>`settings` - Open main settings.</li>
-                <li>`help` - Show this help menu.</li>
-                <li>`open [app name]` - Open an application.</li>
-            </ul>
-            <div class="modal-buttons" style="justify-content: center;">
-                <button id="closeHelpMenu" class="primary">Close</button>
-            </div>
-        </div>
-    </div>
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
-
         // --- DOM ELEMENT REFERENCES ---
         const getEl = (id) => document.getElementById(id);
-        const queryEl = (sel) => document.querySelector(sel);
-
-        const canvas = getEl('particles');
-        const ctx = canvas.getContext('2d');
         const appGrid = getEl('appGrid');
         const dateTimeEl = getEl('dateTime');
-        const fusionBot = getEl('fusionBot');
+        const welcomeMessageEl = getEl('welcomeMessage');
         const speechBubble = getEl('speechBubble');
-        const chatInput = getEl('chatInput');
-        const sendBtn = getEl('sendBtn');
-        const settingsIcon = getEl('settings-icon');
 
-        // Modals
-        const internetPopup = getEl('internetPopup');
-        const timeSettingsMenu = getEl('timeSettingsMenu');
-        const settingsMenu = getEl('settingsMenu');
-        const helpMenu = getEl('helpMenu');
+        // --- 3D SCENE SETUP ---
+        let scene, camera, renderer, particles;
+        const canvas = getEl('three-canvas');
 
-        // Modal Controls
-        const retryConnectionBtn = getEl('retryConnection');
-        const saveTimeSettingsBtn = getEl('saveTimeSettings');
-        const cancelTimeSettingsBtn = getEl('cancelTimeSettings');
-        const saveSettingsBtn = getEl('saveSettings');
-        const cancelSettingsBtn = getEl('cancelSettings');
-        const closeHelpMenuBtn = getEl('closeHelpMenu');
+        function initThreeJS() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 5;
+            renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
 
-        // Setting Inputs
-        const timeFormatToggle = getEl('timeFormatToggle');
-        const showSecondsToggle = getEl('showSecondsToggle');
-        const themeToggle = getEl('themeToggle');
-        const appOrderList = getEl('appOrderList');
+            const particlesGeometry = new THREE.BufferGeometry();
+            const particlesCount = 1500; // Reduced particle count
+            const posArray = new Float32Array(particlesCount * 3);
 
-        // --- INITIAL DATA & SETTINGS ---
-        const initialApps = [
+            for(let i = 0; i < particlesCount * 3; i++) {
+                posArray[i] = (Math.random() - 0.5) * 15; 
+            }
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+            const particlesMaterial = new THREE.PointsMaterial({
+                size: 0.02,
+                color: 0x10b981,
+                transparent: true,
+                blending: THREE.AdditiveBlending
+            });
+
+            particles = new THREE.Points(particlesGeometry, particlesMaterial);
+            scene.add(particles);
+
+            animate3D();
+        }
+
+        function animate3D() {
+            requestAnimationFrame(animate3D);
+            particles.rotation.x += 0.0001;
+            particles.rotation.y += 0.0002;
+            renderer.render(scene, camera);
+        }
+        
+        function create3DBurst(x, y) {
+            const vec = new THREE.Vector3();
+            vec.set( (x / window.innerWidth) * 2 - 1, -(y / window.innerHeight) * 2 + 1, 0.5);
+            vec.unproject(camera);
+            const dir = vec.sub(camera.position).normalize();
+            const distance = -camera.position.z / dir.z;
+            const pos = camera.position.clone().add(dir.multiplyScalar(distance));
+            const burstGeometry = new THREE.SphereGeometry(0.02, 8, 8);
+            const burstColors = [0x10b981, 0x6ee7b7, 0x059669];
+
+            for (let i = 0; i < 30; i++) {
+                const burstMaterial = new THREE.MeshBasicMaterial({ color: burstColors[Math.floor(Math.random() * burstColors.length)] });
+                const particle = new THREE.Mesh(burstGeometry, burstMaterial);
+                particle.position.copy(pos);
+                scene.add(particle);
+                const velocity = new THREE.Vector3( (Math.random() - 0.5) * 0.1, (Math.random() - 0.5) * 0.1, (Math.random() - 0.5) * 0.1 );
+                let life = 0;
+                function animateBurst() {
+                    particle.position.add(velocity);
+                    particle.scale.multiplyScalar(0.98);
+                    life++;
+                    if (life < 60) requestAnimationFrame(animateBurst);
+                    else scene.remove(particle);
+                }
+                animateBurst();
+            }
+        }
+        
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // --- DATA & SETTINGS ---
+        let initialApps = [
             { name: "ChatGPT", url: "https://chat.openai.com/", icon: "openai.com" },
             { name: "Music", url: "https://open.spotify.com/", icon: "spotify.com" },
-            { name: "Game Server 1", url: "https://crazygames.com/", icon: "crazygames.com" },
+            { name: "Game Server 1", url: "https://www.crazygames.com/", icon: "crazygames.com" },
             { name: "Game Server 2", url: "https://poki.com/", icon: "poki.com" },
-            { name: "Anime", url: "https://aniplaynow.live/", icon: "crunchyroll.com" },
             { name: "Watch Together", url: "https://app.kosmi.io/", icon: "kosmi.io" }
         ];
 
         const defaultSettings = {
-            timeFormat24h: false,
-            showSeconds: true,
-            theme: 'dark',
+            timeFormat24h: false, showSeconds: true, theme: 'dark',
             appOrder: initialApps.map(app => app.name)
         };
 
-        let userSettings = {};
-        let tempSettings = {};
-        let timeUpdateInterval;
+        let userSettings = {}, userProfile = {}, tempSettings = {};
+        let suggestedApp = null;
 
-        // --- CORE FUNCTIONS ---
+        function loadData() {
+            const storedApps = JSON.parse(localStorage.getItem('fusionHubApps'));
+            if (storedApps) initialApps = storedApps;
 
-        /**
-         * Loads settings from localStorage or uses defaults.
-         */
-        function loadSettings() {
-            try {
-                const saved = localStorage.getItem('fusionHubSettings');
-                userSettings = saved ? JSON.parse(saved) : { ...defaultSettings };
-                 // Ensure all default keys exist
-                for (const key in defaultSettings) {
-                    if (!(key in userSettings)) {
-                        userSettings[key] = defaultSettings[key];
-                    }
-                }
-            } catch (e) {
-                console.error("Failed to load settings:", e);
-                userSettings = { ...defaultSettings };
-            }
-        }
-
-        /**
-         * Saves the current userSettings to localStorage.
-         */
-        function saveUserSettings() {
-            try {
-                localStorage.setItem('fusionHubSettings', JSON.stringify(userSettings));
-            } catch (e) {
-                console.error("Failed to save settings:", e);
-            }
-        }
-
-        /**
-         * Applies all settings to the UI.
-         */
-        function applyAllSettings() {
-            // Apply Theme
-            document.body.dataset.theme = userSettings.theme;
-
-            // Apply App Order
-            renderAppGrid();
+            userSettings = JSON.parse(localStorage.getItem('fusionHubSettings')) || JSON.parse(JSON.stringify(defaultSettings));
             
-            // Update Time Display
+            const currentAppNames = initialApps.map(a => a.name);
+            userSettings.appOrder = userSettings.appOrder.filter(name => currentAppNames.includes(name));
+            currentAppNames.forEach(name => {
+                if (!userSettings.appOrder.includes(name)) {
+                    userSettings.appOrder.push(name);
+                }
+            });
+            
+            userProfile = JSON.parse(localStorage.getItem('fusionHubProfile')) || {};
+        }
+
+        function saveData() {
+            localStorage.setItem('fusionHubApps', JSON.stringify(initialApps));
+            localStorage.setItem('fusionHubSettings', JSON.stringify(userSettings));
+            localStorage.setItem('fusionHubProfile', JSON.stringify(userProfile));
+        }
+
+        function applyAllSettings() {
+            document.body.dataset.theme = userSettings.theme;
+            renderAppGrid();
             updateTime();
+            updateWelcomeMessage();
         }
         
-        /**
-         * Renders the app grid based on the current appOrder in userSettings.
-         */
+        function updateWelcomeMessage() {
+            welcomeMessageEl.textContent = userProfile.name ? `Hello, ${userProfile.name}.` : 'Welcome! Please set up your profile.';
+        }
+
         function renderAppGrid() {
             appGrid.innerHTML = '';
-            let delay = 0.3;
             userSettings.appOrder.forEach(appName => {
                 const appData = initialApps.find(app => app.name === appName);
                 if (appData) {
                     const appItem = document.createElement('div');
                     appItem.className = 'app-item';
-                    appItem.dataset.url = appData.url;
-                    appItem.dataset.name = appData.name;
-                    appItem.style.setProperty('--delay', `${delay}s`);
-                    
-                    appItem.innerHTML = `
-                        <img src="https://icon.horse/icon/${appData.icon}" alt="${appData.name} icon" onerror="this.src='https://placehold.co/64x64/334155/f1f5f9?text=${appData.name.charAt(0)}'">
-                        <span>${appData.name}</span>
-                    `;
-                    
-                    appItem.addEventListener('click', () => openApp(appItem, appData.url));
+                    appItem.innerHTML = `<img src="https://icon.horse/icon/${appData.icon}" alt="${appData.name} icon" onerror="this.src='https://placehold.co/64x64/334155/f1f5f9?text=${appData.name.charAt(0)}'"><span>${appData.name}</span>`;
+                    appItem.addEventListener('click', (e) => {
+                        create3DBurst(e.clientX, e.clientY);
+                        window.open(appData.url, '_blank');
+                    });
                     appGrid.appendChild(appItem);
-                    delay += 0.05;
                 }
             });
         }
         
-        /**
-         * Updates the date and time display based on current settings.
-         */
+        let timeUpdateInterval;
         function updateTime() {
             clearInterval(timeUpdateInterval);
             const render = () => {
-                const options = {
-                    timeZone: 'Asia/Kolkata',
-                    weekday: 'long',
-                    month: 'long',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: !userSettings.timeFormat24h,
-                };
-                if (userSettings.showSeconds) {
-                    options.second = '2-digit';
-                }
+                const options = { weekday: 'long', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: !userSettings.timeFormat24h };
+                if (userSettings.showSeconds) options.second = '2-digit';
                 dateTimeEl.textContent = new Date().toLocaleString('en-US', options);
             };
             render();
             timeUpdateInterval = setInterval(render, 1000);
         }
-
-        /**
-         * Opens an app in a new tab with a particle burst effect.
-         */
-        function openApp(element, url) {
-            if (!navigator.onLine) {
-                showBubble('Please connect to the internet.');
-                internetPopup.classList.add('active');
-                return;
-            }
-            const rect = element.getBoundingClientRect();
-            createBurst(rect.left + rect.width / 2, rect.top + rect.height / 2);
-            window.open(url, '_blank');
-        }
-
-        /**
-         * Shows a temporary message in the speech bubble.
-         */
-        function showBubble(message, duration = 3000) {
+        
+        function showBubble(message, duration = 5000) {
             speechBubble.textContent = message;
             speechBubble.classList.add('active');
-            setTimeout(() => speechBubble.classList.remove('active'), duration);
+            clearTimeout(speechBubble.timeoutId);
+            speechBubble.timeoutId = setTimeout(() => speechBubble.classList.remove('active'), duration);
         }
 
-        // --- SETTINGS MENUS LOGIC ---
-
-        function openModal(modalElement) {
-            // Create deep copy of settings for temporary changes
+        // --- MODAL & SETTINGS LOGIC ---
+        const modals = {
+            setup: getEl('setupModal'),
+            time: getEl('timeSettingsMenu'),
+            settings: getEl('settingsMenu'),
+            help: getEl('helpMenu'),
+            suggestion: getEl('appSuggestionModal')
+        };
+        
+        function openModal(modalId) {
             tempSettings = JSON.parse(JSON.stringify(userSettings));
+            const modal = modals[modalId];
+            if (!modal) return;
             
-            if (modalElement === settingsMenu) {
-                populateSettingsMenu();
-            } else if (modalElement === timeSettingsMenu) {
-                populateTimeSettingsMenu();
+            if (modalId === 'settings') {
+                getEl('themeToggle').checked = tempSettings.theme === 'light';
+                populateAppOrderList();
+            } else if (modalId === 'time') {
+                getEl('timeFormatToggle').checked = tempSettings.timeFormat24h;
+                getEl('showSecondsToggle').checked = tempSettings.showSeconds;
             }
-            
-            modalElement.classList.add('active');
+            modal.classList.add('active');
         }
 
-        function closeModal(modalElement) {
-             modalElement.classList.remove('active');
+        function closeModal(modalId) {
+            const modal = modals[modalId];
+            if(modal) modal.classList.remove('active');
         }
+        
+        getEl('saveSettings').addEventListener('click', () => {
+            userSettings.theme = getEl('themeToggle').checked ? 'light' : 'dark';
+            userSettings.appOrder = Array.from(getEl('appOrderList').children).map(li => li.dataset.name);
+            saveData(); applyAllSettings(); closeModal('settings');
+        });
+        getEl('cancelSettings').addEventListener('click', () => { closeModal('settings'); });
+        getEl('saveTimeSettings').addEventListener('click', () => {
+            userSettings.timeFormat24h = getEl('timeFormatToggle').checked;
+            userSettings.showSeconds = getEl('showSecondsToggle').checked;
+            saveData(); updateTime(); closeModal('time');
+        });
+        getEl('cancelTimeSettings').addEventListener('click', () => closeModal('time'));
+        getEl('closeHelpMenu').addEventListener('click', () => closeModal('help'));
+        dateTimeEl.addEventListener('click', () => openModal('time'));
+        
+        // --- DRAG-DROP FOR APP REORDERING ---
+        const appOrderList = getEl('appOrderList');
+        let draggedItem = null;
 
-        // Main Settings
-        function populateSettingsMenu() {
-            themeToggle.checked = tempSettings.theme === 'light';
-            
-            appOrderList.innerHTML = '';
+        function populateAppOrderList() {
+            const orderList = getEl('appOrderList');
+            orderList.innerHTML = '';
             tempSettings.appOrder.forEach(name => {
                 const li = document.createElement('li');
-                li.dataset.name = name;
-                li.textContent = name;
+                li.textContent = name; 
+                li.dataset.name = name; 
                 li.draggable = true;
-                appOrderList.appendChild(li);
+                orderList.appendChild(li);
             });
         }
 
-        themeToggle.addEventListener('change', () => {
-            tempSettings.theme = themeToggle.checked ? 'light' : 'dark';
-            document.body.dataset.theme = tempSettings.theme; // Live preview
-        });
-
-        saveSettingsBtn.addEventListener('click', () => {
-             userSettings.theme = tempSettings.theme;
-             const newOrder = Array.from(appOrderList.children).map(li => li.dataset.name);
-             userSettings.appOrder = newOrder;
-             
-             saveUserSettings();
-             applyAllSettings();
-             closeModal(settingsMenu);
-             showBubble('Settings saved.');
-        });
-        
-        cancelSettingsBtn.addEventListener('click', () => {
-            closeModal(settingsMenu);
-            // Revert visual changes by applying original settings
-            document.body.dataset.theme = userSettings.theme;
-            showBubble('Changes discarded.');
-        });
-
-        // Time Settings
-        function populateTimeSettingsMenu() {
-            timeFormatToggle.checked = tempSettings.timeFormat24h;
-            showSecondsToggle.checked = tempSettings.showSeconds;
-        }
-
-        timeFormatToggle.addEventListener('change', () => { tempSettings.timeFormat24h = timeFormatToggle.checked; });
-        showSecondsToggle.addEventListener('change', () => { tempSettings.showSeconds = showSecondsToggle.checked; });
-
-        saveTimeSettingsBtn.addEventListener('click', () => {
-            userSettings.timeFormat24h = tempSettings.timeFormat24h;
-            userSettings.showSeconds = tempSettings.showSeconds;
-            
-            saveUserSettings();
-            updateTime();
-            closeModal(timeSettingsMenu);
-            showBubble('Time settings saved.');
-        });
-        
-        cancelTimeSettingsBtn.addEventListener('click', () => {
-            closeModal(timeSettingsMenu);
-            showBubble('Changes discarded.');
-        });
-        
-        // Generic close for other modals
-        closeHelpMenuBtn.addEventListener('click', () => closeModal(helpMenu));
-
-        // Event Listeners for opening menus
-        settingsIcon.addEventListener('click', () => openModal(settingsMenu));
-        dateTimeEl.addEventListener('click', () => openModal(timeSettingsMenu));
-
-
-        // --- CHATBOT LOGIC ---
-        function processCommand(command) {
-            command = command.toLowerCase().trim();
-            if (!command) return;
-
-            if (['hello', 'hi', 'hey', 'hola'].includes(command)) {
-                showBubble('Hello! How can I assist you today?');
-            } else if (command === 'time') {
-                showBubble(`The current time is ${dateTimeEl.textContent}.`);
-            } else if (command === 'time settings') {
-                openModal(timeSettingsMenu);
-            } else if (command === 'settings') {
-                openModal(settingsMenu);
-            } else if (command === 'help') {
-                openModal(helpMenu);
-            } else if (command.startsWith('open ')) {
-                const appName = command.replace('open ', '').trim();
-                const app = queryEl(`.app-item[data-name='${appName}' i]`);
-                if (app) {
-                    openApp(app, app.dataset.url);
-                    showBubble(`Opening ${app.dataset.name}...`);
-                } else {
-                    showBubble(`App '${appName}' not found. Try 'help'.`);
-                }
-            } else {
-                showBubble("Sorry, I don't understand that. Type 'help' for commands.");
+        appOrderList.addEventListener('dragstart', (e) => {
+            if (e.target.tagName === 'LI') {
+                draggedItem = e.target;
+                setTimeout(() => e.target.classList.add('dragging'), 0);
             }
-            chatInput.value = '';
-        }
-        
-        sendBtn.addEventListener('click', () => processCommand(chatInput.value));
-        chatInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') processCommand(chatInput.value);
         });
-        fusionBot.addEventListener('click', () => showBubble('Hello! Ask me something or type "help".'));
 
-
-        // --- INTERNET CONNECTION ---
-        function checkInternet() {
-            internetPopup.classList.toggle('active', !navigator.onLine);
-        }
-        retryConnectionBtn.addEventListener('click', checkInternet);
-        window.addEventListener('online', () => internetPopup.classList.remove('active'));
-        window.addEventListener('offline', () => internetPopup.classList.add('active'));
-
-
-        // --- DRAG & DROP FOR APP ORDER ---
-        let draggedItem = null;
-        appOrderList.addEventListener('dragstart', e => {
-            draggedItem = e.target;
-            setTimeout(() => e.target.style.opacity = '0.5', 0);
+        appOrderList.addEventListener('dragend', (e) => {
+            if (draggedItem) {
+                draggedItem.classList.remove('dragging');
+                draggedItem = null;
+            }
         });
-        appOrderList.addEventListener('dragend', e => {
-            e.target.style.opacity = '1';
-        });
-        appOrderList.addEventListener('dragover', e => {
+
+        appOrderList.addEventListener('dragover', (e) => {
             e.preventDefault();
+            if (!draggedItem) return;
             const afterElement = getDragAfterElement(appOrderList, e.clientY);
             if (afterElement == null) {
                 appOrderList.appendChild(draggedItem);
@@ -965,7 +763,7 @@
                 appOrderList.insertBefore(draggedItem, afterElement);
             }
         });
-        
+
         function getDragAfterElement(container, y) {
             const draggableElements = [...container.querySelectorAll('li:not(.dragging)')];
             return draggableElements.reduce((closest, child) => {
@@ -973,90 +771,193 @@
                 const offset = y - box.top - box.height / 2;
                 if (offset < 0 && offset > closest.offset) {
                     return { offset: offset, element: child };
-                } else {
-                    return closest;
-                }
+                } else { return closest; }
             }, { offset: Number.NEGATIVE_INFINITY }).element;
         }
 
-        // --- PARTICLE ANIMATION ---
-        let particlesArray = [];
-        function initParticles() {
-            if (!canvas || !ctx) return;
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            particlesArray = [];
-            for (let i = 0; i < 50; i++) {
-                particlesArray.push(new Particle());
-            }
-        }
-
-        class Particle {
-            constructor(x, y, isBurst = false) {
-                this.x = x || Math.random() * canvas.width;
-                this.y = y || Math.random() * canvas.height;
-                this.isBurst = isBurst;
-                this.size = isBurst ? Math.random() * 3 + 1 : Math.random() * 1.5 + 0.5;
-                const angle = Math.random() * Math.PI * 2;
-                const speed = isBurst ? Math.random() * 4 + 2 : Math.random() * 0.4 - 0.2;
-                this.speedX = isBurst ? Math.cos(angle) * speed : Math.random() * 0.2 - 0.1;
-                this.speedY = isBurst ? Math.sin(angle) * speed : Math.random() * 0.2 - 0.1;
-                this.opacity = isBurst ? 1 : Math.random() * 0.5;
-            }
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-                if (this.isBurst) {
-                    this.opacity -= 0.02;
-                    this.size -= 0.05;
+        // --- GEMINI API CALLS ---
+        const GEMINI_API_KEY = ""; // Leave blank, handled by environment
+        const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+        
+        async function callGemini(prompt, jsonSchema = null, systemInstruction = null) {
+            const payload = {
+                contents: [{ role: "user", parts: [{ text: prompt }] }],
+            };
+            if(jsonSchema){
+                payload.generationConfig = {
+                    responseMimeType: "application/json",
+                    responseSchema: jsonSchema
                 }
             }
-            draw() {
-                const theme = document.body.dataset.theme || 'dark';
-                const color = theme === 'light' ? '59, 130, 246' : '16, 185, 129';
-                ctx.fillStyle = `rgba(${color}, ${this.opacity})`;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
+            if(systemInstruction) {
+                payload.systemInstruction = { parts: [{ text: systemInstruction }] };
             }
+
+            const response = await fetch(GEMINI_API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
+            const result = await response.json();
+            
+            if (result.candidates && result.candidates[0]?.content?.parts[0]?.text) {
+                return result.candidates[0].content.parts[0].text;
+            }
+            // Handle cases where the model might refuse to answer
+            if (result.candidates && result.candidates[0]?.finishReason === 'SAFETY') {
+                return "I can't answer that. Let's talk about something else.";
+            }
+            throw new Error("Invalid response from API.");
         }
         
-        function createBurst(x, y) {
-            for (let i = 0; i < 30; i++) {
-                particlesArray.push(new Particle(x, y, true));
+        async function suggestNewApp() {
+            openModal('suggestion');
+            const contentEl = getEl('appSuggestionContent');
+            const addBtn = getEl('addSuggestedApp');
+            addBtn.style.display = 'none';
+            contentEl.innerHTML = `<p>Analyzing your apps to find a great suggestion...</p>`;
+            
+            try {
+                const prompt = `Based on the user's interest in these apps: ${userSettings.appOrder.join(', ')}. Suggest one new, useful, or fun website or online tool they might like. Do not suggest one they already have.`;
+                const schema = {
+                    type: "OBJECT",
+                    properties: {
+                        name: { type: "STRING" },
+                        url: { type: "STRING", description: "The full URL, e.g. https://example.com" },
+                        description: { type: "STRING" },
+                        icon: { type: "STRING", description: "The root domain for the icon, e.g. example.com" }
+                    },
+                    required: ["name", "url", "description", "icon"]
+                };
+
+                const jsonString = await callGemini(prompt, schema);
+                suggestedApp = JSON.parse(jsonString);
+
+                contentEl.innerHTML = `
+                    <h4>${suggestedApp.name}</h4>
+                    <p style="margin-bottom: 10px;">${suggestedApp.description}</p>
+                    <a href="${suggestedApp.url}" target="_blank">${suggestedApp.url}</a>
+                `;
+                addBtn.style.display = 'block';
+
+            } catch (e) {
+                contentEl.innerHTML = `<p>Sorry, I couldn't come up with a suggestion right now. Please try again later.</p>`;
+                console.error(e);
             }
         }
+        getEl('suggestAppBtn').addEventListener('click', suggestNewApp);
+        
+        getEl('cancelSuggestion').addEventListener('click', () => closeModal('suggestion'));
+        getEl('addSuggestedApp').addEventListener('click', () => {
+            if(suggestedApp && !initialApps.some(app => app.name === suggestedApp.name)) {
+                initialApps.push(suggestedApp);
+                userSettings.appOrder.push(suggestedApp.name);
+                saveData();
+                applyAllSettings();
+                showBubble(`${suggestedApp.name} has been added to your hub!`);
+            }
+            closeModal('suggestion');
+            closeModal('settings');
+        });
+        
+        // --- CHATBOT ---
+        async function processCommand(command) {
+            const originalCommand = command;
+            command = command.toLowerCase().trim();
+            if (!command) return;
 
-        function animateParticles() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            for (let i = particlesArray.length - 1; i >= 0; i--) {
-                const p = particlesArray[i];
-                p.update();
-                p.draw();
-                if (p.size <= 0.2 || p.opacity <= 0) {
-                    particlesArray.splice(i, 1);
-                    if (!p.isBurst && particlesArray.length < 50) {
-                       particlesArray.push(new Particle());
-                    }
+            const openAppMatch = command.match(/^open\s(.+)/);
+
+            if (['hello', 'hi', 'hey'].includes(command)) {
+                showBubble(`Hello, ${userProfile.name || 'friend'}! How can I help today?`);
+            } else if (command === 'settings') {
+                openModal('settings');
+            } else if (command === 'time settings') {
+                openModal('time');
+            } else if (command === 'help') {
+                openModal('help');
+            } else if (openAppMatch) {
+                const appName = openAppMatch[1];
+                const appToOpen = initialApps.find(app => app.name.toLowerCase() === appName);
+                if (appToOpen) {
+                    showBubble(`Opening ${appToOpen.name}...`);
+                    window.open(appToOpen.url, '_blank');
+                } else {
+                    showBubble(`Sorry, I couldn't find the app "${appName}". You can add new apps in the settings.`);
+                }
+            } else {
+                showBubble("Thinking...");
+                try {
+                    // This system prompt makes the AI much smarter and more aware of its context
+                    const systemPrompt = `
+                        You are FusionBot, a helpful and friendly AI assistant integrated into the Fusion Hub dashboard.
+                        Your purpose is to assist the user with their tasks, provide information, and make their experience pleasant.
+
+                        Current User Information:
+                        - Name: ${userProfile.name || 'Not set'}
+                        - Age: ${userProfile.age || 'Not set'}
+                        - Gender: ${userProfile.gender || 'Not set'}
+
+                        User's Current Apps in Fusion Hub:
+                        - ${userSettings.appOrder.join('\n- ')}
+
+                        Your Capabilities:
+                        - You can answer general knowledge questions.
+                        - You can provide suggestions and ideas.
+                        - You cannot *directly* open apps or change settings, but you know the commands. If asked to do something you can't, guide the user by telling them to type 'open [app name]', 'settings', or 'time settings'.
+                        
+                        Behavioral Guidelines:
+                        - Be conversational and personable. Address the user by their name if you know it.
+                        - Keep responses concise and to the point, suitable for a small chat bubble.
+                        - If you don't know an answer, say so politely.
+                        - You can use the user's app list to make personalized recommendations.
+                    `;
+                    const response = await callGemini(originalCommand, null, systemPrompt);
+                    showBubble(response);
+                } catch (error) {
+                    console.error("AI Chat Error:", error);
+                    showBubble("Sorry, I'm having a little trouble connecting right now.");
                 }
             }
-            requestAnimationFrame(animateParticles);
+            getEl('chatInput').value = '';
         }
-        window.addEventListener('resize', initParticles);
-
+        
+        getEl('sendBtn').addEventListener('click', () => processCommand(getEl('chatInput').value));
+        getEl('chatInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') processCommand(getEl('chatInput').value);
+        });
 
         // --- INITIALIZATION ---
         function init() {
-            loadSettings();
-            applyAllSettings();
-            checkInternet();
-            initParticles();
-            animateParticles();
-        }
+            loadData();
+            initThreeJS();
+            
+            if (!userProfile.setupComplete) {
+                openModal('setup');
+            } else {
+                applyAllSettings();
+                setTimeout(() => {
+                    showBubble(`Welcome back, ${userProfile.name}! What can I help you with?`);
+                }, 1500);
+            }
 
+            getEl('setupForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                userProfile.name = getEl('userNameInput').value;
+                userProfile.age = getEl('userAgeInput').value;
+                userProfile.gender = getEl('userGenderSelect').value;
+                userProfile.setupComplete = true;
+                saveData();
+                closeModal('setup');
+                applyAllSettings();
+                setTimeout(() => {
+                   showBubble(`Nice to meet you, ${userProfile.name}! You can ask me anything or type 'help' to see commands.`);
+                }, 500);
+            });
+        }
         init();
     });
-
     </script>
 </body>
 </html>
