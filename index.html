@@ -212,7 +212,7 @@
             left: 50%;
             transform: translateX(-50%);
             width: calc(100% - 30px);
-            max-width: 520px; /* Increased width */
+            max-width: 520px;
             background: var(--card-bg);
             border: var(--border);
             border-radius: 20px;
@@ -238,7 +238,7 @@
              background: rgba(0, 0, 0, 0.05);
         }
         
-        #sendBtn, #analyzeDayBtn {
+        #sendBtn {
             background: var(--accent-color);
             border: none;
             border-radius: 15px;
@@ -252,11 +252,8 @@
             transition: filter 0.2s ease;
         }
         
-        #sendBtn:hover, #analyzeDayBtn:hover {
+        #sendBtn:hover {
             filter: brightness(1.15);
-        }
-         #analyzeDayBtn {
-            background: linear-gradient(90deg, #6366f1, #a855f7);
         }
         
         .modal {
@@ -289,7 +286,7 @@
             padding: 30px;
             box-shadow: var(--shadow);
             width: 90%;
-            max-width: 500px; /* Increased max-width */
+            max-width: 500px;
             text-align: center;
             transform: scale(0.9);
             opacity: 0;
@@ -382,12 +379,13 @@
         
         .modal-buttons {
             display: flex;
-            justify-content: flex-end;
-            gap: 15px;
+            flex-direction: column; /* THIS IS THE MAIN CHANGE */
+            gap: 10px;
             margin-top: 25px;
         }
 
         .modal-buttons button {
+            width: 100%; /* Make buttons full-width */
             background: transparent;
             border: 1px solid var(--accent-color);
             border-radius: 8px;
@@ -400,7 +398,7 @@
         }
 
         .modal-buttons button.primary { background: var(--accent-color); color: white; }
-        .modal-buttons button:hover { transform: scale(1.05); filter: brightness(1.1); }
+        .modal-buttons button:hover { transform: scale(1.02); filter: brightness(1.1); } /* Adjusted hover effect */
         
         .toggle {
             position: relative;
@@ -450,7 +448,6 @@
     
     <div id="speechBubble"></div>
     <div id="chatPanel">
-        <button id="analyzeDayBtn" title="Analyze My Day">✨</button>
         <input type="text" id="chatInput" placeholder="Ask FusionBot or type 'help'">
         <button id="sendBtn">Send</button>
     </div>
@@ -479,7 +476,10 @@
             <h3>Time Settings</h3>
             <div class="settings-option"><label for="timeFormatToggle">24-hour Format</label><label class="toggle"><input type="checkbox" id="timeFormatToggle"><span class="slider"></span></label></div>
             <div class="settings-option"><label for="showSecondsToggle">Show Seconds</label><label class="toggle"><input type="checkbox" id="showSecondsToggle"><span class="slider"></span></label></div>
-            <div class="modal-buttons"><button id="cancelTimeSettings">Cancel</button><button id="saveTimeSettings" class="primary">Save</button></div>
+            <div class="modal-buttons">
+                <button id="saveTimeSettings" class="primary">Save</button>
+                <button id="cancelTimeSettings">Cancel</button>
+            </div>
         </div>
     </div>
 
@@ -489,7 +489,10 @@
             <div class="settings-option"><label for="themeToggle">Light Theme</label><label class="toggle"><input type="checkbox" id="themeToggle"><span class="slider"></span></label></div>
             <div class="settings-option" style="flex-direction: column; align-items: flex-start; gap: 10px;"><label>App Order (Drag to reorder)</label><ul id="appOrderList" style="width: 100%;"></ul></div>
             <button id="suggestAppBtn" class="ai-button" style="width: 100%; margin-top: 10px;">✨ Suggest New App</button>
-            <div class="modal-buttons"><button id="cancelSettings">Cancel</button><button id="saveSettings" class="primary">Save</button></div>
+            <div class="modal-buttons">
+                <button id="saveSettings" class="primary">Save</button>
+                <button id="cancelSettings">Cancel</button>
+            </div>
         </div>
     </div>
     
@@ -501,7 +504,6 @@
                 <li><code>settings</code> - Open settings.</li>
                 <li><code>time settings</code> - Open time settings.</li>
                 <li><code>open [app name]</code> - Open an app.</li>
-                <li>Click the ✨ in chat to analyze your day.</li>
             </ul>
             <div class="modal-buttons" style="justify-content: center;"><button id="closeHelpMenu" class="primary">Got it</button></div>
         </div>
@@ -512,8 +514,8 @@
             <h3>✨ AI Suggestion</h3>
             <div id="appSuggestionContent"><p>Thinking of the perfect app for you...</p></div>
             <div class="modal-buttons">
+                 <button id="addSuggestedApp" class="primary" style="display:none;">Add to Hub</button>
                 <button id="cancelSuggestion">Maybe Later</button>
-                <button id="addSuggestedApp" class="primary" style="display:none;">Add to Hub</button>
             </div>
         </div>
     </div>
@@ -677,19 +679,51 @@
         function getDragAfterElement(container, y) { const draggableElements = [...container.querySelectorAll('li:not(.dragging)')]; return draggableElements.reduce((closest, child) => { const box = child.getBoundingClientRect(); const offset = y - box.top - box.height / 2; if (offset < 0 && offset > closest.offset) { return { offset: offset, element: child }; } else { return closest; } }, { offset: Number.NEGATIVE_INFINITY }).element; }
 
         // --- GEMINI API CALLS ---
-        const GEMINI_API_KEY = "";
-        const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
-        
         async function callGemini(prompt, jsonSchema = null, systemInstruction = null) {
-            const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
-            if(jsonSchema){ payload.generationConfig = { responseMimeType: "application/json", responseSchema: jsonSchema }; }
-            if(systemInstruction) { payload.systemInstruction = { parts: [{ text: systemInstruction }] }; }
-            const response = await fetch(GEMINI_API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-            if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
-            const result = await response.json();
-            if (result.candidates && result.candidates[0]?.content?.parts[0]?.text) { return result.candidates[0].content.parts[0].text; }
-            if (result.candidates && result.candidates[0]?.finishReason === 'SAFETY') { return "I can't answer that. Let's talk about something else."; }
-            throw new Error("Invalid response from API.");
+            const apiKey = ""; // Left empty, will be handled by the environment
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+            
+            const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+            const payload = { contents: chatHistory };
+
+            if(jsonSchema){ 
+                payload.generationConfig = { 
+                    responseMimeType: "application/json", 
+                    responseSchema: jsonSchema 
+                }; 
+            }
+            
+            if(systemInstruction) { 
+                payload.systemInstruction = { parts: [{ text: systemInstruction }] }; 
+            }
+            
+            try {
+                const response = await fetch(apiUrl, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify(payload) 
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.status} ${response.statusText}`);
+                }
+
+                const result = await response.json();
+                
+                if (result.candidates && result.candidates[0]?.content?.parts[0]?.text) { 
+                    return result.candidates[0].content.parts[0].text; 
+                }
+                
+                if (result.candidates && result.candidates[0]?.finishReason === 'SAFETY') { 
+                    return "I can't answer that due to safety guidelines. Let's talk about something else."; 
+                }
+
+                throw new Error("Invalid response structure from API.");
+
+            } catch (error) {
+                console.error("Gemini API call failed:", error);
+                throw error; // Re-throw the error to be caught by the calling function
+            }
         }
         
         async function getDailyBriefing() {
@@ -715,9 +749,9 @@
             addBtn.style.display = 'none';
             contentEl.innerHTML = `<p>Analyzing your apps to find a great suggestion...</p>`;
             try {
-                const prompt = `Based on the user's interest in these apps: ${userSettings.appOrder.join(', ')}. Suggest one new, useful, or fun website or online tool they might like. Do not suggest one they already have.`;
+                const prompt = `Based on the user's interest in these apps: ${userSettings.appOrder.join(', ')}. Suggest one new, useful, or fun website or online tool they might like. Do not suggest one they already have. Provide the domain name for the icon property (e.g., for 'https://cool.app/start' the icon should be 'cool.app').`;
                 const schema = { type: "OBJECT", properties: { name: { type: "STRING" }, url: { type: "STRING" }, description: { type: "STRING" }, icon: { type: "STRING" } }, required: ["name", "url", "description", "icon"] };
-                const jsonString = await callGemini(prompt, schema);
+                const jsonString = await callGemini(prompt, schema, "You are an app suggestion expert.");
                 suggestedApp = JSON.parse(jsonString);
                 contentEl.innerHTML = `<h4>${suggestedApp.name}</h4><p style="margin-bottom: 10px;">${suggestedApp.description}</p><a href="${suggestedApp.url}" target="_blank">${suggestedApp.url}</a>`;
                 addBtn.style.display = 'block';
@@ -736,16 +770,6 @@
             closeModal('suggestion'); closeModal('settings');
         });
         
-        async function analyzeDay() {
-            showBubble("Analyzing your day...");
-            try {
-                const prompt = `The user, ${userProfile.name}, has these apps: ${userSettings.appOrder.join(', ')}. Give them a short, fun, one-sentence "reading" or analysis of their day's potential vibe based on these apps. Be creative and a little quirky.`;
-                const response = await callGemini(prompt, null, "You are a fun, slightly psychic AI that gives amusing daily readings.");
-                showBubble(response);
-            } catch (error) { console.error("Analyze Day Error:", error); showBubble("Couldn't get a read on the vibe right now."); }
-        }
-        getEl('analyzeDayBtn').addEventListener('click', analyzeDay);
-
         // --- CHATBOT ---
         async function processCommand(command) {
             const originalCommand = command;
