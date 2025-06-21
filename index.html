@@ -10,6 +10,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         :root {
+            /* Restored original colors */
             --bg-color: #0f172a;
             --card-bg: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.8));
             --card-glow: rgba(16, 185, 129, 0.5);
@@ -48,7 +49,7 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--bg-color);
+            background-color: var(--bg-color); /* Kept original background color */
             color: var(--text-color);
             height: 100vh;
             overflow: hidden;
@@ -131,56 +132,64 @@
             color: var(--accent-color);
         }
         
+        /* --- GRID AND BUTTON STYLE CHANGES START HERE --- */
         .app-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            /* Creates a responsive 2-column layout on most phones */
+            grid-template-columns: repeat(2, 1fr); 
             gap: 15px;
             width: 100%;
             max-height: calc(100vh - 250px);
             overflow-y: auto;
             padding: 10px;
         }
+        
+        /* On larger screens, allow more columns */
+        @media (min-width: 768px) {
+            .app-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+        }
 
         .app-item {
-            position: relative;
-            background: var(--card-bg);
-            border: var(--border);
-            border-radius: 12px;
-            padding: calc(10px + 0.3vw);
-            text-align: center;
-            box-shadow: var(--shadow);
+            /* Shape and color from screenshot */
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
-            min-height: 120px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            
+            /* Layout from screenshot (icon left, text right) */
             display: flex;
-            flex-direction: column;
+            flex-direction: row; /* This is key */
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
+            min-height: 80px; /* Adjust as needed */
         }
 
         .app-item:hover {
-            transform: scale(1.05) translateY(-5px);
-            box-shadow: 0 0 12px var(--card-glow);
-            filter: brightness(1.15);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
 
-        .app-item:hover span { color: var(--accent-color); }
-
         .app-item img {
-            width: calc(32px + 0.5vw);
-            height: calc(32px + 0.5vw);
-            margin-bottom: calc(8px + 0.3vw);
+            width: 40px;
+            height: 40px;
+            margin-right: 15px; /* Space between icon and text */
             object-fit: contain;
-            transition: transform 0.2s ease;
             border-radius: 8px;
+            flex-shrink: 0; /* Prevents icon from shrinking */
         }
 
         .app-item span {
-            font-size: calc(0.9rem + 0.2vw);
+            font-size: 1rem;
             font-weight: 600;
-            color: var(--text-color);
-            transition: color 0.2s ease;
+            color: #1e293b; /* Dark text for contrast on white background */
+            text-align: left; /* Align text to the left */
         }
+        /* --- GRID AND BUTTON STYLE CHANGES END HERE --- */
         
         #speechBubble {
             position: fixed;
@@ -379,13 +388,13 @@
         
         .modal-buttons {
             display: flex;
-            flex-direction: column; /* THIS IS THE MAIN CHANGE */
+            flex-direction: column; 
             gap: 10px;
             margin-top: 25px;
         }
 
         .modal-buttons button {
-            width: 100%; /* Make buttons full-width */
+            width: 100%;
             background: transparent;
             border: 1px solid var(--accent-color);
             border-radius: 8px;
@@ -398,7 +407,7 @@
         }
 
         .modal-buttons button.primary { background: var(--accent-color); color: white; }
-        .modal-buttons button:hover { transform: scale(1.02); filter: brightness(1.1); } /* Adjusted hover effect */
+        .modal-buttons button:hover { transform: scale(1.02); filter: brightness(1.1); }
         
         .toggle {
             position: relative;
@@ -552,12 +561,13 @@
         window.addEventListener('resize', () => { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
 
         // --- DATA & SETTINGS ---
+        // Restored original app names
         let initialApps = [
             { name: "ChatGPT", url: "https://chat.openai.com/", icon: "openai.com", description: "" },
             { name: "Music", url: "https://open.spotify.com/", icon: "spotify.com", description: "" },
-            { name: "Game server 1", url: "https://www.crazygames.com/", icon: "crazygames.com", description: "" },
-            { name: "Game server 2", url: "https://poki.com/", icon: "poki.com", description: "" },
-            { name: "watch together", url: "https://app.kosmi.io/", icon: "kosmi.io", description: "" }
+            { name: "CrazyGames", url: "https://www.crazygames.com/", icon: "crazygames.com", description: "" },
+            { name: "Poki", url: "https://poki.com/", icon: "poki.com", description: "" },
+            { name: "Kosmi", url: "https://app.kosmi.io/", icon: "kosmi.io", description: "" }
         ];
         const defaultSettings = { timeFormat24h: false, showSeconds: true, theme: 'dark', appOrder: initialApps.map(app => app.name) };
         let userSettings = {}, userProfile = {}, tempSettings = {};
@@ -595,7 +605,8 @@
                 if (appData) {
                     const appItem = document.createElement('div');
                     appItem.className = 'app-item';
-                    appItem.innerHTML = `<img src="https://icon.horse/icon/${appData.icon}" alt="${appData.name} icon" onerror="this.src='https://placehold.co/64x64/334155/f1f5f9?text=${appData.name.charAt(0)}'"><span>${appData.name}</span>`;
+                    // Updated the placeholder icon to work on a white background
+                    appItem.innerHTML = `<img src="https://icon.horse/icon/${appData.icon}" alt="${appData.name} icon" onerror="this.src='https://placehold.co/64x64/e2e8f0/475569?text=${appData.name.charAt(0)}'"><span>${appData.name}</span>`;
                     appItem.addEventListener('click', () => window.open(appData.url, '_blank'));
                     appGrid.appendChild(appItem);
                 }
@@ -680,7 +691,10 @@
 
         // --- GEMINI API CALLS ---
         async function callGemini(prompt, jsonSchema = null, systemInstruction = null) {
-            const apiKey = ""; // Left empty, will be handled by the environment
+            // NOTE: This app requires a Google Gemini API key to function.
+            // For this environment, the key is handled automatically.
+            // If you run this elsewhere, you must provide your own key.
+            const apiKey = ""; 
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
             
             const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
@@ -722,7 +736,8 @@
 
             } catch (error) {
                 console.error("Gemini API call failed:", error);
-                throw error; // Re-throw the error to be caught by the calling function
+                // Re-throw the error to be caught and handled by the calling function
+                throw error;
             }
         }
         
@@ -739,7 +754,10 @@
                     <div class="briefing-item"><h4>Fun Fact</h4><p>${briefing.fact}</p></div>
                     <div class="briefing-item"><h4>Today's Focus</h4><p>${briefing.focus}</p></div>
                 `;
-            } catch (e) { contentEl.innerHTML = `<p>Couldn't generate a briefing right now. Have a great day!</p>`; console.error(e); }
+            } catch (e) { 
+                contentEl.innerHTML = `<p>Couldn't generate a briefing. The AI feature might not be configured. Have a great day!</p>`; 
+                console.error(e); 
+            }
         }
 
         async function suggestNewApp() {
@@ -755,7 +773,10 @@
                 suggestedApp = JSON.parse(jsonString);
                 contentEl.innerHTML = `<h4>${suggestedApp.name}</h4><p style="margin-bottom: 10px;">${suggestedApp.description}</p><a href="${suggestedApp.url}" target="_blank">${suggestedApp.url}</a>`;
                 addBtn.style.display = 'block';
-            } catch (e) { contentEl.innerHTML = `<p>Sorry, I couldn't come up with a suggestion right now. Please try again later.</p>`; console.error(e); }
+            } catch (e) { 
+                contentEl.innerHTML = `<p>Sorry, I couldn't come up with a suggestion. The AI may not be available.</p>`; 
+                console.error(e); 
+            }
         }
         getEl('suggestAppBtn').addEventListener('click', suggestNewApp);
         
@@ -788,7 +809,10 @@
                     const systemPrompt = `You are FusionBot, a helpful and friendly AI assistant integrated into the Fusion Hub. The user's name is ${userProfile.name || 'not set'}. Their apps are: ${userSettings.appOrder.join(', ')}. Your capabilities include answering questions and providing suggestions. You cannot directly open apps or change settings, but you can guide the user. Keep responses concise for the chat bubble.`;
                     const response = await callGemini(originalCommand, null, systemPrompt);
                     showBubble(response);
-                } catch (error) { console.error("AI Chat Error:", error); showBubble("Sorry, I'm having trouble connecting right now."); }
+                } catch (error) { 
+                    console.error("AI Chat Error:", error); 
+                    showBubble("Sorry, the AI features are currently unavailable."); 
+                }
             }
             getEl('chatInput').value = '';
         }
