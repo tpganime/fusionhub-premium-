@@ -132,10 +132,8 @@
             color: var(--accent-color);
         }
         
-        /* --- GRID AND BUTTON STYLE CHANGES START HERE --- */
         .app-grid {
             display: grid;
-            /* Creates a responsive 2-column layout on most phones */
             grid-template-columns: repeat(2, 1fr); 
             gap: 15px;
             width: 100%;
@@ -144,7 +142,6 @@
             padding: 10px;
         }
         
-        /* On larger screens, allow more columns */
         @media (min-width: 768px) {
             .app-grid {
                 grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -152,7 +149,6 @@
         }
 
         .app-item {
-            /* Shape and color from screenshot */
             background: #ffffff;
             border: 1px solid #e2e8f0;
             border-radius: 16px;
@@ -160,13 +156,11 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             cursor: pointer;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
-            
-            /* Layout from screenshot (icon left, text right) */
             display: flex;
-            flex-direction: row; /* This is key */
+            flex-direction: row;
             align-items: center;
             justify-content: flex-start;
-            min-height: 80px; /* Adjust as needed */
+            min-height: 80px;
         }
 
         .app-item:hover {
@@ -177,19 +171,18 @@
         .app-item img {
             width: 40px;
             height: 40px;
-            margin-right: 15px; /* Space between icon and text */
+            margin-right: 15px;
             object-fit: contain;
             border-radius: 8px;
-            flex-shrink: 0; /* Prevents icon from shrinking */
+            flex-shrink: 0;
         }
 
         .app-item span {
             font-size: 1rem;
             font-weight: 600;
-            color: #1e293b; /* Dark text for contrast on white background */
-            text-align: left; /* Align text to the left */
+            color: #1e293b;
+            text-align: left;
         }
-        /* --- GRID AND BUTTON STYLE CHANGES END HERE --- */
         
         #speechBubble {
             position: fixed;
@@ -561,7 +554,6 @@
         window.addEventListener('resize', () => { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
 
         // --- DATA & SETTINGS ---
-        // Restored original app names
         let initialApps = [
             { name: "ChatGPT", url: "https://chat.openai.com/", icon: "openai.com", description: "" },
             { name: "Music", url: "https://open.spotify.com/", icon: "spotify.com", description: "" },
@@ -605,7 +597,6 @@
                 if (appData) {
                     const appItem = document.createElement('div');
                     appItem.className = 'app-item';
-                    // Updated the placeholder icon to work on a white background
                     appItem.innerHTML = `<img src="https://icon.horse/icon/${appData.icon}" alt="${appData.name} icon" onerror="this.src='https://placehold.co/64x64/e2e8f0/475569?text=${appData.name.charAt(0)}'"><span>${appData.name}</span>`;
                     appItem.addEventListener('click', () => window.open(appData.url, '_blank'));
                     appGrid.appendChild(appItem);
@@ -691,11 +682,10 @@
 
         // --- GEMINI API CALLS ---
         async function callGemini(prompt, jsonSchema = null, systemInstruction = null) {
-            // NOTE: This app requires a Google Gemini API key to function.
-            // For this environment, the key is handled automatically.
-            // If you run this elsewhere, you must provide your own key.
-            const apiKey = ""; 
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+            // --- API Key Added Here ---
+            const apiKey = "AIzaSyDE-xSx73SINrCpuV5xUsBpUxeg2lVXDCg";
+            // Corrected the model name in the URL
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
             
             const chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
             const payload = { contents: chatHistory };
@@ -719,7 +709,9 @@
                 });
 
                 if (!response.ok) {
-                    throw new Error(`API Error: ${response.status} ${response.statusText}`);
+                    const errorBody = await response.json();
+                    console.error("API Error Response:", errorBody);
+                    throw new Error(`API Error: ${response.status} ${response.statusText}. ${errorBody?.error?.message}`);
                 }
 
                 const result = await response.json();
@@ -731,12 +723,15 @@
                 if (result.candidates && result.candidates[0]?.finishReason === 'SAFETY') { 
                     return "I can't answer that due to safety guidelines. Let's talk about something else."; 
                 }
+                
+                if (result.promptFeedback && result.promptFeedback.blockReason) {
+                    return `Request blocked: ${result.promptFeedback.blockReason}. Please adjust your query.`;
+                }
 
                 throw new Error("Invalid response structure from API.");
 
             } catch (error) {
                 console.error("Gemini API call failed:", error);
-                // Re-throw the error to be caught and handled by the calling function
                 throw error;
             }
         }
@@ -755,7 +750,7 @@
                     <div class="briefing-item"><h4>Today's Focus</h4><p>${briefing.focus}</p></div>
                 `;
             } catch (e) { 
-                contentEl.innerHTML = `<p>Couldn't generate a briefing. The AI feature might not be configured. Have a great day!</p>`; 
+                contentEl.innerHTML = `<p>Couldn't generate a briefing. There might be an issue with the AI service or the API key. Please check the console for errors.</p>`; 
                 console.error(e); 
             }
         }
@@ -774,7 +769,7 @@
                 contentEl.innerHTML = `<h4>${suggestedApp.name}</h4><p style="margin-bottom: 10px;">${suggestedApp.description}</p><a href="${suggestedApp.url}" target="_blank">${suggestedApp.url}</a>`;
                 addBtn.style.display = 'block';
             } catch (e) { 
-                contentEl.innerHTML = `<p>Sorry, I couldn't come up with a suggestion. The AI may not be available.</p>`; 
+                contentEl.innerHTML = `<p>Sorry, I couldn't come up with a suggestion. There might be an issue with the AI service or the API key.</p>`; 
                 console.error(e); 
             }
         }
@@ -811,7 +806,7 @@
                     showBubble(response);
                 } catch (error) { 
                     console.error("AI Chat Error:", error); 
-                    showBubble("Sorry, the AI features are currently unavailable."); 
+                    showBubble("Sorry, the AI features are currently unavailable. Check the console for API key errors."); 
                 }
             }
             getEl('chatInput').value = '';
