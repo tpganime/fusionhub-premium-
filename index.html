@@ -456,20 +456,12 @@
 
     <div id="setupModal" class="modal">
         <div class="modal-content">
-            <h2>Welcome to Fusion Hub!</h2>
+            <h2>FUSION HUB PREMIUM</h2>
             <p>This information is stored on your device only.</p>
             <form id="setupForm">
                 <div class="form-group"><label for="userNameInput">Name</label><input type="text" id="userNameInput" required></div>
                 <div class="modal-buttons" style="margin-top: 15px;"><button type="submit" class="primary">Get Started</button></div>
             </form>
-        </div>
-    </div>
-    
-    <div id="dailyBriefingModal" class="modal">
-        <div class="modal-content" style="text-align: left;">
-            <h3>✨ Your Daily Briefing</h3>
-            <div id="briefingContent"><p>Generating your briefing...</p></div>
-            <div class="modal-buttons" style="justify-content: center;"><button id="closeBriefing" class="primary">Start My Day</button></div>
         </div>
     </div>
     
@@ -555,11 +547,11 @@
 
         // --- DATA & SETTINGS ---
         let initialApps = [
-            { name: "ChatGPT", url: "https://chat.openai.com/", icon: "openai.com", description: "" },
+            { name: "Anime", url: "https://www.hindianimezone.in/?m=1", icon: "hindianimezone.in", description: "" },
             { name: "Music", url: "https://open.spotify.com/", icon: "spotify.com", description: "" },
-            { name: "CrazyGames", url: "https://www.crazygames.com/", icon: "crazygames.com", description: "" },
-            { name: "Poki", url: "https://poki.com/", icon: "poki.com", description: "" },
-            { name: "Kosmi", url: "https://app.kosmi.io/", icon: "kosmi.io", description: "" }
+            { name: "Game server 1", url: "https://www.crazygames.com/", icon: "crazygames.com", description: "" },
+            { name: "Game server 2", url: "https://poki.com/", icon: "poki.com", description: "" },
+            { name: "Watch together", url: "https://app.kosmi.io/", icon: "kosmi.io", description: "" }
         ];
         const defaultSettings = { timeFormat24h: false, showSeconds: true, theme: 'dark', appOrder: initialApps.map(app => app.name) };
         let userSettings = {}, userProfile = {}, tempSettings = {};
